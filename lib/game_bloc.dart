@@ -7,7 +7,7 @@ part 'game_event.dart';
 part 'game_state.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
-  Board? board;
+  Board board;
   GameStatus status;
 
   Map<bool?, bool?> order = {true: false, false: null, null: true};
@@ -15,6 +15,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   GameBloc()
       : status = GameStatus.notStarted,
+        board = Board(),
         super(NotStartedGameState()) {
     on<NewBoardButtonPressedGameEvent>(_newGame);
     on<TilePressedGameEvent>(_tilePressed);
@@ -23,16 +24,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   void _newGame(GameEvent event, Emitter emit) {
     status = GameStatus.generating;
     emit(GeneratingBoardGameState());
-    board = Board(height: 15, width: 15);
+    board.newGameDesc();
     status = GameStatus.running;
-    emit(BoardGameState(board!));
+    emit(BoardGameState(board));
   }
 
   void _tilePressed(TilePressedGameEvent event, Emitter emit) {
-    final cell = board!.cells[event.i][event.j];
+    final cell = board.cells[event.i][event.j];
 
     cell.state = event.long ? reverseOrder[cell.state] : order[cell.state];
-    emit(BoardGameState(board!));
+    emit(BoardGameState(board));
   }
 }
 
