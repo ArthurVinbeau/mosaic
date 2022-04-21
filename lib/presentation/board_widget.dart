@@ -37,7 +37,7 @@ class BoardWidget extends StatelessWidget {
               tileSize = constraints.maxHeight / state.board.height;
             }
 
-            logger.i("tileSize: $tileSize");
+            logger.d("tileSize: $tileSize");
 
             return SizedBox.expand(
               child: InteractiveViewer(

@@ -36,6 +36,7 @@ class GamePage extends StatelessWidget {
           centerTitle: true,
         ),
         body: const BoardWidget(),
+        backgroundColor: Colors.grey,
       ),
     );
   }
