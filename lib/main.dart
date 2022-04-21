@@ -37,6 +37,31 @@ class GamePage extends StatelessWidget {
         ),
         body: const BoardWidget(),
         backgroundColor: Colors.grey,
+        bottomNavigationBar: BlocBuilder<GameBloc, GameState>(
+          builder: (context, state) {
+            Color a = Colors.black, b = Colors.white;
+            if (state is ControlsGameState && state.reversed) {
+              var tmp = a;
+              a = b;
+              b = tmp;
+            }
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8.0,
+                children: [
+                  IconButton(
+                      onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
+                      icon: Stack(
+                        children: [Icon(Icons.circle, color: b), Icon(Icons.contrast, color: a)],
+                      ))
+                ],
+              ),
+            );
+          },
+          buildWhen: (_, b) => b is ControlsGameState,
+        ),
       ),
     );
   }
