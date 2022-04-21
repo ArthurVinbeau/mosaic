@@ -25,7 +25,7 @@ class Board {
     }
   }
 
-  static void _iterateOnSquare<T>(List<List<T>> list, int i, int j, void Function(T, int, int) callback) {
+  static void iterateOnSquare<T>(List<List<T>> list, int i, int j, void Function(T, int, int) callback) {
     for (int k = -1; k < 2; k++) {
       final targetI = i + k;
       if (targetI >= 0 && targetI < list.length) {
@@ -41,7 +41,7 @@ class Board {
 
   int _getSquareValue(int i, int j) {
     var counter = 0;
-    _iterateOnSquare(cells, i, j, (Cell cell, targetI, targetJ) => counter += cell.value ? 1 : 0);
+    iterateOnSquare(cells, i, j, (Cell cell, targetI, targetJ) => counter += cell.value ? 1 : 0);
     return counter;
   }
 
@@ -141,9 +141,12 @@ class Board {
 
   _SolutionResult _solveCheck() {
     List<List<_SolutionCell>> sol =
-        List.generate(height, (i) => List.generate(width, (j) => _SolutionCell(), growable: false), growable: false);
-    bool progress = true, error = false;
-    int solved = 0, curr = 0, shown = 0;
+    List.generate(height, (i) => List.generate(width, (j) => _SolutionCell(), growable: false), growable: false);
+    bool progress = true,
+        error = false;
+    int solved = 0,
+        curr = 0,
+        shown = 0;
     List<_NeededItem> neededList = [];
 
     for (int i = 0; i < height; i++) {
@@ -250,7 +253,7 @@ class Board {
 
   static _MarkCounter _countAround(List<List<_SolutionCell>> sol, int i, int j) {
     var counter = _MarkCounter();
-    _iterateOnSquare(sol, i, j, (_SolutionCell cell, p1, p2) {
+    iterateOnSquare(sol, i, j, (_SolutionCell cell, p1, p2) {
       counter.total++;
       if (cell.cell & CellState.blank != 0) {
         counter.blank++;
@@ -263,7 +266,7 @@ class Board {
 
   static void _markAround(List<List<_SolutionCell>> sol, int i, int j, int mark) {
     int marked = 0;
-    _iterateOnSquare(sol, i, j, (_SolutionCell cell, p1, p2) {
+    iterateOnSquare(sol, i, j, (_SolutionCell cell, p1, p2) {
       if (cell.cell == CellState.unmarked) {
         cell.cell = mark;
         marked++;
