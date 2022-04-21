@@ -9,8 +9,10 @@ class Tile extends StatelessWidget {
   final String? label;
   final bool? state;
   final double size;
+  final bool error;
 
-  const Tile({Key? key, required this.i, required this.j, this.label, this.state, this.size = 50}) : super(key: key);
+  const Tile({Key? key, required this.i, required this.j, this.label, this.state, this.size = 50, this.error = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,8 @@ class Tile extends StatelessWidget {
         child: label != null
             ? AutoSizeText(label!,
                 minFontSize: 1,
-                style: TextStyle(fontSize: 200, color: (state ?? false) ? Colors.white : Colors.black),
+                style: TextStyle(
+                    fontSize: 200, color: error ? Colors.red : ((state ?? false) ? Colors.white : Colors.black)),
                 textAlign: TextAlign.center)
             : null,
       ),

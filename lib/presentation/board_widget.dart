@@ -64,7 +64,13 @@ class BoardWidget extends StatelessWidget {
         final cell = board.cells[i][j];
         row.add(Padding(
           padding: const EdgeInsets.all(2.0),
-          child: Tile(i: i, j: j, label: cell.shown ? cell.clue.toString() : null, state: cell.state, size: size),
+          child: Tile(
+              i: i,
+              j: j,
+              label: cell.shown ? cell.clue.toString() : null,
+              state: cell.state,
+              size: size,
+              error: cell.error),
         ));
       }
       rows.add(Row(mainAxisSize: MainAxisSize.min, children: row));
