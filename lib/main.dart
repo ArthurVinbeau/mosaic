@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/game_bloc.dart';
 import 'package:mosaic/presentation/board_widget.dart';
 
+import 'entities/game_controls.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -39,26 +41,36 @@ class GamePage extends StatelessWidget {
         backgroundColor: Colors.grey,
         bottomNavigationBar: BlocBuilder<GameBloc, GameState>(
           builder: (context, state) {
-            Color a = Colors.black, b = Colors.white;
-            if (state is ControlsGameState && state.reversed) {
-              var tmp = a;
-              a = b;
-              b = tmp;
+            if (state is ControlsGameState) {
+              Color a = Colors.black, b = Colors.white;
+              GameControls controls = state.controls;
+              if (controls.reversed) {
+                var tmp = a;
+                a = b;
+                b = tmp;
+              }
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8.0,
+                  children: [
+                    IconButton(
+                        onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
+                        icon: Stack(
+                          children: [Icon(Icons.circle, color: b), Icon(Icons.contrast, color: a)],
+                        )),
+                    Ink(
+                      decoration: ShapeDecoration(shape: const CircleBorder(), color: controls.fill ? a : null),
+                      child: IconButton(
+                          onPressed: () => context.read<GameBloc>().add(ToggleFillEvent()),
+                          icon: Icon(Icons.format_color_fill, color: controls.fill ? b : a)),
+                    ),
+                  ],
+                ),
+              );
             }
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8.0,
-                children: [
-                  IconButton(
-                      onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
-                      icon: Stack(
-                        children: [Icon(Icons.circle, color: b), Icon(Icons.contrast, color: a)],
-                      ))
-                ],
-              ),
-            );
+            return const SizedBox();
           },
           buildWhen: (_, b) => b is ControlsGameState,
         ),
