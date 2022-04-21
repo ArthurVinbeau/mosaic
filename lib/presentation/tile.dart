@@ -20,13 +20,18 @@ class Tile extends StatelessWidget {
       child: Container(
         height: size,
         width: size,
+        // alignment: Alignment.center,
+        padding: const EdgeInsets.all(2.0),
         color: state == null
             ? Colors.teal
             : state!
                 ? Colors.black
                 : Colors.white,
         child: label != null
-            ? AutoSizeText(label!, style: TextStyle(color: (state ?? false) ? Colors.white : Colors.black))
+            ? AutoSizeText(label!,
+                minFontSize: 1,
+                style: TextStyle(fontSize: 200, color: (state ?? false) ? Colors.white : Colors.black),
+                textAlign: TextAlign.center)
             : null,
       ),
     );
