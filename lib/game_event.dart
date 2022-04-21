@@ -13,3 +13,5 @@ class TilePressedGameEvent extends GameEvent {
 }
 
 class ToggleColorsEvent extends GameEvent {}
+
+class ToggleFillEvent extends GameEvent {}

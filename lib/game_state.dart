@@ -22,7 +22,7 @@ class FinishedGameState extends BoardGameState {
 }
 
 class ControlsGameState extends GameState {
-  final bool reversed;
+  final GameControls controls;
 
-  ControlsGameState(this.reversed);
+  ControlsGameState(this.controls);
 }
