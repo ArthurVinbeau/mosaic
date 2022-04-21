@@ -10,8 +10,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Board board;
   GameStatus status;
 
+  bool reversed = false;
+
   Map<bool?, bool?> order = {true: false, false: null, null: true};
   Map<bool?, bool?> reverseOrder = {true: null, false: true, null: false};
+  late Map<bool, Map<bool?, bool?>> usedOrder = {true: reverseOrder, false: order};
 
   GameBloc()
       : status = GameStatus.notStarted,
@@ -19,6 +22,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         super(NotStartedGameState()) {
     on<NewBoardButtonPressedGameEvent>(_newGame);
     on<TilePressedGameEvent>(_tilePressed);
+    on<ToggleColorsEvent>(_toggleCommands);
   }
 
   void _newGame(GameEvent event, Emitter emit) {
@@ -32,8 +36,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   void _tilePressed(TilePressedGameEvent event, Emitter emit) {
     final cell = board.cells[event.i][event.j];
 
-    cell.state = event.long ? reverseOrder[cell.state] : order[cell.state];
+    cell.state = usedOrder[event.long]![cell.state];
     emit(BoardGameState(board));
+  }
+
+  void _toggleCommands(ToggleColorsEvent event, Emitter emit) {
+    reversed = !reversed;
+    usedOrder = reversed ? {true: order, false: reverseOrder} : {true: reverseOrder, false: order};
+    emit(ControlsGameState(reversed));
   }
 }
 

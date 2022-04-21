@@ -16,3 +16,13 @@ class BoardGameState extends GameState {
 
   BoardGameState(this.board);
 }
+
+class FinishedGameState extends BoardGameState {
+  FinishedGameState(Board board) : super(board);
+}
+
+class ControlsGameState extends GameState {
+  final bool reversed;
+
+  ControlsGameState(this.reversed);
+}

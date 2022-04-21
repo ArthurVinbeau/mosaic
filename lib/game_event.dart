@@ -11,3 +11,5 @@ class TilePressedGameEvent extends GameEvent {
 
   TilePressedGameEvent(this.i, this.j, this.long);
 }
+
+class ToggleColorsEvent extends GameEvent {}
