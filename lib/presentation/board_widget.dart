@@ -12,6 +12,7 @@ class BoardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GameBloc, GameState>(
+      buildWhen: (_, b) => b is! ControlsGameState,
       builder: (BuildContext context, state) {
         if (state is NotStartedGameState) {
           return Center(
