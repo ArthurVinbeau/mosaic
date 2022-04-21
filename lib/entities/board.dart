@@ -64,11 +64,11 @@ class Board {
           if (!valid) {
             logger.d("Not valid, regenerating.");
           } else {
-            valid = solve_check(params, desc, rs, NULL);
+            valid = _solveCheck().result;
             if (!valid) {
               logger.d("Couldn't solve, regenerating.");
             } else {
-              hide_clues(params, desc, rs);
+              _hideClues();
             }
           }
         }
@@ -318,7 +318,39 @@ class Board {
         marked++;
       }
     });
-    logger.d("Marked $marked cells with $mark.");
+    logger.v("Marked $marked cells with $mark.");
+  }
+
+  void _hideClues() {
+    int needed = 0;
+    List<_NeededItem> neededList = [];
+
+    logger.d("Hiding clues");
+    List<List<_SolutionCell>> sol = _solveCheck().sol;
+
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        if (sol[i][j].needed) {
+          neededList.add(_NeededItem(i, j));
+          needed++;
+        } else if (!sol[i][j].needed) {
+          cells[i][j].shown = false;
+        }
+      }
+    }
+
+    neededList.shuffle();
+
+    for (int k = 0; k < needed; k++) {
+      var curr = cells[neededList[k].i][neededList[k].j];
+      curr.shown = false;
+      if (!_solveCheck().result) {
+        logger.d("Hiding cell [${neededList[k].i}][${neededList[k].j}] not possible.");
+        curr.shown = true;
+      }
+    }
+
+    logger.d("needed $needed");
   }
 }
 
