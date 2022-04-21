@@ -1,4 +1,4 @@
-# tmp
+# mosaic
 
 A flutter implementation of Mosaic from Simon Tatham's Portable Puzzle Collection
 
