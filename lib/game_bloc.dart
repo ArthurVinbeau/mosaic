@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:mosaic/entities/board.dart';
 
+import 'entities/cell.dart';
+
 part 'game_event.dart';
 
 part 'game_state.dart';
@@ -37,6 +39,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final cell = board.cells[event.i][event.j];
 
     cell.state = usedOrder[event.long]![cell.state];
+    Board.iterateOnSquare(board.cells, event.i, event.j, (Cell cell, p1, p2) {
+      var count = 0;
+      Board.iterateOnSquare(board.cells, p1, p2, (Cell e, p1, p2) => count += (e.state ?? false) ? 1 : 0);
+      cell.error = count > cell.clue;
+    });
+
     emit(BoardGameState(board));
   }
 
