@@ -11,7 +11,24 @@ class BoardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GameBloc, GameState>(
+    return BlocConsumer<GameBloc, GameState>(
+      listener: (context, state) {
+        showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: const Text("You WIN!"),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          context.read<GameBloc>().add(NewBoardButtonPressedGameEvent());
+                        },
+                        child: const Text("New Game")),
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text("Dismiss")),
+                  ],
+                ));
+      },
+      listenWhen: (_, b) => b is FinishedGameState,
       buildWhen: (_, b) => b is! ControlsGameState,
       builder: (BuildContext context, state) {
         if (state is NotStartedGameState) {
@@ -22,12 +39,17 @@ class BoardWidget extends StatelessWidget {
             ),
           );
         } else if (state is GeneratingBoardGameState) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(value: state.progress),
-              const Text("Generating a new board..."),
-            ],
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(value: state.progress),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text("Generating a new board..."),
+                ),
+              ],
+            ),
           );
         } else if (state is BoardGameState) {
           return LayoutBuilder(builder: (context, constraints) {
