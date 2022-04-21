@@ -50,6 +50,7 @@ class Board {
 
     String compressed = "";
     int baseSpace = 'a'.codeUnitAt(0);
+    int maxSpace = 'z'.codeUnitAt(0);
     int spaceCount = baseSpace;
 
     while (!valid) {
@@ -58,100 +59,50 @@ class Board {
       for (int i = 0; i < height; i++) {
         for (int j = 0; j < width; j++) {
           _populateCell(i, j);
+        }
+      }
 
-          valid = _startPointCheck();
+      valid = _startPointCheck();
 
-          if (!valid) {
-            logger.d("Not valid, regenerating.");
+      if (!valid) {
+        logger.d("Not valid, regenerating.");
+      } else {
+        valid = _solveCheck().result;
+        if (!valid) {
+          logger.d("Couldn't solve, regenerating.");
+        } else {
+          _hideClues();
+        }
+      }
+    }
+
+    // uncompressed string generation omitted
+
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        if (cells[i][j].shown) {
+          if (spaceCount > baseSpace) {
+            compressed += String.fromCharCode(spaceCount);
+            spaceCount = baseSpace;
+          }
+          compressed += cells[i][j].clue.toString();
+        } else {
+          if (spaceCount <= maxSpace) {
+            spaceCount++;
           } else {
-            valid = _solveCheck().result;
-            if (!valid) {
-              logger.d("Couldn't solve, regenerating.");
-            } else {
-              _hideClues();
-            }
+            compressed += String.fromCharCode(spaceCount);
+            spaceCount = baseSpace;
           }
         }
       }
     }
-  }
+    if (spaceCount > baseSpace) {
+      compressed += String.fromCharCode(spaceCount);
+    }
+    logger.d("Compressed description: $compressed");
 
-/*
-    while (!valid) {
-        if (!valid) {
-#ifdef DEBUG_PRINTS
-            printf("Not valid, regenerating.\n");
-#endif
-        } else {
-            valid = solve_check(params, desc, rs, NULL);
-            if (!valid) {
-#ifdef DEBUG_PRINTS
-                printf("Couldn't solve, regenerating.");
-#endif
-            } else {
-                hide_clues(params, desc, rs);
-            }
-        }
-    }
-    location_in_str = 0;
-    for (y = 0; y < params->height; y++) {
-        for (x = 0; x < params->width; x++) {
-            if (desc[(y * params->width) + x].shown) {
-#ifdef DEBUG_PRINTS
-                printf("%d(%d)", desc[(y * params->width) + x].value,
-                       desc[(y * params->width) + x].clue);
-#endif
-                sprintf(desc_string + location_in_str, "%d",
-                        desc[(y * params->width) + x].clue);
-            } else {
-#ifdef DEBUG_PRINTS
-                printf("%d( )", desc[(y * params->width) + x].value);
-#endif
-                sprintf(desc_string + location_in_str, " ");
-            }
-            location_in_str += 1;
-        }
-#ifdef DEBUG_PRINTS
-        printf("\n");
-#endif
-    }
-    location_in_str = 0;
-    space_count = 'a' - 1;
-    for (y = 0; y < params->height; y++) {
-        for (x = 0; x < params->width; x++) {
-            if (desc[(y * params->width) + x].shown) {
-                if (space_count >= 'a') {
-                    sprintf(compressed_desc + location_in_str, "%c",
-                            space_count);
-                    location_in_str++;
-                    space_count = 'a' - 1;
-                }
-                sprintf(compressed_desc + location_in_str, "%d",
-                        desc[(y * params->width) + x].clue);
-                location_in_str++;
-            } else {
-                if (space_count <= 'z') {
-                    space_count++;
-                } else {
-                    sprintf(compressed_desc + location_in_str, "%c",
-                            space_count);
-                    location_in_str++;
-                    space_count = 'a' - 1;
-                }
-            }
-        }
-    }
-    if (space_count >= 'a') {
-        sprintf(compressed_desc + location_in_str, "%c", space_count);
-        location_in_str++;
-    }
-    compressed_desc[location_in_str] = '\0';
-#ifdef DEBUG_PRINTS
-    printf("compressed_desc: %s\n", compressed_desc);
-#endif
-    return compressed_desc;
-}
-   */
+    return compressed;
+  }
 
   void _populateCell(int i, int j) {
     int clue = _getSquareValue(i, j);
