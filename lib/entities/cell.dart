@@ -6,6 +6,7 @@ class Cell {
   bool empty;
   bool? state;
   bool error;
+  bool complete;
 
   Cell(
       {this.clue = 0,
@@ -14,5 +15,6 @@ class Cell {
       this.full = false,
       this.empty = false,
       this.state,
-      this.error = false});
+      this.error = false,
+      this.complete = false});
 }

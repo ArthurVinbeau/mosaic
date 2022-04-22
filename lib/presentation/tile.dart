@@ -10,8 +10,17 @@ class Tile extends StatelessWidget {
   final bool? state;
   final double size;
   final bool error;
+  final bool complete;
 
-  const Tile({Key? key, required this.i, required this.j, this.label, this.state, this.size = 50, this.error = false})
+  const Tile(
+      {Key? key,
+      required this.i,
+      required this.j,
+      this.label,
+      this.state,
+      this.size = 50,
+      this.error = false,
+      this.complete = false})
       : super(key: key);
 
   @override
@@ -33,7 +42,12 @@ class Tile extends StatelessWidget {
             ? AutoSizeText(label!,
                 minFontSize: 1,
                 style: TextStyle(
-                    fontSize: 200, color: error ? Colors.red : ((state ?? false) ? Colors.white : Colors.black)),
+                    fontSize: 200,
+                    color: error
+                        ? Colors.red
+                        : complete
+                            ? Colors.grey
+                            : ((state ?? false) ? Colors.white : Colors.black)),
                 textAlign: TextAlign.center)
             : null,
       ),

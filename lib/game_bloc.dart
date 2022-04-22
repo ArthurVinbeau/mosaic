@@ -47,9 +47,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _checkCellError(int i, int j) {
-    var count = 0;
-    Board.iterateOnSquare(board.cells, i, j, (Cell e, p1, p2) => count += (e.state ?? false) ? 1 : 0);
-    board.cells[i][j].error = count > board.cells[i][j].clue;
+    var count = 0, empty = 0;
+    Board.iterateOnSquare(board.cells, i, j, (Cell e, p1, p2) {
+      count += (e.state ?? false) ? 1 : 0;
+      empty += e.state == null ? 1 : 0;
+    });
+    board.cells[i][j].error = count > board.cells[i][j].clue || count < board.cells[i][j].clue && empty == 0;
+    board.cells[i][j].complete = empty == 0;
   }
 
   void _cellPressed(Cell cell, bool? newState) {

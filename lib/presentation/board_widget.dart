@@ -92,7 +92,8 @@ class BoardWidget extends StatelessWidget {
               label: cell.shown ? cell.clue.toString() : null,
               state: cell.state,
               size: size,
-              error: cell.error),
+              error: cell.error,
+              complete: cell.complete),
         ));
       }
       rows.add(Row(mainAxisSize: MainAxisSize.min, children: row));
