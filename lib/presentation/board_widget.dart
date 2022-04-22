@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/game_bloc.dart';
+import 'package:mosaic/presentation/new_game_widget.dart';
 import 'package:mosaic/presentation/tile.dart';
 
 import '../entities/board.dart';
@@ -21,7 +22,7 @@ class BoardWidget extends StatelessWidget {
                     TextButton(
                         onPressed: () {
                           Navigator.pop(context);
-                          context.read<GameBloc>().add(NewBoardButtonPressedGameEvent());
+                          context.read<GameBloc>().add(NewBoardDialogButtonPressedGameEvent());
                         },
                         child: const Text("New Game")),
                     TextButton(onPressed: () => Navigator.pop(context), child: const Text("Dismiss")),
@@ -32,12 +33,7 @@ class BoardWidget extends StatelessWidget {
       buildWhen: (_, b) => b is! ControlsGameState,
       builder: (BuildContext context, state) {
         if (state is NotStartedGameState) {
-          return Center(
-            child: ElevatedButton(
-              child: const Text("New Game"),
-              onPressed: () => context.read<GameBloc>().add(NewBoardButtonPressedGameEvent()),
-            ),
-          );
+          return Center(child: NewGameWidget(height: state.baseHeight, width: state.baseWidth));
         } else if (state is GeneratingBoardGameState) {
           return Center(
             child: Column(

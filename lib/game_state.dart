@@ -3,7 +3,11 @@ part of '../game_bloc.dart';
 @immutable
 abstract class GameState {}
 
-class NotStartedGameState extends GameState {}
+class NotStartedGameState extends GameState {
+  final int baseHeight, baseWidth;
+
+  NotStartedGameState(this.baseHeight, this.baseWidth);
+}
 
 class GeneratingBoardGameState extends GameState {
   final double? progress;

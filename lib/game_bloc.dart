@@ -15,7 +15,9 @@ part 'game_event.dart';
 part 'game_state.dart';
 
 class GameBloc extends Bloc<GameEvent, GameState> {
-  Board board;
+  static const baseHeight = 8, baseWidth = 8;
+
+  late Board board;
   GameStatus status;
   GameControls controls;
   late MoveManager moveManager;
@@ -27,11 +29,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   GameBloc()
       : status = GameStatus.notStarted,
-        board = Board(),
         controls = GameControls(false, false, false, false),
         validTiles = 0,
-        super(NotStartedGameState()) {
+        super(NotStartedGameState(baseHeight, baseWidth)) {
     on<NewBoardButtonPressedGameEvent>(_newGame);
+    on<NewBoardDialogButtonPressedGameEvent>(_showNewGameWidget);
     on<TilePressedGameEvent>(_tilePressed);
     on<ToggleColorsEvent>(_toggleCommands);
     on<ToggleFillEvent>(_toggleFill);
@@ -39,15 +41,20 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<RedoEvent>(_redo);
   }
 
-  void _newGame(GameEvent event, Emitter emit) {
+  void _newGame(NewBoardButtonPressedGameEvent event, Emitter emit) {
     status = GameStatus.generating;
     emit(GeneratingBoardGameState());
+    board = Board(height: event.height, width: event.width);
     board.newGameDesc();
     status = GameStatus.running;
     validTiles = 0;
     moveManager = MoveManager();
     emit(BoardGameState(board));
     emit(ControlsGameState(controls));
+  }
+
+  void _showNewGameWidget(NewBoardDialogButtonPressedGameEvent event, Emitter emit) {
+    emit(NotStartedGameState(board.height, board.width));
   }
 
   void _checkCellError(int i, int j) {

@@ -3,7 +3,13 @@ part of '../game_bloc.dart';
 @immutable
 abstract class GameEvent {}
 
-class NewBoardButtonPressedGameEvent extends GameEvent {}
+class NewBoardButtonPressedGameEvent extends GameEvent {
+  final int height, width;
+
+  NewBoardButtonPressedGameEvent(this.height, this.width);
+}
+
+class NewBoardDialogButtonPressedGameEvent extends GameEvent {}
 
 class TilePressedGameEvent extends GameEvent {
   final int i, j;
