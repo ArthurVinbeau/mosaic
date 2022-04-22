@@ -4,9 +4,11 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/entities/game_controls.dart';
+import 'package:mosaic/entities/move_manager.dart';
 import 'package:mosaic/utils/config.dart';
 
 import 'entities/cell.dart';
+import 'entities/move.dart';
 
 part 'game_event.dart';
 
@@ -16,6 +18,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Board board;
   GameStatus status;
   GameControls controls;
+  late MoveManager moveManager;
   int validTiles;
 
   Map<bool?, bool?> order = {true: false, false: null, null: true};
@@ -25,25 +28,26 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   GameBloc()
       : status = GameStatus.notStarted,
         board = Board(),
-        controls = GameControls(false, false),
+        controls = GameControls(false, false, false, false),
         validTiles = 0,
         super(NotStartedGameState()) {
     on<NewBoardButtonPressedGameEvent>(_newGame);
     on<TilePressedGameEvent>(_tilePressed);
     on<ToggleColorsEvent>(_toggleCommands);
     on<ToggleFillEvent>(_toggleFill);
+    on<UndoEvent>(_undo);
+    on<RedoEvent>(_redo);
   }
 
-  void _newGame(GameEvent event, Emitter emit) async {
+  void _newGame(GameEvent event, Emitter emit) {
     status = GameStatus.generating;
     emit(GeneratingBoardGameState());
-    await Future.delayed(Duration.zero, () {
-      board.newGameDesc();
-      status = GameStatus.running;
-      validTiles = 0;
-      emit(BoardGameState(board));
-      emit(ControlsGameState(controls));
-    });
+    board.newGameDesc();
+    status = GameStatus.running;
+    validTiles = 0;
+    moveManager = MoveManager();
+    emit(BoardGameState(board));
+    emit(ControlsGameState(controls));
   }
 
   void _checkCellError(int i, int j) {
@@ -69,18 +73,27 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   void _tilePressed(TilePressedGameEvent event, Emitter emit) {
     if (controls.fill) {
+      List<Move> moves = [];
       Board.iterateOnSquare(board.cells, event.i, event.j, (Cell cell, p1, p2) {
-        _cellPressed(cell, cell.state ?? usedOrder[event.long]![cell.state]);
+        if (cell.state == null) {
+          final newState = usedOrder[event.long]![cell.state];
+          moves.add(Move(p1, p2, cell.state, newState));
+          _cellPressed(cell, newState);
+        }
       });
-      for (int i = max(0, event.i - 2); i < board.height && i < event.i + 2; i++) {
-        for (int j = max(0, event.j - 2); j < board.width && j < event.j + 2; j++) {
-          _checkCellError(i, j);
+      if (moves.isNotEmpty) {
+        moveManager.add(moves);
+        for (int i = max(0, event.i - 2); i < board.height && i < event.i + 2; i++) {
+          for (int j = max(0, event.j - 2); j < board.width && j < event.j + 2; j++) {
+            _checkCellError(i, j);
+          }
         }
       }
     } else {
       final cell = board.cells[event.i][event.j];
-
-      _cellPressed(cell, usedOrder[event.long]![cell.state]);
+      final newState = usedOrder[event.long]![cell.state];
+      moveManager.add([Move(event.i, event.j, cell.state, newState)]);
+      _cellPressed(cell, newState);
       Board.iterateOnSquare(board.cells, event.i, event.j, (Cell cell, p1, p2) {
         _checkCellError(p1, p2);
       });
@@ -93,6 +106,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     } else {
       emit(BoardGameState(board));
     }
+
+    _updateMoveControls(emit);
   }
 
   void _toggleCommands(ToggleColorsEvent event, Emitter emit) {
@@ -104,6 +119,48 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   void _toggleFill(ToggleFillEvent event, Emitter emit) {
     controls.fill = !controls.fill;
     emit(ControlsGameState(controls));
+  }
+
+  void _updateMoveControls(Emitter emit) {
+    bool change = false;
+    if (moveManager.canUndo != controls.canUndo) {
+      controls.canUndo = moveManager.canUndo;
+      change = true;
+    }
+    if (moveManager.canRedo != controls.canRedo) {
+      controls.canRedo = moveManager.canRedo;
+      change = true;
+    }
+
+    if (change) {
+      emit(ControlsGameState(controls));
+    }
+  }
+
+  void _undo(UndoEvent event, Emitter emit) {
+    if (moveManager.canUndo) {
+      moveManager.undo().forEach((Move move) {
+        _cellPressed(board.cells[move.i][move.j], move.oldState);
+        Board.iterateOnSquare(board.cells, move.i, move.j, (Cell cell, p1, p2) {
+          _checkCellError(p1, p2);
+        });
+      });
+      emit(BoardGameState(board));
+      _updateMoveControls(emit);
+    }
+  }
+
+  void _redo(RedoEvent event, Emitter emit) {
+    if (moveManager.canRedo) {
+      moveManager.redo().forEach((Move move) {
+        _cellPressed(board.cells[move.i][move.j], move.newState);
+        Board.iterateOnSquare(board.cells, move.i, move.j, (Cell cell, p1, p2) {
+          _checkCellError(p1, p2);
+        });
+      });
+      emit(BoardGameState(board));
+      _updateMoveControls(emit);
+    }
   }
 }
 

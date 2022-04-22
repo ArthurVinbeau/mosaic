@@ -2,5 +2,8 @@ class GameControls {
   bool reversed;
   bool fill;
 
-  GameControls(this.reversed, this.fill);
+  bool canUndo;
+  bool canRedo;
+
+  GameControls(this.reversed, this.fill, this.canUndo, this.canRedo);
 }
