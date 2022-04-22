@@ -141,12 +141,9 @@ class Board {
 
   _SolutionResult _solveCheck() {
     List<List<_SolutionCell>> sol =
-    List.generate(height, (i) => List.generate(width, (j) => _SolutionCell(), growable: false), growable: false);
-    bool progress = true,
-        error = false;
-    int solved = 0,
-        curr = 0,
-        shown = 0;
+        List.generate(height, (i) => List.generate(width, (j) => _SolutionCell(), growable: false), growable: false);
+    bool progress = true, error = false;
+    int solved = 0, curr = 0, shown = 0;
     List<_NeededItem> neededList = [];
 
     for (int i = 0; i < height; i++) {

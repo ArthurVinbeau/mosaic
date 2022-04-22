@@ -32,8 +32,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         controls = GameControls(false, false, false, false),
         validTiles = 0,
         super(NotStartedGameState(baseHeight, baseWidth)) {
-    on<NewBoardButtonPressedGameEvent>(_newGame);
-    on<NewBoardDialogButtonPressedGameEvent>(_showNewGameWidget);
+    on<CreateGameEvent>(_newGame);
+    on<ShowNewGameOptionsEvent>(_showNewGameWidget);
+    on<NewGameButtonEvent>(_showNewGameConfirmation);
     on<TilePressedGameEvent>(_tilePressed);
     on<ToggleColorsEvent>(_toggleCommands);
     on<ToggleFillEvent>(_toggleFill);
@@ -41,7 +42,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<RedoEvent>(_redo);
   }
 
-  void _newGame(NewBoardButtonPressedGameEvent event, Emitter emit) {
+  void _newGame(CreateGameEvent event, Emitter emit) {
     status = GameStatus.generating;
     emit(GeneratingBoardGameState());
     board = Board(height: event.height, width: event.width);
@@ -49,13 +50,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     status = GameStatus.running;
     validTiles = 0;
     moveManager = MoveManager();
-    emit(BoardGameState(board));
-    emit(ControlsGameState(controls));
+    emit(NewBoardGameState(board, controls));
   }
 
-  void _showNewGameWidget(NewBoardDialogButtonPressedGameEvent event, Emitter emit) {
+  void _showNewGameWidget(ShowNewGameOptionsEvent event, Emitter emit) {
     status = GameStatus.notStarted;
     emit(NotStartedGameState(board.height, board.width));
+  }
+
+  void _showNewGameConfirmation(NewGameButtonEvent event, Emitter emit) {
+    emit(ShowDialogState(title: "Start a new game?", confirmationEvent: ShowNewGameOptionsEvent(), pop: true));
   }
 
   void _checkCellError(int i, int j) {
@@ -107,12 +111,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       });
     }
 
+    emit(BoardGameState(board));
     if (validTiles == board.height * board.width) {
       logger.i("You win!");
       status = GameStatus.win;
-      emit(FinishedGameState(board));
-    } else {
-      emit(BoardGameState(board));
+      emit(ShowDialogState(
+          title: "You win!",
+          confirmationEvent: ShowNewGameOptionsEvent(),
+          confirmation: "Start new game",
+          dismiss: "Dismiss",
+          pop: true));
     }
 
     _updateMoveControls(emit);

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/game_bloc.dart';
-import 'package:mosaic/presentation/new_game_widget.dart';
 import 'package:mosaic/presentation/tile.dart';
 
 import '../entities/board.dart';
@@ -10,31 +9,40 @@ import '../utils/config.dart';
 class BoardWidget extends StatelessWidget {
   const BoardWidget({Key? key}) : super(key: key);
 
+  void _showBlocDialog(BuildContext context, ShowDialogState state) async {
+    final theme = Theme.of(context);
+    final pop = await showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text(state.title),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(state.dismiss),
+                    style: TextButton.styleFrom(primary: theme.errorColor)),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context, state.pop);
+                      context.read<GameBloc>().add(state.confirmationEvent);
+                    },
+                    child: Text(state.confirmation)),
+              ],
+            ));
+    if (pop ?? false) {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<GameBloc, GameState>(
       listener: (context, state) {
-        showDialog(
-            context: context,
-            builder: (ctx) => AlertDialog(
-                  title: const Text("You WIN!"),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          context.read<GameBloc>().add(NewBoardDialogButtonPressedGameEvent());
-                        },
-                        child: const Text("New Game")),
-                    TextButton(onPressed: () => Navigator.pop(context), child: const Text("Dismiss")),
-                  ],
-                ));
+        _showBlocDialog(context, state as ShowDialogState);
       },
-      listenWhen: (_, b) => b is FinishedGameState,
-      buildWhen: (_, b) => b is! ControlsGameState,
+      listenWhen: (_, b) => b is ShowDialogState,
+      buildWhen: (_, b) => b is BoardGameState || b is GeneratingBoardGameState,
       builder: (BuildContext context, state) {
-        if (state is NotStartedGameState) {
-          return Center(child: NewGameWidget(height: state.baseHeight, width: state.baseWidth));
-        } else if (state is GeneratingBoardGameState) {
+        if (state is GeneratingBoardGameState) {
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,

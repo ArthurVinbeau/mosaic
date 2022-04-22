@@ -21,8 +21,25 @@ class BoardGameState extends GameState {
   BoardGameState(this.board);
 }
 
-class FinishedGameState extends BoardGameState {
-  FinishedGameState(Board board) : super(board);
+class NewBoardGameState extends BoardGameState {
+  final GameControls controls;
+
+  NewBoardGameState(Board board, this.controls) : super(board);
+}
+
+class ShowDialogState extends GameState {
+  final String title;
+  final String confirmation;
+  final String dismiss;
+  final GameEvent confirmationEvent;
+  final bool pop;
+
+  ShowDialogState(
+      {required this.title,
+      this.confirmation = "yes",
+      this.dismiss = "no",
+      required this.confirmationEvent,
+      this.pop = false});
 }
 
 class ControlsGameState extends GameState {

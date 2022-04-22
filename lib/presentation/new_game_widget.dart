@@ -73,7 +73,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                context.read<GameBloc>().add(NewBoardButtonPressedGameEvent(height, width));
+                context.read<GameBloc>().add(CreateGameEvent(height, width));
               }
             },
           ),
