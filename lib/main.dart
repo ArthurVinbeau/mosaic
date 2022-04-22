@@ -66,6 +66,12 @@ class GamePage extends StatelessWidget {
                           onPressed: () => context.read<GameBloc>().add(ToggleFillEvent()),
                           icon: Icon(Icons.format_color_fill, color: controls.fill ? b : a)),
                     ),
+                    IconButton(
+                        onPressed: controls.canUndo ? () => context.read<GameBloc>().add(UndoEvent()) : null,
+                        icon: const Icon(Icons.undo)),
+                    IconButton(
+                        onPressed: controls.canRedo ? () => context.read<GameBloc>().add(RedoEvent()) : null,
+                        icon: const Icon(Icons.redo)),
                   ],
                 ),
               );
