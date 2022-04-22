@@ -54,6 +54,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _showNewGameWidget(NewBoardDialogButtonPressedGameEvent event, Emitter emit) {
+    status = GameStatus.notStarted;
     emit(NotStartedGameState(board.height, board.width));
   }
 

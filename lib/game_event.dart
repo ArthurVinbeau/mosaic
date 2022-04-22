@@ -11,6 +11,8 @@ class NewBoardButtonPressedGameEvent extends GameEvent {
 
 class NewBoardDialogButtonPressedGameEvent extends GameEvent {}
 
+class NewGameButtonEvent extends GameEvent {}
+
 class TilePressedGameEvent extends GameEvent {
   final int i, j;
   final bool long;

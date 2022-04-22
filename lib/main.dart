@@ -32,55 +32,64 @@ class GamePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => GameBloc(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Mosaic"),
-          centerTitle: true,
-        ),
-        body: const BoardWidget(),
-        backgroundColor: Colors.grey,
-        bottomNavigationBar: BlocBuilder<GameBloc, GameState>(
-          builder: (context, state) {
-            if (state is ControlsGameState) {
-              Color a = Colors.black, b = Colors.white;
-              GameControls controls = state.controls;
-              if (controls.reversed) {
-                var tmp = a;
-                a = b;
-                b = tmp;
+      child: Builder(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Mosaic"),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                onPressed: () => context.read<GameBloc>().add(NewGameButtonEvent()),
+                icon: const Icon(Icons.refresh),
+                tooltip: "New game",
+              )
+            ],
+          ),
+          body: const BoardWidget(),
+          backgroundColor: Colors.grey,
+          bottomNavigationBar: BlocBuilder<GameBloc, GameState>(
+            builder: (context, state) {
+              if (state is ControlsGameState) {
+                Color a = Colors.black, b = Colors.white;
+                GameControls controls = state.controls;
+                if (controls.reversed) {
+                  var tmp = a;
+                  a = b;
+                  b = tmp;
+                }
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 8.0,
+                    children: [
+                      IconButton(
+                          onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
+                          icon: Stack(
+                            children: [Icon(Icons.circle, color: b), Icon(Icons.contrast, color: a)],
+                          )),
+                      Ink(
+                        decoration: ShapeDecoration(shape: const CircleBorder(), color: controls.fill ? a : null),
+                        child: IconButton(
+                            onPressed: () => context.read<GameBloc>().add(ToggleFillEvent()),
+                            icon: Icon(Icons.format_color_fill, color: controls.fill ? b : a)),
+                      ),
+                      IconButton(
+                          onPressed: controls.canUndo ? () => context.read<GameBloc>().add(UndoEvent()) : null,
+                          icon: const Icon(Icons.undo)),
+                      IconButton(
+                          onPressed: controls.canRedo ? () => context.read<GameBloc>().add(RedoEvent()) : null,
+                          icon: const Icon(Icons.redo)),
+                    ],
+                  ),
+                );
               }
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 8.0,
-                  children: [
-                    IconButton(
-                        onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
-                        icon: Stack(
-                          children: [Icon(Icons.circle, color: b), Icon(Icons.contrast, color: a)],
-                        )),
-                    Ink(
-                      decoration: ShapeDecoration(shape: const CircleBorder(), color: controls.fill ? a : null),
-                      child: IconButton(
-                          onPressed: () => context.read<GameBloc>().add(ToggleFillEvent()),
-                          icon: Icon(Icons.format_color_fill, color: controls.fill ? b : a)),
-                    ),
-                    IconButton(
-                        onPressed: controls.canUndo ? () => context.read<GameBloc>().add(UndoEvent()) : null,
-                        icon: const Icon(Icons.undo)),
-                    IconButton(
-                        onPressed: controls.canRedo ? () => context.read<GameBloc>().add(RedoEvent()) : null,
-                        icon: const Icon(Icons.redo)),
-                  ],
-                ),
-              );
-            }
-            return const SizedBox();
-          },
-          buildWhen: (_, b) => b is ControlsGameState,
-        ),
-      ),
+              return const SizedBox();
+            },
+            buildWhen: (_, b) => b is ControlsGameState,
+          ),
+        );
+      }),
     );
   }
 }
