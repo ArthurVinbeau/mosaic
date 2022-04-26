@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/game_bloc.dart';
@@ -39,10 +38,9 @@ class Tile extends StatelessWidget {
                 ? Colors.black
                 : Colors.white,
         child: label != null
-            ? AutoSizeText(label!,
-                minFontSize: 1,
+            ? Text(label!,
                 style: TextStyle(
-                    fontSize: 200,
+                    fontSize: 24,
                     color: error
                         ? Colors.red
                         : complete

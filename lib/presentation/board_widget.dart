@@ -57,22 +57,28 @@ class BoardWidget extends StatelessWidget {
           );
         } else if (state is BoardGameState) {
           return LayoutBuilder(builder: (context, constraints) {
-            double tileSize;
+            const double tileSize = 32.0;
+            double? height;
+            double? width;
             if (constraints.maxHeight > constraints.maxWidth) {
-              tileSize = constraints.maxWidth / state.board.width;
+              height = (tileSize + 4) * state.board.width * constraints.maxHeight / constraints.maxWidth;
             } else {
-              tileSize = constraints.maxHeight / state.board.height;
+              width = (tileSize + 4) * state.board.height * constraints.maxWidth / constraints.maxHeight;
             }
 
-            logger.d("tileSize: $tileSize");
+            logger.d("height: $height, width: $width");
 
             return SizedBox.expand(
               child: InteractiveViewer(
-                  minScale: 0.01,
-                  boundaryMargin: EdgeInsets.all(tileSize * 0.6),
-                  child: Center(
-                      child:
-                          Column(mainAxisSize: MainAxisSize.min, children: getTableRows(state.board, tileSize - 4)))),
+                  minScale: 0.00000000001,
+                  maxScale: double.infinity,
+                  boundaryMargin: const EdgeInsets.all(16),
+                  constrained: false,
+                  child: Container(
+                      height: height,
+                      width: width,
+                      alignment: Alignment.center,
+                      child: Column(mainAxisSize: MainAxisSize.min, children: getTableRows(state.board, tileSize)))),
             );
           });
         } else {
