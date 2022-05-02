@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../game_bloc.dart';
+import 'package:mosaic/blocs/Game/game_bloc.dart';
 
 class NewGameWidget extends StatefulWidget {
   final int height, width;

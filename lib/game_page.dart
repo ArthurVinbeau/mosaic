@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'blocs/AppState/app_state_bloc.dart';
+import 'blocs/Game/game_bloc.dart';
 import 'entities/game_controls.dart';
-import 'game_bloc.dart';
 import 'presentation/board_widget.dart';
 
-class GamePage extends StatelessWidget {
+class GamePage extends StatefulWidget {
   const GamePage({Key? key}) : super(key: key);
+
+  @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
+  late final AppStateBloc _bloc;
 
   @override
   Widget build(BuildContext context) {
@@ -71,5 +79,24 @@ class GamePage extends StatelessWidget {
         buildWhen: (_, b) => b is ControlsGameState || b is NewBoardGameState,
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance?.addObserver(this);
+    _bloc = context.read<AppStateBloc>();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    _bloc.add(PopRouteEvent());
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _bloc.add(AppLifecycleStateEvent(state));
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mosaic/game_bloc.dart';
+import 'package:mosaic/blocs/AppState/app_state_bloc.dart';
+import 'package:mosaic/blocs/Game/game_bloc.dart';
 import 'package:mosaic/presentation/new_game_widget.dart';
 
 import 'game_page.dart';
@@ -15,8 +16,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GameBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<GameBloc>(
+          create: (context) => GameBloc(),
+        ),
+        BlocProvider<AppStateBloc>(
+          create: (context) => AppStateBloc(BlocProvider.of<GameBloc>(context)),
+        ),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -28,8 +36,19 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<GameBloc>().add(AppStartedEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +60,21 @@ class MyHomePage extends StatelessWidget {
       body: BlocConsumer<GameBloc, GameState>(
         builder: (context, state) {
           state as NotStartedGameState;
-          return Center(child: NewGameWidget(height: state.baseHeight, width: state.baseWidth));
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              NewGameWidget(height: state.baseHeight, width: state.baseWidth),
+              if (state.canResume)
+                Container(
+                  padding: const EdgeInsets.all(32.0),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    child: const Text("Resume Game"),
+                    onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
+                  ),
+                ),
+            ],
+          );
         },
         buildWhen: (_, b) => b is NotStartedGameState,
         listenWhen: (_, b) => b is GeneratingBoardGameState,

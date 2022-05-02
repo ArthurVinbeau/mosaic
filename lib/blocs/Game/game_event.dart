@@ -1,4 +1,4 @@
-part of '../game_bloc.dart';
+part of 'game_bloc.dart';
 
 @immutable
 abstract class GameEvent {}
@@ -27,3 +27,13 @@ class ToggleFillEvent extends GameEvent {}
 class UndoEvent extends GameEvent {}
 
 class RedoEvent extends GameEvent {}
+
+class GamePausedEvent extends GameEvent {
+  final bool saveOnly;
+
+  GamePausedEvent(this.saveOnly);
+}
+
+class ResumeGameEvent extends GameEvent {}
+
+class AppStartedEvent extends GameEvent {}
