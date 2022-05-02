@@ -12,7 +12,69 @@ class Board {
 
   final Random _rand = Random();
 
+  String? _gameDesc;
+
   Board({this.height = 8, this.width = 8, this.density = 0.5});
+
+  static Board fromString(String str) {
+    final parts = str.split(";");
+    final board = Board(height: int.parse(parts[0]), width: int.parse(parts[1]));
+    board.cells = List.generate(board.height, (index) => List.generate(board.width, (index) => Cell(value: false)));
+    board._gameDesc = parts[2];
+
+    _parseString(parts[2], board.width, true, (i, j, value) {
+      board.cells[i][j].clue = value;
+      board.cells[i][j].shown = false;
+    });
+    _parseString(parts[3], board.width, false, (i, j, value) => board.cells[i][j].value = _getBoolFromInt(value)!);
+    _parseString(parts[4], board.width, false, (i, j, value) => board.cells[i][j].state = _getBoolFromInt(value));
+
+    int empty, count;
+    for (int i = 0; i < board.height; i++) {
+      for (int j = 0; j < board.width; j++) {
+        board.cells[i][j].shown = !board.cells[i][j].shown;
+        if (board.cells[i][j].shown) {
+          empty = count = 0;
+          iterateOnSquare(board.cells, i, j, (Cell cell, i, j) {
+            count += (cell.state ?? false) ? 1 : 0;
+            empty += cell.state == null ? 1 : 0;
+          });
+          board.cells[i][j].error = count > board.cells[i][j].clue || count < board.cells[i][j].clue && empty == 0;
+          board.cells[i][j].complete = empty == 0;
+        }
+      }
+    }
+
+    return board;
+  }
+
+  static void _parseString(String curr, int width, bool once, void Function(int i, int j, int value) setVal) {
+    int value;
+    int count;
+    final int baseSpace = "a".codeUnitAt(0) - 1;
+    int i = 0;
+    int j = 0;
+
+    for (int k = 0; k < curr.length; k++) {
+      if (curr.codeUnitAt(k) > baseSpace) {
+        j += curr.codeUnitAt(k) - baseSpace;
+      } else {
+        value = int.parse(curr[k]);
+        if (!once && k < curr.length - 1 && curr.codeUnitAt(k + 1) > baseSpace) {
+          count = curr.codeUnitAt(++k) - baseSpace;
+          for (int n = 0; n < count; n++, j++) {
+            i += (j / width).floor();
+            j = j % width;
+            setVal(i, j, value);
+          }
+        } else {
+          setVal(i, j++, value);
+        }
+      }
+      i += (j / width).floor();
+      j = j % width;
+    }
+  }
 
   void _generateNewBoard() {
     cells = [];
@@ -25,7 +87,7 @@ class Board {
     }
   }
 
-  static void iterateOnSquare<T>(List<List<T>> list, int i, int j, void Function(T, int, int) callback) {
+  static void iterateOnSquare<T>(List<List<T>> list, int i, int j, void Function(T e, int i, int j) callback) {
     for (int k = -1; k < 2; k++) {
       final targetI = i + k;
       if (targetI >= 0 && targetI < list.length) {
@@ -49,7 +111,7 @@ class Board {
     bool valid = false;
 
     String compressed = "";
-    int baseSpace = 'a'.codeUnitAt(0);
+    int baseSpace = 'a'.codeUnitAt(0) - 1;
     int maxSpace = 'z'.codeUnitAt(0);
     int spaceCount = baseSpace;
 
@@ -87,7 +149,7 @@ class Board {
           }
           compressed += cells[i][j].clue.toString();
         } else {
-          if (spaceCount <= maxSpace) {
+          if (spaceCount < maxSpace) {
             spaceCount++;
           } else {
             compressed += String.fromCharCode(spaceCount);
@@ -100,6 +162,8 @@ class Board {
       compressed += String.fromCharCode(spaceCount);
     }
     logger.d("Compressed description: $compressed");
+
+    _gameDesc = compressed;
 
     return compressed;
   }
@@ -302,6 +366,49 @@ class Board {
     }
 
     logger.d("needed $needed");
+  }
+
+  static int _getIntFromBool(bool? value) => {null: 0, true: 1, false: 2}[value]!;
+
+  static bool? _getBoolFromInt(int value) => {1: true, 2: false}[value];
+
+  String _getCompressedString(bool? Function(Cell cell) getValue) {
+    int baseSpace = 'a'.codeUnitAt(0) - 1;
+    int maxSpace = 'z'.codeUnitAt(0);
+    int spaceCount = baseSpace;
+    bool? state = getValue(cells[0][0]);
+    String compressed = _getIntFromBool(state).toString();
+
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        var value = getValue(cells[i][j]);
+        if (value != state) {
+          if (spaceCount > baseSpace + 1) {
+            compressed += String.fromCharCode(spaceCount);
+            spaceCount = baseSpace + 1;
+          }
+          compressed += _getIntFromBool(value).toString();
+          state = value;
+        } else {
+          if (spaceCount < maxSpace) {
+            spaceCount++;
+          } else {
+            compressed += String.fromCharCode(spaceCount) + _getIntFromBool(value).toString();
+            spaceCount = baseSpace + 1;
+          }
+        }
+      }
+    }
+    if (spaceCount > baseSpace + 1) {
+      compressed += String.fromCharCode(spaceCount);
+    }
+
+    return compressed;
+  }
+
+  @override
+  String toString() {
+    return "$height;$width;$_gameDesc;${_getCompressedString((cell) => cell.value)};${_getCompressedString((cell) => cell.state)}";
   }
 }
 

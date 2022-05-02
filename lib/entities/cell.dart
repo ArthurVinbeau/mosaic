@@ -17,4 +17,9 @@ class Cell {
       this.state,
       this.error = false,
       this.complete = false});
+
+  @override
+  String toString() {
+    return 'Cell{clue: $clue, shown: $shown, value: $value, full: $full, empty: $empty, state: $state, error: $error, complete: $complete}';
+  }
 }
