@@ -207,6 +207,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final str = prefs.getString("board");
     if (str != null) {
       board = Board.fromString(str);
+      validTiles = 0;
+      for (final row in board!.cells) {
+        for (final cell in row) {
+          validTiles += cell.state == cell.value ? 1 : 0;
+        }
+      }
       emit(NotStartedGameState(board!.height, board!.width, true));
     } else {
       emit(NotStartedGameState(baseHeight, baseWidth, false));
