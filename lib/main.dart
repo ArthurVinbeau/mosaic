@@ -60,20 +60,22 @@ class _MyHomePageState extends State<MyHomePage> {
       body: BlocConsumer<GameBloc, GameState>(
         builder: (context, state) {
           state as NotStartedGameState;
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              NewGameWidget(height: state.baseHeight, width: state.baseWidth),
-              if (state.canResume)
-                Container(
-                  padding: const EdgeInsets.all(32.0),
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    child: const Text("Resume Game"),
-                    onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                NewGameWidget(height: state.baseHeight, width: state.baseWidth),
+                if (state.canResume)
+                  Container(
+                    padding: const EdgeInsets.all(32.0),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      child: const Text("Resume Game"),
+                      onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           );
         },
         buildWhen: (_, b) => b is NotStartedGameState,
