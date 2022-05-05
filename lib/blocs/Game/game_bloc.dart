@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/entities/cell.dart';
@@ -13,6 +14,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'game_event.dart';
 
 part 'game_state.dart';
+
+Board _generateBoard(Board board) {
+  board.newGameDesc();
+  return board;
+}
 
 class GameBloc extends Bloc<GameEvent, GameState> {
   static const baseHeight = 8, baseWidth = 8;
@@ -48,10 +54,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   void _newGame(CreateGameEvent event, Emitter emit) async {
     status = GameStatus.generating;
     emit(GeneratingBoardGameState());
-    await Future.delayed(Duration(seconds: 3)).then((value) {
-      board = Board(height: event.height, width: event.width);
-      board!.newGameDesc();
-    });
+    board = await compute(_generateBoard, Board(height: event.height, width: event.width));
     status = GameStatus.running;
     validTiles = 0;
     moveManager = MoveManager();
