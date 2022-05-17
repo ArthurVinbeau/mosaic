@@ -59,7 +59,10 @@ class BoardWidget extends StatelessWidget {
             const double tileSize = 32.0;
             double? height;
             double? width;
-            if (state.board.height * constraints.maxHeight > state.board.width * constraints.maxWidth) {
+            double screenRatio = constraints.maxHeight / constraints.maxWidth;
+            double boardRatio = state.board.height / state.board.width;
+            bool A = screenRatio > 1, B = boardRatio > 1, C = screenRatio > boardRatio;
+            if (A && (!B || C) || !A && !B && !C) {
               height = (tileSize + 4) * state.board.width * constraints.maxHeight / constraints.maxWidth;
             } else {
               width = (tileSize + 4) * state.board.height * constraints.maxWidth / constraints.maxHeight;
