@@ -10,3 +10,5 @@ class AppLifecycleStateEvent extends AppStateEvent {
 }
 
 class PopRouteEvent extends AppStateEvent {}
+
+class MetricsChangedEvent extends AppStateEvent {}

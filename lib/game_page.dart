@@ -99,4 +99,9 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _bloc.add(AppLifecycleStateEvent(state));
   }
+
+  @override
+  void didChangeMetrics() {
+    _bloc.add(MetricsChangedEvent());
+  }
 }

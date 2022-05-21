@@ -18,6 +18,10 @@ class AppStateBloc extends Bloc<AppStateEvent, AppStateState> {
       logger.d("route pop");
       _gameBloc.add(GamePausedEvent(false));
     });
+    on<MetricsChangedEvent>((event, emit) {
+      logger.d("metrics changed");
+      _gameBloc.add(ShouldRebuildEvent());
+    });
     on<AppLifecycleStateEvent>((event, emit) {
       logger.d(event.state);
       if (event.state == AppLifecycleState.resumed) {
