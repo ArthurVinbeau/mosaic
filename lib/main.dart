@@ -4,6 +4,7 @@ import 'package:mosaic/blocs/AppState/app_state_bloc.dart';
 import 'package:mosaic/blocs/Game/game_bloc.dart';
 import 'package:mosaic/presentation/new_game_widget.dart';
 import 'package:mosaic/utils/config.dart';
+import 'package:mosaic/utils/themes.dart';
 
 import 'game_page.dart';
 
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         navigatorKey: navigatorKey,
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: baseTheme.dark.primaryColor,
         ),
         home: const MyHomePage(),
       ),
@@ -86,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(context, MaterialPageRoute(builder: (ctx) => const GamePage()));
         },
       ),
-      backgroundColor: Colors.grey,
+      backgroundColor: baseTheme.dark.menuBackground,
     );
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/blocs/Game/game_bloc.dart';
 
+import '../utils/themes.dart';
+
 class Tile extends StatelessWidget {
   final int i, j;
 
@@ -24,6 +26,7 @@ class Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = baseTheme.dark;
     return InkWell(
       onTap: () => context.read<GameBloc>().add(TilePressedGameEvent(i, j, false)),
       onLongPress: () => context.read<GameBloc>().add(TilePressedGameEvent(i, j, true)),
@@ -33,19 +36,23 @@ class Tile extends StatelessWidget {
         // alignment: Alignment.center,
         padding: const EdgeInsets.all(2.0),
         color: state == null
-            ? Colors.teal
+            ? theme.cellBase
             : state!
-                ? Colors.black
-                : Colors.white,
+                ? theme.cellFilled
+                : theme.cellEmpty,
         child: label != null
             ? Text(label!,
                 style: TextStyle(
                     fontSize: 24,
                     color: error
-                        ? Colors.red
+                        ? theme.cellTextError
                         : complete
-                            ? Colors.grey
-                            : ((state ?? false) ? Colors.white : Colors.black)),
+                            ? theme.cellTextComplete
+                            : state == null
+                                ? theme.cellTextBase
+                                : state!
+                                    ? theme.cellTextFilled
+                                    : theme.cellTextEmpty),
                 textAlign: TextAlign.center)
             : null,
       ),
