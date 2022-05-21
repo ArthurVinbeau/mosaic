@@ -11,4 +11,12 @@ class AppLifecycleStateEvent extends AppStateEvent {
 
 class PopRouteEvent extends AppStateEvent {}
 
-class MetricsChangedEvent extends AppStateEvent {}
+class MetricsChangedEvent extends AppStateEvent {
+  final double height;
+  final double width;
+
+  MetricsChangedEvent({
+    required this.height,
+    required this.width,
+  });
+}

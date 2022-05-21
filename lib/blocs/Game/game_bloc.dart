@@ -52,7 +52,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _rebuildGame(ShouldRebuildEvent event, Emitter emit) {
-    emit(NewBoardGameState(board!, controls));
+    if (status == GameStatus.running || status == GameStatus.win) {
+      emit(NewBoardGameState(board!, controls));
+    } else if (status == GameStatus.generating) {
+      emit(GeneratingBoardGameState());
+    }
   }
 
   void _newGame(CreateGameEvent event, Emitter emit) async {

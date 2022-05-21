@@ -124,6 +124,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
   @override
   void didChangeMetrics() {
-    _bloc.add(MetricsChangedEvent());
+    final size = MediaQuery.of(context).size;
+    _bloc.add(MetricsChangedEvent(height: size.height, width: size.width));
   }
 }

@@ -13,14 +13,22 @@ class AppStateBloc extends Bloc<AppStateEvent, AppStateState> {
   final GameBloc _gameBloc;
   bool _paused = false;
 
+  double height = 0;
+  double width = 0;
+
   AppStateBloc(this._gameBloc) : super(AppStateInitial()) {
     on<PopRouteEvent>((event, emit) {
       logger.d("route pop");
       _gameBloc.add(GamePausedEvent(false));
     });
     on<MetricsChangedEvent>((event, emit) {
-      logger.d("metrics changed");
-      _gameBloc.add(ShouldRebuildEvent());
+      if (height != event.height || width != event.width) {
+        height = event.height;
+        width = event.width;
+
+        logger.d("metrics changed");
+        _gameBloc.add(ShouldRebuildEvent());
+      }
     });
     on<AppLifecycleStateEvent>((event, emit) {
       logger.d(event.state);
