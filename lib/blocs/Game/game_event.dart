@@ -37,3 +37,5 @@ class GamePausedEvent extends GameEvent {
 class ResumeGameEvent extends GameEvent {}
 
 class AppStartedEvent extends GameEvent {}
+
+class ShouldRebuildEvent extends GameEvent {}

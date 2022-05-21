@@ -48,6 +48,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<GamePausedEvent>(_saveBoard);
     on<AppStartedEvent>(_checkForSave);
     on<ResumeGameEvent>(_resumeGame);
+    on<ShouldRebuildEvent>(_rebuildGame);
+  }
+
+  void _rebuildGame(ShouldRebuildEvent event, Emitter emit) {
+    emit(NewBoardGameState(board!, controls));
   }
 
   void _newGame(CreateGameEvent event, Emitter emit) async {
