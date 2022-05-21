@@ -14,14 +14,14 @@ void main() {
       final board = Board(height: height, width: width);
       final desc = board.newGameDesc();
 
-      final _rand = Random();
+      final rand = Random();
 
       for (int k = 0; k < boardSize / 2; k++) {
-        int n = _rand.nextInt(boardSize);
+        int n = rand.nextInt(boardSize);
         final cell = board.cells[(n / width).floor()][n % width];
-        cell.error = _rand.nextBool();
-        cell.full = _rand.nextBool();
-        cell.state = {1: true, 2: false}[_rand.nextInt(3)];
+        cell.error = rand.nextBool();
+        cell.full = rand.nextBool();
+        cell.state = {1: true, 2: false}[rand.nextInt(3)];
       }
 
       final str = board.toString();
@@ -44,13 +44,13 @@ void main() {
       final board = Board(height: height, width: width);
       board.newGameDesc();
 
-      final _rand = Random();
+      final rand = Random();
       int count, empty;
       List<List<int>> coords = [];
       for (int k = 0; k < boardSize / 2; k++) {
-        int n = _rand.nextInt(boardSize);
+        int n = rand.nextInt(boardSize);
         final cell = board.cells[(n / width).floor()][n % width];
-        cell.state = {1: true, 2: false}[_rand.nextInt(3)];
+        cell.state = {1: true, 2: false}[rand.nextInt(3)];
         coords.add([(n / width).floor(), n % width]);
       }
 

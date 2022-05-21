@@ -15,6 +15,31 @@ class _NewGameWidgetState extends State<NewGameWidget> {
   final _formKey = GlobalKey<FormState>();
   late int height = widget.height, width = widget.width;
 
+  Widget _getInputWidget(
+      {required BuildContext context, required String label, required void Function(int? value) onSaved}) {
+    return Container(
+      width: 120,
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        keyboardType: TextInputType.number,
+        initialValue: height.toString(),
+        decoration: InputDecoration(label: Text("Board $label"), errorMaxLines: 10),
+        onSaved: (String? value) {
+          if (value != null) {
+            onSaved(int.tryParse(value));
+          }
+        },
+        validator: (String? value) {
+          int? val;
+          if (value == null || (val = int.tryParse(value)) == null || val! < 8) {
+            return "$label must be a valid number and be greater or equal to 8";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -25,46 +50,8 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 120,
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  initialValue: height.toString(),
-                  decoration: const InputDecoration(label: Text("Board Height")),
-                  onSaved: (String? value) {
-                    if (value != null) {
-                      height = int.tryParse(value) ?? height;
-                    }
-                  },
-                  validator: (String? value) {
-                    int? val;
-                    if (value == null || (val = int.tryParse(value)) == null || val! < 8) {
-                      return "Value must be a valid number and be greater or equal to 8";
-                    }
-                  },
-                ),
-              ),
-              Container(
-                width: 120,
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  initialValue: width.toString(),
-                  decoration: const InputDecoration(label: Text("Board Width")),
-                  onSaved: (String? value) {
-                    if (value != null) {
-                      width = int.tryParse(value) ?? width;
-                    }
-                  },
-                  validator: (String? value) {
-                    int? val;
-                    if (value == null || (val = int.tryParse(value)) == null || val! < 8) {
-                      return "Value must be a valid number and be greater or equal to 8";
-                    }
-                  },
-                ),
-              ),
+              _getInputWidget(context: context, label: "Height", onSaved: (value) => height = value ?? height),
+              _getInputWidget(context: context, label: "Width", onSaved: (value) => width = value ?? width),
             ],
           ),
           ElevatedButton(

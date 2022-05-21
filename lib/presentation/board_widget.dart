@@ -17,8 +17,8 @@ class BoardWidget extends StatelessWidget {
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: Text(state.dismiss),
-                    style: TextButton.styleFrom(primary: theme.errorColor)),
+                    style: TextButton.styleFrom(primary: theme.errorColor),
+                    child: Text(state.dismiss)),
                 ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context, state.pop);
@@ -28,7 +28,7 @@ class BoardWidget extends StatelessWidget {
               ],
             ));
     if (pop ?? false) {
-      Navigator.pop(context);
+      navigatorKey.currentState!.pop();
     }
   }
 

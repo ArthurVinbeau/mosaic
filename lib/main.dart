@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/blocs/AppState/app_state_bloc.dart';
 import 'package:mosaic/blocs/Game/game_bloc.dart';
 import 'package:mosaic/presentation/new_game_widget.dart';
+import 'package:mosaic/utils/config.dart';
 
 import 'game_page.dart';
 
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
+        navigatorKey: navigatorKey,
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

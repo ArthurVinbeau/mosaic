@@ -433,11 +433,9 @@ class _NeededItem {
 }
 
 class _SolutionCell {
-  int cell;
-  bool solved;
-  bool needed;
-
-  _SolutionCell({this.cell = CellState.unmarked, this.solved = false, this.needed = false});
+  int cell = CellState.unmarked;
+  bool solved = false;
+  bool needed = false;
 }
 
 class _SolutionResult {
@@ -448,7 +446,7 @@ class _SolutionResult {
 }
 
 class _MarkCounter {
-  int marked, total, blank;
-
-  _MarkCounter({this.marked = 0, this.total = 0, this.blank = 0});
+  int marked = 0;
+  int total = 0;
+  int blank = 0;
 }
