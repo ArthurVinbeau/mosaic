@@ -25,7 +25,7 @@ const ThemeCollection baseTheme = ThemeCollection(
         cellTextError: Colors.red,
         cellTextComplete: Colors.grey,
         controlsMoveEnabled: Colors.black,
-        controlsMoveDisabled: Colors.grey),
+        controlsMoveDisabled: Colors.black26),
     dark: GameTheme(
         primaryColor: Colors.red,
         menuBackground: Color.fromARGB(255, 240, 240, 240),

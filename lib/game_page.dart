@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mosaic/utils/themes.dart';
+import 'package:mosaic/utils/theme/theme_container.dart';
 
 import 'blocs/AppState/app_state_bloc.dart';
 import 'blocs/Game/game_bloc.dart';
@@ -18,7 +18,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
   late final AppStateBloc _bloc;
 
   Widget _getControls(BuildContext context, bool vertical) {
-    final theme = baseTheme.dark;
+    final theme = GameThemeContainer.of(context);
     return BlocBuilder<GameBloc, GameState>(
       builder: (context, state) {
         GameControls controls;
@@ -74,7 +74,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final theme = baseTheme.dark;
+    final theme = GameThemeContainer.of(context);
 
     Widget body = const BoardWidget();
 
