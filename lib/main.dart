@@ -6,7 +6,6 @@ import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/presentation/new_game_widget.dart';
 import 'package:mosaic/utils/config.dart';
 import 'package:mosaic/utils/theme/theme_container.dart';
-import 'package:mosaic/utils/theme/themes.dart';
 
 import 'game_page.dart';
 
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
       child: GameThemeContainer(
         child: Builder(builder: (context) {
           return MaterialApp(
-            title: 'Flutter Demo',
+            title: 'Mosaic',
             navigatorKey: navigatorKey,
             theme: ThemeData(
               primarySwatch: GameThemeContainer.of(context).primaryColor,
