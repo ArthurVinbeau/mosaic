@@ -31,3 +31,12 @@ class TimerTick extends TimerEvent {
   @override
   List<Object> get props => [duration];
 }
+
+class TimerOffset extends TimerEvent {
+  final Duration offset;
+
+  const TimerOffset(this.offset);
+
+  @override
+  List<Object> get props => [offset];
+}

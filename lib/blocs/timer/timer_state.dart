@@ -16,7 +16,7 @@ abstract class TimerState extends Equatable {
 }
 
 class TimerInitial extends TimerState {
-  const TimerInitial() : super(Duration.zero);
+  const TimerInitial({Duration duration = Duration.zero}) : super(duration);
 }
 
 class TimerRunning extends TimerState {

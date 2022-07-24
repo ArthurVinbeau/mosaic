@@ -10,20 +10,23 @@ part 'timer_state.dart';
 
 class TimerBloc extends Bloc<TimerEvent, TimerState> {
   final Stopwatch _stopwatch;
+  Duration _offset;
 
-  StreamSubscription<dynamic>? _stopwatchSubscription;
+  StreamSubscription<Duration>? _stopwatchSubscription;
 
   TimerBloc()
       : _stopwatch = Stopwatch(),
+        _offset = Duration.zero,
         super(const TimerInitial()) {
     on<TimerStart>(_onStarted);
     on<TimerPause>(_onPaused);
     on<TimerResume>(_onResumed);
     on<TimerReset>(_onReset);
     on<TimerTick>(_onTicked);
+    on<TimerOffset>(_onOffset);
   }
 
-  Duration get elapsed => _stopwatch.elapsed;
+  Duration get elapsed => _stopwatch.elapsed + _offset;
 
   @override
   Future<void> close() {
@@ -36,8 +39,8 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     _stopwatch.reset();
     emit(TimerRunning(_stopwatch.elapsed));
     _stopwatch.start();
-    _stopwatchSubscription =
-        Stream.periodic(const Duration(seconds: 1)).listen((_) => add(TimerTick(duration: _stopwatch.elapsed)));
+    _stopwatchSubscription = Stream.periodic(const Duration(seconds: 1), (_) => _offset + _stopwatch.elapsed)
+        .listen((duration) => add(TimerTick(duration: duration)));
   }
 
   void _onPaused(TimerPause event, Emitter<TimerState> emit) {
@@ -60,10 +63,18 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
     _stopwatchSubscription?.cancel();
     _stopwatch.stop();
     _stopwatch.reset();
+    _offset = Duration.zero;
     emit(const TimerInitial());
   }
 
   void _onTicked(TimerTick event, Emitter<TimerState> emit) {
     emit(TimerRunning(event.duration));
+  }
+
+  void _onOffset(TimerOffset event, Emitter<TimerState> emit) {
+    _offset = event.offset;
+    if (state is TimerInitial) {
+      emit(TimerInitial(duration: _offset));
+    }
   }
 }
