@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mosaic/blocs/Game/game_bloc.dart';
+import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/presentation/tile.dart';
 import 'package:mosaic/utils/config.dart';

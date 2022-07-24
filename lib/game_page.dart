@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/utils/theme/theme_container.dart';
 
-import 'blocs/AppState/app_state_bloc.dart';
-import 'blocs/Game/game_bloc.dart';
+import 'blocs/app_state/app_state_bloc.dart';
+import 'blocs/game/game_bloc.dart';
 import 'entities/game_controls.dart';
 import 'presentation/board_widget.dart';
 

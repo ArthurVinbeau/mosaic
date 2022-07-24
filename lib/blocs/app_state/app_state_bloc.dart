@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:mosaic/blocs/Game/game_bloc.dart';
+import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/utils/config.dart';
 
 part 'app_state_event.dart';
