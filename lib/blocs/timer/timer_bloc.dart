@@ -32,9 +32,9 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
   }
 
   void _onStarted(TimerStart event, Emitter<TimerState> emit) {
-    emit(TimerRunning(event.duration));
     _stopwatchSubscription?.cancel();
     _stopwatch.reset();
+    emit(TimerRunning(_stopwatch.elapsed));
     _stopwatch.start();
     _stopwatchSubscription =
         Stream.periodic(const Duration(seconds: 1)).listen((_) => add(TimerTick(duration: _stopwatch.elapsed)));
