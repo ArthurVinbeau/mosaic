@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mosaic/blocs/timer/timer_bloc.dart';
 import 'package:mosaic/utils/theme/theme_container.dart';
 
 import 'blocs/app_state/app_state_bloc.dart';
@@ -87,7 +88,12 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Mosaic"),
+        title: BlocBuilder<TimerBloc, TimerState>(
+          buildWhen: (prev, state) => prev.duration != state.duration,
+          builder: (context, state) {
+            return Text(state.toString());
+          },
+        ),
         centerTitle: true,
         actions: [
           IconButton(
