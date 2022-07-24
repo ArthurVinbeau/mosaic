@@ -226,12 +226,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setString("board", board.toString());
+    await prefs.setString("timer", _timerBloc.elapsed.inMilliseconds.toString());
   }
 
   void _removeSave() async {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.setString("board", "");
+    await prefs.setString("timer", "");
   }
 
   void _checkForSave(AppStartedEvent event, Emitter emit) async {
@@ -247,6 +249,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         }
       }
       emit(NotStartedGameState(board!.height, board!.width, true));
+
+      final timer = int.tryParse(prefs.getString("timer") ?? "");
+      if (timer != null) {
+        _timerBloc.add(TimerOffset(Duration(milliseconds: timer)));
+      }
     } else {
       emit(NotStartedGameState(baseHeight, baseWidth, false));
     }
