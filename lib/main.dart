@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/blocs/app_state/app_state_bloc.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
+import 'package:mosaic/blocs/timer/timer_bloc.dart';
 import 'package:mosaic/presentation/new_game_widget.dart';
 import 'package:mosaic/utils/config.dart';
 import 'package:mosaic/utils/theme/theme_container.dart';
@@ -21,8 +22,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<TimerBloc>(
+          create: (context) => TimerBloc(),
+        ),
         BlocProvider<GameBloc>(
-          create: (context) => GameBloc(),
+          create: (context) => GameBloc(BlocProvider.of<TimerBloc>(context)),
         ),
         BlocProvider<AppStateBloc>(
           create: (context) => AppStateBloc(BlocProvider.of<GameBloc>(context)),

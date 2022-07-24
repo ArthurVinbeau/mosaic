@@ -10,10 +10,15 @@ class BoardWidget extends StatelessWidget {
 
   void _showBlocDialog(BuildContext context, ShowDialogState state) async {
     final theme = Theme.of(context);
+    Widget? content;
+    if (state.description != null) {
+      content = Text(state.description!);
+    }
     final pop = await showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
               title: Text(state.title),
+              content: content,
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(context),

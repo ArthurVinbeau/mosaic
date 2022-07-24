@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mosaic/blocs/timer/timer_bloc.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/entities/cell.dart';
 import 'package:mosaic/entities/game_controls.dart';
@@ -22,6 +23,8 @@ Board _generateBoard(Board board) {
 class GameBloc extends Bloc<GameEvent, GameState> {
   static const baseHeight = 8, baseWidth = 8;
 
+  final TimerBloc _timerBloc;
+
   Board? board;
   GameStatus status;
   GameControls controls;
@@ -32,8 +35,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Map<bool?, bool?> reverseOrder = {true: null, false: true, null: false};
   late Map<bool, Map<bool?, bool?>> usedOrder = {true: reverseOrder, false: order};
 
-  GameBloc()
-      : status = GameStatus.notStarted,
+  GameBloc(TimerBloc timerBloc)
+      : _timerBloc = timerBloc,
+        status = GameStatus.notStarted,
         controls = GameControls(false, false, false, false),
         validTiles = 0,
         super(NotStartedGameState(baseHeight, baseWidth, false)) {
@@ -60,6 +64,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _newGame(CreateGameEvent event, Emitter emit) async {
+    _timerBloc.add(const TimerReset());
     status = GameStatus.generating;
     emit(GeneratingBoardGameState());
     board = await compute(_generateBoard, Board(height: event.height, width: event.width));
@@ -101,6 +106,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _tilePressed(TilePressedGameEvent event, Emitter emit) {
+    if (_timerBloc.state is TimerInitial) {
+      _timerBloc.add(const TimerStart());
+    } else if (_timerBloc.state is TimerPaused) {
+      _timerBloc.add(const TimerResume());
+    }
+
     if (controls.fill) {
       List<Move> moves = [];
       Board.iterateOnSquare(board!.cells, event.i, event.j, (Cell cell, p1, p2) {
@@ -130,11 +141,21 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     emit(BoardGameState(board!));
     if (validTiles == board!.height * board!.width) {
+      _timerBloc.add(const TimerPause());
       logger.i("You win!");
       status = GameStatus.win;
       _removeSave();
+      final elapsed = _timerBloc.state.toString().split(":");
+      var str = "${elapsed[2]} seconds";
+      if (elapsed[1] != "00" || elapsed[0] != "00") {
+        str = "${elapsed[1]} minutes and $str";
+      }
+      if (elapsed[0] != "00") {
+        str = "${elapsed[0]} hours, $str";
+      }
       emit(ShowDialogState(
           title: "You win!",
+          description: "You took $str to finish this ${board!.height}x${board!.width} board!",
           confirmationEvent: ShowNewGameOptionsEvent(),
           confirmation: "Start new game",
           dismiss: "Dismiss",
@@ -198,6 +219,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _saveBoard(GamePausedEvent event, Emitter emit) async {
+    _timerBloc.add(const TimerPause());
     if (!event.saveOnly) {
       emit(NotStartedGameState(board!.height, board!.width, true));
     }

@@ -32,6 +32,7 @@ class NewBoardGameState extends BoardGameState {
 
 class ShowDialogState extends GameState {
   final String title;
+  final String? description;
   final String confirmation;
   final String dismiss;
   final GameEvent confirmationEvent;
@@ -39,6 +40,7 @@ class ShowDialogState extends GameState {
 
   ShowDialogState(
       {required this.title,
+      this.description,
       this.confirmation = "yes",
       this.dismiss = "no",
       required this.confirmationEvent,
