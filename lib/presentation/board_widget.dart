@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/entities/board_painter.dart';
+import 'package:mosaic/presentation/free_drawing.dart';
 import 'package:mosaic/presentation/tile.dart';
 import 'package:mosaic/utils/config.dart';
 
@@ -63,6 +64,7 @@ class BoardWidget extends StatelessWidget {
             ),
           );
         } else if (state is BoardGameState) {
+          return SizedBox.expand(child: FreeDrawing(board: state.board));
           return LayoutBuilder(builder: (context, constraints) {
             const double tileSize = 32.0;
             const double padding = 4.0;
