@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
-import 'package:mosaic/utils/config.dart';
 import 'package:mosaic/utils/theme/themes.dart';
 
 class FreePainter extends CustomPainter {
@@ -56,7 +55,9 @@ class FreePainter extends CustomPainter {
     final double midW = size.width / 2;
     final double midH = size.height / 2;
 
-    logger.i({
+    var pos = Offset(position.dx * jCount / size.width, position.dy * iCount / size.height);
+
+    /*logger.i({
       "tileSize": tileSize,
       "count": {
         "i": iCount,
@@ -70,25 +71,25 @@ class FreePainter extends CustomPainter {
         "height": board.height,
         "width": board.width,
       },
-    });
+    });*/
 
     final Paint cellRandom = Paint()
       ..style = PaintingStyle.fill
       ..color = Color.fromARGB(255, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
 
-    final TextStyle cellTextBase = TextStyle(fontSize: 0.25 * tileSize, color: theme.cellTextBase);
-    final TextStyle cellTextError = TextStyle(fontSize: 0.25 * tileSize, color: theme.cellTextError);
-    final TextStyle cellTextComplete = TextStyle(fontSize: 0.25 * tileSize, color: theme.cellTextComplete);
-    final TextStyle cellTextFilled = TextStyle(fontSize: 0.25 * tileSize, color: theme.cellTextFilled);
-    final TextStyle cellTextEmpty = TextStyle(fontSize: 0.25 * tileSize, color: theme.cellTextEmpty);
+    final TextStyle cellTextBase = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextBase);
+    final TextStyle cellTextError = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextError);
+    final TextStyle cellTextComplete = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextComplete);
+    final TextStyle cellTextFilled = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextFilled);
+    final TextStyle cellTextEmpty = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextEmpty);
 
-    final iStart = max(0, (position.dy - iCount / 2).floor());
-    final jStart = max(0, (position.dx - jCount / 2).floor());
+    final iStart = max(0, (pos.dy - iCount / 2).floor());
+    final jStart = max(0, (pos.dx - jCount / 2).floor());
     for (int i = iStart; i < min(board.height, iStart + iCount + 1); i++) {
       for (int j = jStart; j < min(board.width, jStart + jCount + 1); j++) {
         final cell = board.cells[i][j];
-        final offset = Offset(midW - (position.dx - j) * tileSize * paddingRatio + padding,
-            midH - (position.dy - i) * tileSize * paddingRatio + padding);
+        final offset = Offset(midW - (pos.dx - j) * tileSize * paddingRatio + padding,
+            midH - (pos.dy - i) * tileSize * paddingRatio + padding);
         canvas.drawRect(
             Rect.fromPoints(
               offset,
@@ -99,10 +100,10 @@ class FreePainter extends CustomPainter {
                 : cell.state!
                     ? cellFilled
                     : cellEmpty);
-        if (true || cell.shown) {
+        if (cell.shown) {
           final textPainter = TextPainter(
               text: TextSpan(
-                text: "$i,$j",
+                text: cell.clue.toString(),
                 style: cell.error
                     ? cellTextError
                     : cell.complete
@@ -128,6 +129,6 @@ class FreePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+    return true;
   }
 }

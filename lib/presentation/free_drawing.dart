@@ -1,29 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
-import 'package:mosaic/entities/free_painter.dart';
+import 'package:mosaic/utils/config.dart';
 
+import '../entities/free_painter.dart';
 import '../utils/theme/theme_container.dart';
 
 class FreeDrawing extends StatefulWidget {
   final Board board;
 
-  const FreeDrawing({Key? key, required this.board}) : super(key: key);
+  final double minScale;
+  final double maxScale;
+
+  const FreeDrawing({Key? key, required this.board, this.minScale = 0.8, this.maxScale = double.infinity})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _FreeDrawingState();
 }
 
 class _FreeDrawingState extends State<FreeDrawing> {
-  double scale = 6.0;
-  late Offset position = Offset(widget.board.width / 2, widget.board.height / 2);
+  late double _scale;
+  Offset? _position;
 
-  static const paddingRatio = 1 / 8;
+  static const _paddingRatio = 1 / 8;
+
+  @override
+  void initState() {
+    _scale = 6.0;
+    super.initState();
+  }
+
+  late double _scaleStart = _scale;
+
+  // late Offset _positionStart = _position;
 
   @override
   Widget build(BuildContext context) {
     final theme = GameThemeContainer.of(context);
 
-    return CustomPaint(painter: FreePainter(board: widget.board, theme: theme, position: position, scale: scale));
+    return LayoutBuilder(builder: (context, BoxConstraints constraints) {
+      _position ??= Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
+      return GestureDetector(
+        onScaleUpdate: (ScaleUpdateDetails scaleDetails) {
+          setState(() {
+            _scale = (_scaleStart * scaleDetails.scale).clamp(widget.minScale, widget.maxScale);
+          });
+          _position = Offset(
+            (_position!.dx - scaleDetails.focalPointDelta.dx).clamp(0, constraints.maxWidth),
+            (_position!.dy - scaleDetails.focalPointDelta.dy).clamp(0, constraints.maxHeight),
+          );
+          logger.i(_position);
+        },
+        onScaleStart: (ScaleStartDetails details) {
+          _scaleStart = _scale;
+        },
+        /*onTap: () {
+            setState(() {
+              _scale++;
+              logger.i(_scale);
+            });
+          },*/
+        /*child: Container(
+            color: Colors.pinkAccent,
+            alignment: Alignment.center,
+            height: double.infinity,
+            width: double.infinity,
+            child: Text(_scale.toString()),
+          ),*/
+        child:
+            CustomPaint(painter: FreePainter(board: widget.board, theme: theme, position: _position!, scale: _scale)),
+      );
+    });
   }
 /*
   return LayoutBuilder(builder: (context, constraints) {
