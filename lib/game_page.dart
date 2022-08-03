@@ -38,7 +38,8 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
             filled = empty;
             empty = tmp;
           }
-          return Padding(
+          return Container(
+            color: theme.gameBackground,
             padding: const EdgeInsets.all(8.0),
             child: Wrap(
               alignment: WrapAlignment.center,

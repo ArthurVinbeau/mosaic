@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/utils/theme/themes.dart';
 
+import '../utils/config.dart';
+
 class FreePainter extends CustomPainter {
   final Board board;
   final GameTheme theme;
   final double scale;
   final double paddingRatio;
-  final Offset position;
+  final Offset boardPosition;
 
   static final Random rand = Random();
 
@@ -27,7 +29,7 @@ class FreePainter extends CustomPainter {
       {required this.board,
       required this.theme,
       required this.scale,
-      required this.position,
+      required this.boardPosition,
       this.paddingRatio = 1.125});
 
   @override
@@ -55,14 +57,13 @@ class FreePainter extends CustomPainter {
     final double midW = size.width / 2;
     final double midH = size.height / 2;
 
-    var pos = Offset(position.dx * jCount / size.width, position.dy * iCount / size.height);
-
-    /*logger.i({
+    logger.i({
       "tileSize": tileSize,
       "count": {
         "i": iCount,
         "j": jCount,
       },
+      "boardPosition": boardPosition,
       "canvas": {
         "height": size.height,
         "width": size.width,
@@ -71,7 +72,7 @@ class FreePainter extends CustomPainter {
         "height": board.height,
         "width": board.width,
       },
-    });*/
+    });
 
     final Paint cellRandom = Paint()
       ..style = PaintingStyle.fill
@@ -83,13 +84,13 @@ class FreePainter extends CustomPainter {
     final TextStyle cellTextFilled = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextFilled);
     final TextStyle cellTextEmpty = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextEmpty);
 
-    final iStart = max(0, (pos.dy - iCount / 2).floor());
-    final jStart = max(0, (pos.dx - jCount / 2).floor());
+    final iStart = max(0, (boardPosition.dy - iCount / 2).floor());
+    final jStart = max(0, (boardPosition.dx - jCount / 2).floor());
     for (int i = iStart; i < min(board.height, iStart + iCount + 1); i++) {
       for (int j = jStart; j < min(board.width, jStart + jCount + 1); j++) {
         final cell = board.cells[i][j];
-        final offset = Offset(midW - (pos.dx - j) * tileSize * paddingRatio + padding,
-            midH - (pos.dy - i) * tileSize * paddingRatio + padding);
+        final offset = Offset(midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
+            midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
         canvas.drawRect(
             Rect.fromPoints(
               offset,

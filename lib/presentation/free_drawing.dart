@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
-import 'package:mosaic/utils/config.dart';
 
 import '../entities/free_painter.dart';
 import '../utils/theme/theme_container.dart';
@@ -11,8 +10,16 @@ class FreeDrawing extends StatefulWidget {
   final double minScale;
   final double maxScale;
 
-  const FreeDrawing({Key? key, required this.board, this.minScale = 0.8, this.maxScale = double.infinity})
-      : super(key: key);
+  final double paddingRatio;
+
+  const FreeDrawing(
+      {Key? key,
+      required this.board,
+      this.minScale = 0.8,
+      this.maxScale = double.infinity,
+      double paddingRatio = 1 / 8})
+      : this.paddingRatio = 1 + paddingRatio,
+        super(key: key);
 
   @override
   State<StatefulWidget> createState() => _FreeDrawingState();
@@ -21,8 +28,6 @@ class FreeDrawing extends StatefulWidget {
 class _FreeDrawingState extends State<FreeDrawing> {
   late double _scale;
   Offset? _position;
-
-  static const _paddingRatio = 1 / 8;
 
   @override
   void initState() {
@@ -40,16 +45,40 @@ class _FreeDrawingState extends State<FreeDrawing> {
 
     return LayoutBuilder(builder: (context, BoxConstraints constraints) {
       _position ??= Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
+
+      final screenRatio = constraints.maxHeight / constraints.maxWidth;
+      final boardRatio = widget.board.height / widget.board.width;
+
+      double minHeight = 0;
+      double maxHeight = constraints.maxHeight;
+      double minWidth = 0;
+      double maxWidth = constraints.maxWidth;
+
+      if (screenRatio > boardRatio) {
+        var offset = (maxHeight - (maxHeight / screenRatio * boardRatio)) / 2;
+        minHeight += offset;
+        maxHeight -= offset;
+      } else {
+        var offset = (maxWidth - (maxWidth / screenRatio * boardRatio)) / 2;
+        minWidth += offset;
+        maxWidth -= offset;
+      }
+
+      final boardPosition = Offset(
+        (_position!.dx - minWidth) * widget.board.width / (maxWidth - minWidth),
+        (_position!.dy - minHeight) * widget.board.height / (maxHeight - minHeight),
+      );
+
       return GestureDetector(
         onScaleUpdate: (ScaleUpdateDetails scaleDetails) {
           setState(() {
             _scale = (_scaleStart * scaleDetails.scale).clamp(widget.minScale, widget.maxScale);
+            _position = Offset(
+              (_position!.dx - (scaleDetails.focalPointDelta.dx / _scale)).clamp(minWidth, maxWidth),
+              (_position!.dy - (scaleDetails.focalPointDelta.dy / _scale)).clamp(minHeight, maxHeight),
+            );
           });
-          _position = Offset(
-            (_position!.dx - scaleDetails.focalPointDelta.dx).clamp(0, constraints.maxWidth),
-            (_position!.dy - scaleDetails.focalPointDelta.dy).clamp(0, constraints.maxHeight),
-          );
-          logger.i(_position);
+          // logger.i({"constraints": constraints, "position": _position});
         },
         onScaleStart: (ScaleStartDetails details) {
           _scaleStart = _scale;
@@ -67,8 +96,14 @@ class _FreeDrawingState extends State<FreeDrawing> {
             width: double.infinity,
             child: Text(_scale.toString()),
           ),*/
-        child:
-            CustomPaint(painter: FreePainter(board: widget.board, theme: theme, position: _position!, scale: _scale)),
+        child: CustomPaint(
+            size: Size(constraints.maxWidth, constraints.maxHeight),
+            painter: FreePainter(
+                board: widget.board,
+                theme: theme,
+                boardPosition: boardPosition,
+                scale: _scale,
+                paddingRatio: widget.paddingRatio)),
       );
     });
   }
