@@ -43,7 +43,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         super(NotStartedGameState(baseHeight, baseWidth, false)) {
     on<CreateGameEvent>(_newGame);
     on<ShowNewGameOptionsEvent>(_showNewGameWidget);
-    on<NewGameButtonEvent>(_showNewGameConfirmation);
+    on<RestartGameButtonEvent>(_showRestartGameConfirmation);
+    on<RestartGameEvent>(_restartGame);
     on<TilePressedGameEvent>(_tilePressed);
     on<ToggleColorsEvent>(_toggleCommands);
     on<ToggleFillEvent>(_toggleFill);
@@ -79,17 +80,36 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     emit(NotStartedGameState(board!.height, board!.width, false));
   }
 
-  void _showNewGameConfirmation(NewGameButtonEvent event, Emitter emit) {
-    emit(ShowDialogState(title: "Start a new game?", confirmationEvent: ShowNewGameOptionsEvent(), pop: true));
+  void _showRestartGameConfirmation(RestartGameButtonEvent event, Emitter emit) {
+    emit(ShowDialogState(
+        title: "Restart the current game?",
+        description: "You will loose your current progress",
+        confirmationEvent: RestartGameEvent(),
+        pop: false));
+  }
+
+  void _restartGame(RestartGameEvent event, Emitter emit) {
+    _timerBloc.add(const TimerReset());
+    for (int i = 0; i < board!.height; i++) {
+      for (int j = 0; j < board!.height; j++) {
+        board!.cells[i][j].state = null;
+        board!.cells[i][j].error = board!.cells[i][j].complete = false;
+      }
+    }
+    status = GameStatus.running;
+    validTiles = 0;
+    moveManager = MoveManager();
+    emit(NewBoardGameState(board!, controls));
   }
 
   void _checkCellError(int i, int j) {
-    var count = 0, empty = 0;
+    var countF = 0, countE = 0, empty = 0;
     Board.iterateOnSquare(board!.cells, i, j, (Cell e, p1, p2) {
-      count += (e.state ?? false) ? 1 : 0;
+      countF += (e.state ?? false) ? 1 : 0;
+      countE += (e.state ?? true) ? 0 : 1;
       empty += e.state == null ? 1 : 0;
     });
-    board!.cells[i][j].error = count > board!.cells[i][j].clue || count < board!.cells[i][j].clue && empty == 0;
+    board!.cells[i][j].error = countF > board!.cells[i][j].clue || 9 - countE < board!.cells[i][j].clue;
     board!.cells[i][j].complete = empty == 0;
   }
 

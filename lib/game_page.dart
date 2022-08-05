@@ -20,56 +20,63 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
   Widget _getControls(BuildContext context, bool vertical) {
     final theme = GameThemeContainer.of(context);
-    return BlocBuilder<GameBloc, GameState>(
-      builder: (context, state) {
-        GameControls controls;
-        if (state is ControlsGameState) {
-          controls = state.controls;
-        } else if (state is NewBoardGameState) {
-          controls = state.controls;
-        } else {
-          return const SizedBox();
-        }
-        Color filled = theme.cellFilled, empty = theme.cellEmpty;
+    return RepaintBoundary(
+      child: BlocBuilder<GameBloc, GameState>(
+        builder: (context, state) {
+          GameControls controls;
+          if (state is ControlsGameState) {
+            controls = state.controls;
+          } else if (state is NewBoardGameState) {
+            controls = state.controls;
+          } else {
+            return const SizedBox();
+          }
+          Color filled = theme.cellFilled, empty = theme.cellEmpty;
 
-        if (controls.reversed) {
-          var tmp = filled;
-          filled = empty;
-          empty = tmp;
-        }
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            direction: vertical ? Axis.vertical : Axis.horizontal,
-            spacing: 8.0,
-            children: [
-              IconButton(
-                  onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
-                  icon: Stack(
-                    children: [Icon(Icons.circle, color: empty), Icon(Icons.contrast, color: filled)],
-                  )),
-              Ink(
-                decoration: ShapeDecoration(shape: const CircleBorder(), color: controls.fill ? filled : null),
-                child: IconButton(
-                    onPressed: () => context.read<GameBloc>().add(ToggleFillEvent()),
-                    icon: Icon(Icons.format_color_fill, color: controls.fill ? empty : filled)),
+          if (controls.reversed) {
+            var tmp = filled;
+            filled = empty;
+            empty = tmp;
+          }
+          return Material(
+            color: theme.gameBackground,
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              width: vertical ? null : double.infinity,
+              height: vertical ? double.infinity : null,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                direction: vertical ? Axis.vertical : Axis.horizontal,
+                spacing: 8.0,
+                children: [
+                  IconButton(
+                      onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
+                      icon: Stack(
+                        children: [Icon(Icons.circle, color: empty), Icon(Icons.contrast, color: filled)],
+                      )),
+                  Ink(
+                    decoration: ShapeDecoration(shape: const CircleBorder(), color: controls.fill ? filled : null),
+                    child: IconButton(
+                        onPressed: () => context.read<GameBloc>().add(ToggleFillEvent()),
+                        icon: Icon(Icons.format_color_fill, color: controls.fill ? empty : filled)),
+                  ),
+                  IconButton(
+                      onPressed: controls.canUndo ? () => context.read<GameBloc>().add(UndoEvent()) : null,
+                      icon: const Icon(Icons.undo),
+                      color: theme.controlsMoveEnabled,
+                      disabledColor: theme.controlsMoveDisabled),
+                  IconButton(
+                      onPressed: controls.canRedo ? () => context.read<GameBloc>().add(RedoEvent()) : null,
+                      icon: const Icon(Icons.redo),
+                      color: theme.controlsMoveEnabled,
+                      disabledColor: theme.controlsMoveDisabled),
+                ],
               ),
-              IconButton(
-                  onPressed: controls.canUndo ? () => context.read<GameBloc>().add(UndoEvent()) : null,
-                  icon: const Icon(Icons.undo),
-                  color: theme.controlsMoveEnabled,
-                  disabledColor: theme.controlsMoveDisabled),
-              IconButton(
-                  onPressed: controls.canRedo ? () => context.read<GameBloc>().add(RedoEvent()) : null,
-                  icon: const Icon(Icons.redo),
-                  color: theme.controlsMoveEnabled,
-                  disabledColor: theme.controlsMoveDisabled),
-            ],
-          ),
-        );
-      },
-      buildWhen: (_, b) => b is ControlsGameState || b is NewBoardGameState,
+            ),
+          );
+        },
+        buildWhen: (_, b) => b is ControlsGameState || b is NewBoardGameState,
+      ),
     );
   }
 
@@ -77,35 +84,37 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final theme = GameThemeContainer.of(context);
 
-    Widget body = const BoardWidget();
+    Widget body = const RepaintBoundary(child: BoardWidget());
 
     final size = MediaQuery.of(context).size;
 
     final bool vertical = size.height <= size.width;
 
     if (vertical) {
-      body = Row(children: [_getControls(context, true), SizedBox(width: size.width - 64, child: body)]);
+      body = Row(children: [SizedBox(width: size.width - 64, child: body), _getControls(context, true)]);
     }
     return Scaffold(
       appBar: AppBar(
-        title: BlocBuilder<TimerBloc, TimerState>(
-          buildWhen: (prev, state) => prev.duration != state.duration,
-          builder: (context, state) {
-            return Text(state.toString());
-          },
+        title: RepaintBoundary(
+          child: BlocBuilder<TimerBloc, TimerState>(
+            buildWhen: (prev, state) => prev.duration != state.duration,
+            builder: (context, state) {
+              return Text(state.toString());
+            },
+          ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () => context.read<GameBloc>().add(NewGameButtonEvent()),
+            onPressed: () => context.read<GameBloc>().add(RestartGameButtonEvent()),
             icon: const Icon(Icons.refresh),
-            tooltip: "New game",
+            tooltip: "Restart game",
           )
         ],
       ),
       body: body,
       backgroundColor: theme.gameBackground,
-      bottomNavigationBar: vertical ? null : _getControls(context, false),
+      bottomSheet: vertical ? null : _getControls(context, false),
     );
   }
 

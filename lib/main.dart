@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.all(32.0),
                     width: double.infinity,
                     child: ElevatedButton(
-                      child: const Text("Resume Game"),
+                      child: Text("Resume Game (${state.baseHeight}x${state.baseWidth})"),
                       onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
                     ),
                   ),

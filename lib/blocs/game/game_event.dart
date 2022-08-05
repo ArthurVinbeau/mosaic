@@ -11,7 +11,9 @@ class CreateGameEvent extends GameEvent {
 
 class ShowNewGameOptionsEvent extends GameEvent {}
 
-class NewGameButtonEvent extends GameEvent {}
+class RestartGameButtonEvent extends GameEvent {}
+
+class RestartGameEvent extends GameEvent {}
 
 class TilePressedGameEvent extends GameEvent {
   final int i, j;

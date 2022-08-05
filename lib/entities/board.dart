@@ -360,7 +360,7 @@ class Board {
       var curr = cells[neededList[k].i][neededList[k].j];
       curr.shown = false;
       if (!_solveCheck().result) {
-        logger.d("Hiding cell [${neededList[k].i}][${neededList[k].j}] not possible.");
+        logger.v("Hiding cell [${neededList[k].i}][${neededList[k].j}] not possible.");
         curr.shown = true;
       }
     }
