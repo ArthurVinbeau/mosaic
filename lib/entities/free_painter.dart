@@ -11,7 +11,7 @@ class FreePainter extends CustomPainter {
   final double paddingRatio;
   final Offset boardPosition;
 
-  static final Random rand = Random();
+  // static final Random rand = Random();
 
   late final Paint cellBase = Paint()
     ..style = PaintingStyle.fill
@@ -55,9 +55,9 @@ class FreePainter extends CustomPainter {
     final double midW = size.width / 2;
     final double midH = size.height / 2;
 
-    final Paint cellRandom = Paint()
+    /*final Paint cellRandom = Paint()
       ..style = PaintingStyle.fill
-      ..color = Color.fromARGB(255, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+      ..color = Color.fromARGB(255, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));*/
 
     final TextStyle cellTextBase = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextBase);
     final TextStyle cellTextError = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextError);
@@ -107,7 +107,7 @@ class FreePainter extends CustomPainter {
               Offset(offset.dx + tileSize, offset.dy + tileSize),
             ),
             cell.state == null
-                ? cellRandom
+                ? cellBase
                 : cell.state!
                     ? cellFilled
                     : cellEmpty);

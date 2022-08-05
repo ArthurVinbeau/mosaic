@@ -106,9 +106,9 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () => context.read<GameBloc>().add(NewGameButtonEvent()),
+            onPressed: () => context.read<GameBloc>().add(RestartGameButtonEvent()),
             icon: const Icon(Icons.refresh),
-            tooltip: "New game",
+            tooltip: "Restart game",
           )
         ],
       ),
