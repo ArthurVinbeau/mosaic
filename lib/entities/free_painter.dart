@@ -57,23 +57,6 @@ class FreePainter extends CustomPainter {
     final double midW = size.width / 2;
     final double midH = size.height / 2;
 
-    logger.i({
-      "tileSize": tileSize,
-      "count": {
-        "i": iCount,
-        "j": jCount,
-      },
-      "boardPosition": boardPosition,
-      "canvas": {
-        "height": size.height,
-        "width": size.width,
-      },
-      "board": {
-        "height": board.height,
-        "width": board.width,
-      },
-    });
-
     final Paint cellRandom = Paint()
       ..style = PaintingStyle.fill
       ..color = Color.fromARGB(255, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
@@ -86,6 +69,35 @@ class FreePainter extends CustomPainter {
 
     final iStart = max(0, (boardPosition.dy - iCount / 2).floor());
     final jStart = max(0, (boardPosition.dx - jCount / 2).floor());
+
+    if (iStart == 0) {
+      iCount += (boardPosition.dy - iCount / 2).floor();
+    }
+    if (jStart == 0) {
+      jCount += (boardPosition.dx - jCount / 2).floor();
+    }
+
+    logger.i({
+      "tileSize": tileSize,
+      "count": {
+        "i": iCount,
+        "j": jCount,
+      },
+      "end-start": {
+        "i": min(board.height, iStart + iCount + 1) - iStart,
+        "j": min(board.width, jStart + jCount + 1) - jStart,
+      },
+      "boardPosition": boardPosition,
+      "canvas": {
+        "height": size.height,
+        "width": size.width,
+      },
+      "board": {
+        "height": board.height,
+        "width": board.width,
+      },
+    });
+
     for (int i = iStart; i < min(board.height, iStart + iCount + 1); i++) {
       for (int j = jStart; j < min(board.width, jStart + jCount + 1); j++) {
         final cell = board.cells[i][j];

@@ -80,6 +80,7 @@ class _FreeDrawingState extends State<FreeDrawing> {
 
       final screenRatio = constraints.maxHeight / constraints.maxWidth;
       final boardRatio = widget.board.height / widget.board.width;
+      // TODO: FIX Landscape mode
 
       var boardSize = BoxConstraints(
         minHeight: 0,
