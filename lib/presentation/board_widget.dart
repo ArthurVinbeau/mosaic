@@ -64,7 +64,14 @@ class BoardWidget extends StatelessWidget {
             ),
           );
         } else if (state is BoardGameState) {
-          return SizedBox.expand(child: FreeDrawing(board: state.board));
+          return SizedBox.expand(
+            child: FreeDrawing(
+              board: state.board,
+              onTap: (int i, int j, bool long) {
+                context.read<GameBloc>().add(TilePressedGameEvent(i, j, long));
+              },
+            ),
+          );
           return LayoutBuilder(builder: (context, constraints) {
             const double tileSize = 32.0;
             const double padding = 4.0;

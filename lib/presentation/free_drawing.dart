@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
+import 'package:vibration/vibration.dart';
 
 import '../entities/free_painter.dart';
 import '../utils/theme/theme_container.dart';
@@ -12,13 +13,19 @@ class FreeDrawing extends StatefulWidget {
 
   final double paddingRatio;
 
+  final void Function(int i, int j, bool long)? onTap;
+
+  final bool vibration;
+
   const FreeDrawing(
       {Key? key,
       required this.board,
       this.minScale = 0.8,
       this.maxScale = double.infinity,
+      this.vibration = true,
+      this.onTap,
       double paddingRatio = 1 / 8})
-      : this.paddingRatio = 1 + paddingRatio,
+      : paddingRatio = 1 + paddingRatio,
         super(key: key);
 
   @override
@@ -28,16 +35,41 @@ class FreeDrawing extends StatefulWidget {
 class _FreeDrawingState extends State<FreeDrawing> {
   late double _scale;
   Offset? _position;
+  late bool _vibration;
 
   @override
   void initState() {
     _scale = 6.0;
+    if (widget.vibration) {
+      Vibration.hasVibrator().then((value) => _vibration = value ?? false);
+    } else {
+      _vibration = false;
+    }
     super.initState();
   }
 
   late double _scaleStart = _scale;
+  late Offset _tapTarget;
 
   // late Offset _positionStart = _position;
+
+  Offset _getBoardPosition(Offset position, BoxConstraints constraints) {
+    return Offset(
+      (position.dx - constraints.minWidth) * widget.board.width / (constraints.maxWidth - constraints.minWidth),
+      (position.dy - constraints.minHeight) * widget.board.height / (constraints.maxHeight - constraints.minHeight),
+    );
+  }
+
+  void _onTap(bool long, Offset boardPosition, Offset center, BoxConstraints boardSize) {
+    if (widget.onTap != null) {
+      // _position doesn't include _scale but _tapTarget depends on the scaled painted grid so they are not in the same
+      // coordinate system. We first need to transpose _tapTarget to the _position system.
+      final absoluteCenteredTapTarget = (_tapTarget - center) / _scale;
+      final target = _getBoardPosition(_position! + absoluteCenteredTapTarget, boardSize);
+      if (long && _vibration) Vibration.vibrate(duration: 50);
+      widget.onTap!(target.dy.floor(), target.dx.floor(), long);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,33 +81,39 @@ class _FreeDrawingState extends State<FreeDrawing> {
       final screenRatio = constraints.maxHeight / constraints.maxWidth;
       final boardRatio = widget.board.height / widget.board.width;
 
-      double minHeight = 0;
-      double maxHeight = constraints.maxHeight;
-      double minWidth = 0;
-      double maxWidth = constraints.maxWidth;
+      var boardSize = BoxConstraints(
+        minHeight: 0,
+        maxHeight: constraints.maxHeight,
+        minWidth: 0,
+        maxWidth: constraints.maxWidth,
+      );
 
       if (screenRatio > boardRatio) {
-        var offset = (maxHeight - (maxHeight / screenRatio * boardRatio)) / 2;
-        minHeight += offset;
-        maxHeight -= offset;
+        var offset = (boardSize.maxHeight - (boardSize.maxHeight / screenRatio * boardRatio)) / 2;
+        boardSize = boardSize.copyWith(
+          minHeight: boardSize.minHeight + offset,
+          maxHeight: boardSize.maxHeight - offset,
+        );
       } else {
-        var offset = (maxWidth - (maxWidth / screenRatio * boardRatio)) / 2;
-        minWidth += offset;
-        maxWidth -= offset;
+        var offset = (boardSize.maxWidth - (boardSize.maxWidth / screenRatio * boardRatio)) / 2;
+        boardSize = boardSize.copyWith(
+          minWidth: boardSize.minWidth + offset,
+          maxWidth: boardSize.maxWidth - offset,
+        );
       }
 
-      final boardPosition = Offset(
-        (_position!.dx - minWidth) * widget.board.width / (maxWidth - minWidth),
-        (_position!.dy - minHeight) * widget.board.height / (maxHeight - minHeight),
-      );
+      final boardPosition = _getBoardPosition(_position!, boardSize);
+      final center = Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
 
       return GestureDetector(
         onScaleUpdate: (ScaleUpdateDetails scaleDetails) {
           setState(() {
             _scale = (_scaleStart * scaleDetails.scale).clamp(widget.minScale, widget.maxScale);
             _position = Offset(
-              (_position!.dx - (scaleDetails.focalPointDelta.dx / _scale)).clamp(minWidth, maxWidth),
-              (_position!.dy - (scaleDetails.focalPointDelta.dy / _scale)).clamp(minHeight, maxHeight),
+              (_position!.dx - (scaleDetails.focalPointDelta.dx / _scale))
+                  .clamp(boardSize.minWidth, boardSize.maxWidth),
+              (_position!.dy - (scaleDetails.focalPointDelta.dy / _scale))
+                  .clamp(boardSize.minHeight, boardSize.maxHeight),
             );
           });
           // logger.i({"constraints": constraints, "position": _position});
@@ -83,19 +121,11 @@ class _FreeDrawingState extends State<FreeDrawing> {
         onScaleStart: (ScaleStartDetails details) {
           _scaleStart = _scale;
         },
-        /*onTap: () {
-            setState(() {
-              _scale++;
-              logger.i(_scale);
-            });
-          },*/
-        /*child: Container(
-            color: Colors.pinkAccent,
-            alignment: Alignment.center,
-            height: double.infinity,
-            width: double.infinity,
-            child: Text(_scale.toString()),
-          ),*/
+        onTapDown: (TapDownDetails details) {
+          _tapTarget = details.localPosition;
+        },
+        onTap: () => _onTap(false, boardPosition, center, boardSize),
+        onLongPress: () => _onTap(true, boardPosition, center, boardSize),
         child: CustomPaint(
             size: Size(constraints.maxWidth, constraints.maxHeight),
             painter: FreePainter(
@@ -107,49 +137,4 @@ class _FreeDrawingState extends State<FreeDrawing> {
       );
     });
   }
-/*
-  return LayoutBuilder(builder: (context, constraints) {
-            const double tileSize = 32.0;
-            const double padding = 4.0;
-            final theme = GameThemeContainer.of(context);
-
-            double? height;
-            double? width;
-            if (constraints.maxHeight / constraints.maxWidth > state.board.height / state.board.width) {
-              height = (tileSize + padding) * state.board.width * constraints.maxHeight / constraints.maxWidth;
-            } else {
-              width = (tileSize + padding) * state.board.height * constraints.maxWidth / constraints.maxHeight;
-            }
-
-            logger.d("height: $height, width: $width");
-            return SizedBox.expand(
-              child: InteractiveViewer(
-                minScale: 0.00000000001,
-                maxScale: double.infinity,
-                boundaryMargin: const EdgeInsets.all(16),
-                constrained: false,
-                child: Container(
-                    height: height,
-                    width: width,
-                    alignment: Alignment.center,
-                    child: GestureDetector(
-                      onTapUp: (TapUpDetails details) {
-                        final i = (details.localPosition.dy / (tileSize + padding)).floor();
-                        final j = (details.localPosition.dx / (tileSize + padding)).floor();
-                        context.read<GameBloc>().add(TilePressedGameEvent(i, j, false));
-                      },
-                      onLongPressEnd: (LongPressEndDetails details) {
-                        final i = (details.localPosition.dy / (tileSize + padding)).floor();
-                        final j = (details.localPosition.dx / (tileSize + padding)).floor();
-                        context.read<GameBloc>().add(TilePressedGameEvent(i, j, true));
-                      },
-                      child: CustomPaint(
-                        size: Size(state.board.width * (tileSize + padding), state.board.height * (tileSize + padding)),
-                        painter: BoardPainter(board: state.board, theme: theme, tileSize: tileSize, padding: padding),
-                      ),
-                    )),
-              ),
-            );
-          });
-   */
 }
