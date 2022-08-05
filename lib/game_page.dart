@@ -38,36 +38,40 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
             filled = empty;
             empty = tmp;
           }
-          return Container(
+          return Material(
             color: theme.gameBackground,
-            padding: const EdgeInsets.all(8.0),
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              direction: vertical ? Axis.vertical : Axis.horizontal,
-              spacing: 8.0,
-              children: [
-                IconButton(
-                    onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
-                    icon: Stack(
-                      children: [Icon(Icons.circle, color: empty), Icon(Icons.contrast, color: filled)],
-                    )),
-                Ink(
-                  decoration: ShapeDecoration(shape: const CircleBorder(), color: controls.fill ? filled : null),
-                  child: IconButton(
-                      onPressed: () => context.read<GameBloc>().add(ToggleFillEvent()),
-                      icon: Icon(Icons.format_color_fill, color: controls.fill ? empty : filled)),
-                ),
-                IconButton(
-                    onPressed: controls.canUndo ? () => context.read<GameBloc>().add(UndoEvent()) : null,
-                    icon: const Icon(Icons.undo),
-                    color: theme.controlsMoveEnabled,
-                    disabledColor: theme.controlsMoveDisabled),
-                IconButton(
-                    onPressed: controls.canRedo ? () => context.read<GameBloc>().add(RedoEvent()) : null,
-                    icon: const Icon(Icons.redo),
-                    color: theme.controlsMoveEnabled,
-                    disabledColor: theme.controlsMoveDisabled),
-              ],
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              width: vertical ? null : double.infinity,
+              height: vertical ? double.infinity : null,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                direction: vertical ? Axis.vertical : Axis.horizontal,
+                spacing: 8.0,
+                children: [
+                  IconButton(
+                      onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
+                      icon: Stack(
+                        children: [Icon(Icons.circle, color: empty), Icon(Icons.contrast, color: filled)],
+                      )),
+                  Ink(
+                    decoration: ShapeDecoration(shape: const CircleBorder(), color: controls.fill ? filled : null),
+                    child: IconButton(
+                        onPressed: () => context.read<GameBloc>().add(ToggleFillEvent()),
+                        icon: Icon(Icons.format_color_fill, color: controls.fill ? empty : filled)),
+                  ),
+                  IconButton(
+                      onPressed: controls.canUndo ? () => context.read<GameBloc>().add(UndoEvent()) : null,
+                      icon: const Icon(Icons.undo),
+                      color: theme.controlsMoveEnabled,
+                      disabledColor: theme.controlsMoveDisabled),
+                  IconButton(
+                      onPressed: controls.canRedo ? () => context.read<GameBloc>().add(RedoEvent()) : null,
+                      icon: const Icon(Icons.redo),
+                      color: theme.controlsMoveEnabled,
+                      disabledColor: theme.controlsMoveDisabled),
+                ],
+              ),
             ),
           );
         },
@@ -87,7 +91,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
     final bool vertical = size.height <= size.width;
 
     if (vertical) {
-      body = Row(children: [_getControls(context, true), SizedBox(width: size.width - 64, child: body)]);
+      body = Row(children: [SizedBox(width: size.width - 64, child: body), _getControls(context, true)]);
     }
     return Scaffold(
       appBar: AppBar(
@@ -110,7 +114,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
       ),
       body: body,
       backgroundColor: theme.gameBackground,
-      bottomNavigationBar: vertical ? null : _getControls(context, false),
+      bottomSheet: vertical ? null : _getControls(context, false),
     );
   }
 
