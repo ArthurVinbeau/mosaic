@@ -20,7 +20,7 @@ class FreeDrawing extends StatefulWidget {
   const FreeDrawing(
       {Key? key,
       required this.board,
-      this.minScale = 0.8,
+      this.minScale = 0.9,
       this.maxScale = double.infinity,
       this.vibration = true,
       this.onTap,
@@ -39,7 +39,7 @@ class _FreeDrawingState extends State<FreeDrawing> {
 
   @override
   void initState() {
-    _scale = 6.0;
+    _scale = widget.minScale;
     if (widget.vibration) {
       Vibration.hasVibrator().then((value) => _vibration = value ?? false);
     } else {
@@ -50,8 +50,6 @@ class _FreeDrawingState extends State<FreeDrawing> {
 
   late double _scaleStart = _scale;
   late Offset _tapTarget;
-
-  // late Offset _positionStart = _position;
 
   Offset _getBoardPosition(Offset position, BoxConstraints constraints) {
     return Offset(
@@ -105,15 +103,18 @@ class _FreeDrawingState extends State<FreeDrawing> {
       final boardPosition = _getBoardPosition(_position!, boardSize);
       final center = Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
 
+      final limitH = (boardSize.maxHeight - boardSize.minHeight) * widget.minScale / _scale / 2;
+      final limitW = (boardSize.maxWidth - boardSize.minWidth) * widget.minScale / _scale / 2;
+
       return GestureDetector(
         onScaleUpdate: (ScaleUpdateDetails scaleDetails) {
           setState(() {
             _scale = (_scaleStart * scaleDetails.scale).clamp(widget.minScale, widget.maxScale);
             _position = Offset(
               (_position!.dx - (scaleDetails.focalPointDelta.dx / _scale))
-                  .clamp(boardSize.minWidth, boardSize.maxWidth),
+                  .clamp(boardSize.minWidth + limitW, boardSize.maxWidth - limitW),
               (_position!.dy - (scaleDetails.focalPointDelta.dy / _scale))
-                  .clamp(boardSize.minHeight, boardSize.maxHeight),
+                  .clamp(boardSize.minHeight + limitH, boardSize.maxHeight - limitH),
             );
           });
           // logger.i({"constraints": constraints, "position": _position});
