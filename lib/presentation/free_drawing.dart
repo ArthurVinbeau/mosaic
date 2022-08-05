@@ -80,7 +80,6 @@ class _FreeDrawingState extends State<FreeDrawing> {
 
       final screenRatio = constraints.maxHeight / constraints.maxWidth;
       final boardRatio = widget.board.height / widget.board.width;
-      // TODO: FIX Landscape mode
 
       var boardSize = BoxConstraints(
         minHeight: 0,
@@ -96,7 +95,7 @@ class _FreeDrawingState extends State<FreeDrawing> {
           maxHeight: boardSize.maxHeight - offset,
         );
       } else {
-        var offset = (boardSize.maxWidth - (boardSize.maxWidth / screenRatio * boardRatio)) / 2;
+        var offset = (boardSize.maxWidth - (boardSize.maxWidth * screenRatio / boardRatio)) / 2;
         boardSize = boardSize.copyWith(
           minWidth: boardSize.minWidth + offset,
           maxWidth: boardSize.maxWidth - offset,

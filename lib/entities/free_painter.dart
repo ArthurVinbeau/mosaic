@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/utils/theme/themes.dart';
 
-import '../utils/config.dart';
-
 class FreePainter extends CustomPainter {
   final Board board;
   final GameTheme theme;
@@ -77,7 +75,7 @@ class FreePainter extends CustomPainter {
       jCount += (boardPosition.dx - jCount / 2).floor();
     }
 
-    logger.i({
+    /*logger.i({
       "tileSize": tileSize,
       "count": {
         "i": iCount,
@@ -96,7 +94,7 @@ class FreePainter extends CustomPainter {
         "height": board.height,
         "width": board.width,
       },
-    });
+    });*/
 
     for (int i = iStart; i < min(board.height, iStart + iCount + 1); i++) {
       for (int j = jStart; j < min(board.width, jStart + jCount + 1); j++) {
