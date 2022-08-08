@@ -22,7 +22,7 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   void setTheme(ThemeCollection collection) {
-    collection = collection;
+    this.collection = collection;
     _getTheme();
   }
 
