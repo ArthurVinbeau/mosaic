@@ -4,6 +4,7 @@ import 'package:vibration/vibration.dart';
 
 import '../entities/free_painter.dart';
 import '../utils/theme/theme_container.dart';
+import '../utils/theme/themes.dart';
 
 class FreeDrawing extends StatefulWidget {
   final Board board;
@@ -12,6 +13,8 @@ class FreeDrawing extends StatefulWidget {
   final double maxScale;
 
   final double paddingRatio;
+
+  final GameTheme? theme;
 
   final void Function(int i, int j, bool long)? onTap;
 
@@ -23,6 +26,7 @@ class FreeDrawing extends StatefulWidget {
       this.minScale = 0.9,
       this.maxScale = double.infinity,
       this.vibration = true,
+      this.theme,
       this.onTap,
       double paddingRatio = 1 / 8})
       : paddingRatio = 1 + paddingRatio,
@@ -71,7 +75,7 @@ class _FreeDrawingState extends State<FreeDrawing> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = GameThemeContainer.of(context);
+    final theme = widget.theme ?? GameThemeContainer.of(context);
 
     return LayoutBuilder(builder: (context, BoxConstraints constraints) {
       _position ??= Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
