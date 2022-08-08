@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/blocs/app_state/app_state_bloc.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
+import 'package:mosaic/blocs/theme_picker/theme_picker_bloc.dart';
 import 'package:mosaic/blocs/timer/timer_bloc.dart';
 import 'package:mosaic/presentation/new_game_widget.dart';
+import 'package:mosaic/theme_picker.dart';
 import 'package:mosaic/utils/config.dart';
 import 'package:mosaic/utils/theme/theme_container.dart';
 
@@ -32,6 +34,7 @@ class MyApp extends StatelessWidget {
           create: (context) => AppStateBloc(BlocProvider.of<GameBloc>(context)),
         ),
         BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
+        BlocProvider<ThemePickerBloc>(create: (context) => ThemePickerBloc(BlocProvider.of<ThemeCubit>(context))),
       ],
       child: GameThemeContainer(
         child: Builder(builder: (context) {
@@ -69,27 +72,41 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text("Mosaic"),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ThemePicker())),
+              icon: const Icon(Icons.settings))
+        ],
       ),
       body: BlocConsumer<GameBloc, GameState>(
         builder: (context, state) {
           state as NotStartedGameState;
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                NewGameWidget(height: state.baseHeight, width: state.baseWidth),
-                if (state.canResume)
-                  Container(
-                    padding: const EdgeInsets.all(32.0),
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      child: Text("Resume Game (${state.baseHeight}x${state.baseWidth})"),
-                      onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
-                    ),
-                  ),
-              ],
-            ),
-          );
+          return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    NewGameWidget(height: state.baseHeight, width: state.baseWidth),
+                    if (state.canResume)
+                      Container(
+                        padding: const EdgeInsets.all(32.0),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          child: Text("Resume Game (${state.baseHeight}x${state.baseWidth})"),
+                          onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            );
+          });
         },
         buildWhen: (_, b) => b is NotStartedGameState,
         listenWhen: (_, b) => b is GeneratingBoardGameState,
