@@ -18,6 +18,7 @@ const ThemeCollection baseTheme = ThemeCollection(
     name: "Base",
     light: GameTheme(
         primaryColor: Colors.blue,
+        brightness: Brightness.light,
         menuBackground: Colors.white,
         gameBackground: Colors.grey,
         cellBase: Colors.teal,
@@ -31,8 +32,9 @@ const ThemeCollection baseTheme = ThemeCollection(
         controlsMoveEnabled: Colors.black,
         controlsMoveDisabled: Colors.black26),
     dark: GameTheme(
-        primaryColor: Colors.red,
-        menuBackground: Color.fromARGB(255, 240, 240, 240),
+        primaryColor: Colors.orange,
+        brightness: Brightness.dark,
+        menuBackground: Colors.black54,
         gameBackground: Colors.black,
         cellBase: Color.fromARGB(255, 148, 196, 190),
         cellEmpty: Colors.white,
@@ -49,6 +51,7 @@ const ThemeCollection redTheme = ThemeCollection(
     name: "Red",
     light: GameTheme(
         primaryColor: Colors.blue,
+        brightness: Brightness.light,
         menuBackground: Colors.white,
         gameBackground: Colors.grey,
         cellBase: Colors.pinkAccent,
@@ -63,6 +66,7 @@ const ThemeCollection redTheme = ThemeCollection(
         controlsMoveDisabled: Colors.black26),
     dark: GameTheme(
         primaryColor: Colors.red,
+        brightness: Brightness.dark,
         menuBackground: Color.fromARGB(255, 240, 240, 240),
         gameBackground: Colors.black,
         cellBase: Color.fromARGB(255, 148, 196, 190),
@@ -80,6 +84,7 @@ const ThemeCollection blueTheme = ThemeCollection(
     name: "Blue",
     light: GameTheme(
         primaryColor: Colors.blue,
+        brightness: Brightness.light,
         menuBackground: Colors.white,
         gameBackground: Colors.blueGrey,
         cellBase: Colors.blueAccent,
@@ -94,6 +99,7 @@ const ThemeCollection blueTheme = ThemeCollection(
         controlsMoveDisabled: Colors.black26),
     dark: GameTheme(
         primaryColor: Colors.red,
+        brightness: Brightness.dark,
         menuBackground: Color.fromARGB(255, 240, 240, 240),
         gameBackground: Colors.black,
         cellBase: Color.fromARGB(255, 148, 196, 190),
@@ -109,6 +115,7 @@ const ThemeCollection blueTheme = ThemeCollection(
 
 class GameTheme {
   final MaterialColor primaryColor;
+  final Brightness brightness;
   final Color menuBackground;
   final Color gameBackground;
   final Color cellBase;
@@ -124,6 +131,7 @@ class GameTheme {
 
   const GameTheme({
     required this.primaryColor,
+    required this.brightness,
     required this.menuBackground,
     required this.gameBackground,
     required this.cellBase,

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:mosaic/utils/theme/themes.dart';
+import 'package:mosaic/utils/themes.dart';
 
 part 'theme_state.dart';
 
@@ -27,7 +27,7 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   GameTheme _getTheme() {
-    theme = collection.light; // FIXME
+    theme = collection.dark; // FIXME
     emit(GameThemeState(theme));
     return theme;
   }

@@ -8,7 +8,6 @@ import 'package:mosaic/blocs/timer/timer_bloc.dart';
 import 'package:mosaic/presentation/new_game_widget.dart';
 import 'package:mosaic/theme_picker.dart';
 import 'package:mosaic/utils/config.dart';
-import 'package:mosaic/utils/theme/theme_container.dart';
 
 import 'game_page.dart';
 
@@ -36,18 +35,17 @@ class MyApp extends StatelessWidget {
         BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
         BlocProvider<ThemePickerBloc>(create: (context) => ThemePickerBloc(BlocProvider.of<ThemeCubit>(context))),
       ],
-      child: GameThemeContainer(
-        child: Builder(builder: (context) {
-          return MaterialApp(
-            title: 'Mosaic',
-            navigatorKey: navigatorKey,
-            theme: ThemeData(
-              primarySwatch: GameThemeContainer.of(context).primaryColor,
-            ),
-            home: const MyHomePage(),
-          );
-        }),
-      ),
+      child: BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
+        return MaterialApp(
+          title: 'Mosaic',
+          navigatorKey: navigatorKey,
+          theme: ThemeData(
+            primarySwatch: state.theme.primaryColor,
+            brightness: state.theme.brightness,
+          ),
+          home: const MyHomePage(),
+        );
+      }),
     );
   }
 }
@@ -68,53 +66,55 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Mosaic"),
-        centerTitle: true,
-        actions: [
-          IconButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ThemePicker())),
-              icon: const Icon(Icons.settings))
-        ],
-      ),
-      body: BlocConsumer<GameBloc, GameState>(
-        builder: (context, state) {
-          state as NotStartedGameState;
-          return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    NewGameWidget(height: state.baseHeight, width: state.baseWidth),
-                    if (state.canResume)
-                      Container(
-                        padding: const EdgeInsets.all(32.0),
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          child: Text("Resume Game (${state.baseHeight}x${state.baseWidth})"),
-                          onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
+    return BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("Mosaic"),
+          centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => const ThemePicker())),
+                icon: const Icon(Icons.settings))
+          ],
+        ),
+        body: BlocConsumer<GameBloc, GameState>(
+          builder: (context, state) {
+            state as NotStartedGameState;
+            return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      NewGameWidget(height: state.baseHeight, width: state.baseWidth),
+                      if (state.canResume)
+                        Container(
+                          padding: const EdgeInsets.all(32.0),
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            child: Text("Resume Game (${state.baseHeight}x${state.baseWidth})"),
+                            onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
+                          ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          });
-        },
-        buildWhen: (_, b) => b is NotStartedGameState,
-        listenWhen: (_, b) => b is GeneratingBoardGameState,
-        listener: (context, state) {
-          Navigator.push(context, MaterialPageRoute(builder: (ctx) => const GamePage()));
-        },
-      ),
-      backgroundColor: GameThemeContainer.of(context).menuBackground,
-    );
+              );
+            });
+          },
+          buildWhen: (_, b) => b is NotStartedGameState,
+          listenWhen: (_, b) => b is GeneratingBoardGameState,
+          listener: (context, state) {
+            Navigator.push(context, MaterialPageRoute(builder: (ctx) => const GamePage()));
+          },
+        ),
+        backgroundColor: state.theme.menuBackground,
+      );
+    });
   }
 }

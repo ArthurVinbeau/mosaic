@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/timer/timer_bloc.dart';
-import 'package:mosaic/utils/theme/theme_container.dart';
+import 'package:mosaic/utils/themes.dart';
 
 import 'blocs/app_state/app_state_bloc.dart';
 import 'blocs/game/game_bloc.dart';
@@ -18,8 +19,7 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
   late final AppStateBloc _bloc;
 
-  Widget _getControls(BuildContext context, bool vertical) {
-    final theme = GameThemeContainer.of(context);
+  Widget _getControls(BuildContext context, GameTheme theme, bool vertical) {
     return RepaintBoundary(
       child: BlocBuilder<GameBloc, GameState>(
         builder: (context, state) {
@@ -82,40 +82,40 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final theme = GameThemeContainer.of(context);
+    return BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
+      Widget body = const RepaintBoundary(child: BoardWidget());
 
-    Widget body = const RepaintBoundary(child: BoardWidget());
+      final size = MediaQuery.of(context).size;
 
-    final size = MediaQuery.of(context).size;
+      final bool vertical = size.height <= size.width;
 
-    final bool vertical = size.height <= size.width;
-
-    if (vertical) {
-      body = Row(children: [SizedBox(width: size.width - 64, child: body), _getControls(context, true)]);
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: RepaintBoundary(
-          child: BlocBuilder<TimerBloc, TimerState>(
-            buildWhen: (prev, state) => prev.duration != state.duration,
-            builder: (context, state) {
-              return Text(state.toString());
-            },
+      if (vertical) {
+        body = Row(children: [SizedBox(width: size.width - 64, child: body), _getControls(context, state.theme, true)]);
+      }
+      return Scaffold(
+        appBar: AppBar(
+          title: RepaintBoundary(
+            child: BlocBuilder<TimerBloc, TimerState>(
+              buildWhen: (prev, state) => prev.duration != state.duration,
+              builder: (context, state) {
+                return Text(state.toString());
+              },
+            ),
           ),
+          centerTitle: true,
+          actions: [
+            IconButton(
+              onPressed: () => context.read<GameBloc>().add(RestartGameButtonEvent()),
+              icon: const Icon(Icons.refresh),
+              tooltip: "Restart game",
+            )
+          ],
         ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () => context.read<GameBloc>().add(RestartGameButtonEvent()),
-            icon: const Icon(Icons.refresh),
-            tooltip: "Restart game",
-          )
-        ],
-      ),
-      body: body,
-      backgroundColor: theme.gameBackground,
-      bottomSheet: vertical ? null : _getControls(context, false),
-    );
+        body: body,
+        backgroundColor: state.theme.gameBackground,
+        bottomSheet: vertical ? null : _getControls(context, state.theme, false),
+      );
+    });
   }
 
   @override

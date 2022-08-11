@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:vibration/vibration.dart';
 
 import '../entities/free_painter.dart';
-import '../utils/theme/theme_container.dart';
-import '../utils/theme/themes.dart';
+import '../utils/themes.dart';
 
 class FreeDrawing extends StatefulWidget {
   final Board board;
@@ -75,7 +76,7 @@ class _FreeDrawingState extends State<FreeDrawing> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = widget.theme ?? GameThemeContainer.of(context);
+    final theme = widget.theme ?? context.read<ThemeCubit>().state.theme;
 
     return LayoutBuilder(builder: (context, BoxConstraints constraints) {
       _position ??= Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);

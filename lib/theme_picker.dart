@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/blocs/theme_picker/theme_picker_bloc.dart';
 import 'package:mosaic/presentation/free_drawing.dart';
-import 'package:mosaic/utils/theme/themes.dart';
+import 'package:mosaic/utils/themes.dart';
 
 import 'entities/board.dart';
 
