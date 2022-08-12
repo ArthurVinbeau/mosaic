@@ -10,7 +10,7 @@ part 'theme_picker_state.dart';
 class ThemePickerBloc extends Bloc<ThemePickerEvent, ThemePickerState> {
   final ThemeCubit themeCubit;
 
-  ThemePickerBloc(this.themeCubit) : super(ThemePickerInitial(themeCubit.collection, themeCollections)) {
+  ThemePickerBloc(this.themeCubit) : super(ThemePickerInitial(themeCubit.state.collection, themeCollections)) {
     on<PickThemeEvent>(_onPick);
   }
 

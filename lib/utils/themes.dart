@@ -12,7 +12,7 @@ class ThemeCollection {
         dark = theme;
 }
 
-const List<ThemeCollection> themeCollections = [baseTheme, redTheme, blueTheme];
+final List<ThemeCollection> themeCollections = [baseTheme, redTheme, blueTheme];
 
 const ThemeCollection baseTheme = ThemeCollection(
     name: "Base",
@@ -47,38 +47,38 @@ const ThemeCollection baseTheme = ThemeCollection(
         controlsMoveEnabled: Colors.white,
         controlsMoveDisabled: Color.fromARGB(255, 75, 75, 75)));
 
-const ThemeCollection redTheme = ThemeCollection(
+final ThemeCollection redTheme = ThemeCollection(
     name: "Red",
     light: GameTheme(
         primaryColor: Colors.blue,
         brightness: Brightness.light,
         menuBackground: Colors.white,
-        gameBackground: Colors.grey,
-        cellBase: Colors.pinkAccent,
-        cellEmpty: Colors.white,
-        cellFilled: Colors.black,
+        gameBackground: const Color(0xFFFFB0B0),
+        cellBase: Colors.redAccent.withOpacity(0.50),
+        cellEmpty: Colors.red,
+        cellFilled: const Color(0xff590606),
         cellTextBase: Colors.black,
-        cellTextEmpty: Colors.black,
+        cellTextEmpty: const Color(0xfffbf5df),
         cellTextFilled: Colors.white,
-        cellTextError: Colors.red,
-        cellTextComplete: Colors.grey,
+        cellTextError: Colors.yellowAccent,
+        cellTextComplete: const Color(0xffd39fc2),
         controlsMoveEnabled: Colors.black,
         controlsMoveDisabled: Colors.black26),
     dark: GameTheme(
         primaryColor: Colors.red,
         brightness: Brightness.dark,
-        menuBackground: Color.fromARGB(255, 240, 240, 240),
+        menuBackground: Colors.black,
         gameBackground: Colors.black,
-        cellBase: Color.fromARGB(255, 148, 196, 190),
-        cellEmpty: Colors.white,
-        cellFilled: Color.fromARGB(255, 75, 75, 75),
-        cellTextBase: Colors.black,
+        cellBase: Colors.redAccent.withOpacity(0.30),
+        cellEmpty: const Color(0xfffeb3ab),
+        cellFilled: Colors.redAccent.withOpacity(0.75),
+        cellTextBase: const Color(0xfffbf5df),
         cellTextEmpty: Colors.black,
-        cellTextFilled: Colors.white,
-        cellTextError: Colors.red,
-        cellTextComplete: Colors.grey,
+        cellTextFilled: const Color(0xfffbf5df),
+        cellTextError: Colors.yellowAccent,
+        cellTextComplete: const Color(0xff787583),
         controlsMoveEnabled: Colors.white,
-        controlsMoveDisabled: Color.fromARGB(255, 75, 75, 75)));
+        controlsMoveDisabled: const Color.fromARGB(255, 75, 75, 75)));
 
 const ThemeCollection blueTheme = ThemeCollection(
     name: "Blue",

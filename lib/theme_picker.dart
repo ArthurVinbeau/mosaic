@@ -37,6 +37,7 @@ class ThemePicker extends StatelessWidget {
 
   Widget _getThemeWidget(BuildContext context, double size, ThemeCollection collection, bool selected) {
     final theme = Theme.of(context);
+
     return InkWell(
       onTap: () => context.read<ThemePickerBloc>().add(PickThemeEvent(collection)),
       child: Container(
@@ -44,7 +45,10 @@ class ThemePicker extends StatelessWidget {
         width: size * 2,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(8.0),
-        color: selected ? theme.primaryColor.withOpacity(0.5) : null,
+        color: selected
+            ? (theme.colorScheme.brightness == Brightness.light ? theme.primaryColor : theme.colorScheme.secondary)
+                .withOpacity(0.5)
+            : null,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,

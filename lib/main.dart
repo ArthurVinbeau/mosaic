@@ -32,7 +32,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<AppStateBloc>(
           create: (context) => AppStateBloc(BlocProvider.of<GameBloc>(context)),
         ),
-        BlocProvider<ThemeCubit>(create: (context) => ThemeCubit()),
+        BlocProvider<ThemeCubit>(
+            create: (context) =>
+                ThemeCubit(MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness)),
         BlocProvider<ThemePickerBloc>(create: (context) => ThemePickerBloc(BlocProvider.of<ThemeCubit>(context))),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
@@ -57,11 +59,21 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+  late final ThemeCubit _cubit;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     context.read<GameBloc>().add(AppStartedEvent());
+    _cubit = context.read<ThemeCubit>();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -116,5 +128,10 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: state.theme.menuBackground,
       );
     });
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    _cubit.updatePlatformBrightness(MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness);
   }
 }

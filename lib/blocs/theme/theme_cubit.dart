@@ -1,34 +1,42 @@
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter/material.dart';
 import 'package:mosaic/utils/themes.dart';
 
 part 'theme_state.dart';
 
 class ThemeCubit extends Cubit<ThemeState> {
-  bool? preference;
+  Brightness? _preference;
 
-  ThemeCollection collection;
-  late GameTheme theme;
+  Brightness _platformBrightness;
 
-  ThemeCubit()
-      : collection = baseTheme,
-        super(GameThemeState(baseTheme.light)) {
+  ThemeCollection _collection;
+  late GameTheme _theme;
+
+  ThemeCubit(this._platformBrightness)
+      : _collection = baseTheme,
+        super(GameThemeState(baseTheme.light, baseTheme)) {
     _getTheme();
   }
 
-  void updateThemePreference(bool? light) {
-    preference = light;
+  void updateThemePreference(Brightness? brightness) {
+    _preference = brightness;
     _getTheme();
   }
 
   void setTheme(ThemeCollection collection) {
-    this.collection = collection;
+    _collection = collection;
+    _getTheme();
+  }
+
+  void updatePlatformBrightness(Brightness brightness) {
+    _platformBrightness = brightness;
     _getTheme();
   }
 
   GameTheme _getTheme() {
-    theme = collection.dark; // FIXME
-    emit(GameThemeState(theme));
-    return theme;
+    final brightness = _preference ?? _platformBrightness;
+    _theme = brightness == Brightness.light ? _collection.light : _collection.dark;
+    emit(GameThemeState(_theme, _collection));
+    return _theme;
   }
 }
