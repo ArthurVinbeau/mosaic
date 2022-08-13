@@ -6,6 +6,7 @@ import 'package:mosaic/blocs/theme_picker/theme_picker_bloc.dart';
 import 'package:mosaic/presentation/free_drawing.dart';
 import 'package:mosaic/utils/themes.dart';
 
+import 'blocs/theme/theme_cubit.dart';
 import 'entities/board.dart';
 
 class ThemePicker extends StatelessWidget {
@@ -45,10 +46,7 @@ class ThemePicker extends StatelessWidget {
         width: size * 2,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(8.0),
-        color: selected
-            ? (theme.colorScheme.brightness == Brightness.light ? theme.primaryColor : theme.colorScheme.secondary)
-                .withOpacity(0.5)
-            : null,
+        color: selected ? context.read<ThemeCubit>().state.theme.primaryColor : null,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,17 +116,19 @@ class ThemePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ThemePickerBloc, ThemePickerState>(builder: (BuildContext context, ThemePickerState state) {
       final size = min(MediaQuery.of(context).size.width / 2, 250.0);
+      final theme = context.read<ThemeCubit>().state.theme;
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: const Text("Theme Picker"),
         ),
+        backgroundColor: theme.menuBackground,
         body: GridView.builder(
-          itemCount: state.themes.length * 3,
+          itemCount: state.themes.length,
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: size * 2, childAspectRatio: 1.9, crossAxisSpacing: 8.0, mainAxisSpacing: 8.0),
           itemBuilder: (context, index) {
-            final collection = state.themes[index % state.themes.length];
+            final collection = state.themes[index];
             return _getThemeWidget(context, size, collection, collection == state.selected);
           },
         ),
