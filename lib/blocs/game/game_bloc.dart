@@ -104,12 +104,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   void _checkCellError(int i, int j) {
     var countF = 0, countE = 0, empty = 0;
-    Board.iterateOnSquare(board!.cells, i, j, (Cell e, p1, p2) {
+    final countC = Board.iterateOnSquare(board!.cells, i, j, (Cell e, p1, p2) {
       countF += (e.state ?? false) ? 1 : 0;
       countE += (e.state ?? true) ? 0 : 1;
       empty += e.state == null ? 1 : 0;
     });
-    board!.cells[i][j].error = countF > board!.cells[i][j].clue || 9 - countE < board!.cells[i][j].clue;
+    board!.cells[i][j].error = countF > board!.cells[i][j].clue || countC - countE < board!.cells[i][j].clue;
     board!.cells[i][j].complete = empty == 0;
   }
 

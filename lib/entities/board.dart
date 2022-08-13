@@ -87,7 +87,8 @@ class Board {
     }
   }
 
-  static void iterateOnSquare<T>(List<List<T>> list, int i, int j, void Function(T e, int i, int j) callback) {
+  static int iterateOnSquare<T>(List<List<T>> list, int i, int j, void Function(T e, int i, int j) callback) {
+    int count = 0;
     for (int k = -1; k < 2; k++) {
       final targetI = i + k;
       if (targetI >= 0 && targetI < list.length) {
@@ -95,10 +96,12 @@ class Board {
           final targetJ = j + n;
           if (targetJ >= 0 && targetJ < list[targetI].length) {
             callback(list[targetI][targetJ], targetI, targetJ);
+            count++;
           }
         }
       }
     }
+    return count;
   }
 
   int _getSquareValue(int i, int j) {
