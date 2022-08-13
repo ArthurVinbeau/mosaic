@@ -97,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     minHeight: constraints.maxHeight,
+                    minWidth: constraints.maxWidth,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
