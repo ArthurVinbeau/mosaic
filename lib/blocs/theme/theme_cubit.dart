@@ -35,6 +35,7 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   void updateThemePreference(Brightness? brightness) {
     _preference = brightness;
+    SharedPreferences.getInstance().then((pref) => pref.setInt(ThemeKeys.preference, brightness?.index ?? -1));
     _getTheme();
   }
 
@@ -46,7 +47,6 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   void updatePlatformBrightness(Brightness brightness) {
     _platformBrightness = brightness;
-    SharedPreferences.getInstance().then((pref) => pref.setInt(ThemeKeys.preference, brightness.index));
     _getTheme();
   }
 
