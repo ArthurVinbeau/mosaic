@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:mosaic/utils/themes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'theme_state.dart';
 
@@ -15,7 +16,19 @@ class ThemeCubit extends Cubit<ThemeState> {
   ThemeCubit(this._platformBrightness)
       : _collection = baseTheme,
         super(GameThemeState(baseTheme.light, baseTheme)) {
-    _getTheme();
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      final index = prefs.getInt(ThemeKeys.index) ?? -1;
+      if (index >= 0 && index < themeCollections.length) {
+        _collection = themeCollections[index];
+      }
+
+      final prefIndex = prefs.getInt(ThemeKeys.preference);
+      if (prefIndex != null && prefIndex >= 0 && prefIndex < Brightness.values.length) {
+        _preference = Brightness.values[prefIndex];
+      }
+
+      _getTheme();
+    });
   }
 
   void updateThemePreference(Brightness? brightness) {
@@ -25,11 +38,13 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   void setTheme(ThemeCollection collection) {
     _collection = collection;
+    SharedPreferences.getInstance().then((pref) => pref.setInt(ThemeKeys.index, themeCollections.indexOf(collection)));
     _getTheme();
   }
 
   void updatePlatformBrightness(Brightness brightness) {
     _platformBrightness = brightness;
+    SharedPreferences.getInstance().then((pref) => pref.setInt(ThemeKeys.preference, brightness.index));
     _getTheme();
   }
 
@@ -39,4 +54,10 @@ class ThemeCubit extends Cubit<ThemeState> {
     emit(GameThemeState(_theme, _collection));
     return _theme;
   }
+}
+
+abstract class ThemeKeys {
+  static const String index = "themeIndex";
+  static const String custom = "themeCustom";
+  static const String preference = "themePreference";
 }
