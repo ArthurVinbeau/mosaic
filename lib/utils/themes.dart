@@ -47,21 +47,21 @@ const ThemeCollection baseTheme = ThemeCollection(
         controlsMoveEnabled: Colors.white,
         controlsMoveDisabled: Color.fromARGB(255, 75, 75, 75)));
 
-final ThemeCollection redTheme = ThemeCollection(
+const ThemeCollection redTheme = ThemeCollection(
     name: "Red",
     light: GameTheme(
-        primaryColor: Colors.blue,
+        primaryColor: Colors.red,
         brightness: Brightness.light,
         menuBackground: Colors.white,
-        gameBackground: const Color(0xFFFFB0B0),
-        cellBase: Colors.redAccent.withOpacity(0.50),
+        gameBackground: Color(0xFFFFB0B0),
+        cellBase: Color(0xffff8b8b),
         cellEmpty: Colors.red,
-        cellFilled: const Color(0xff590606),
+        cellFilled: Color(0xff590606),
         cellTextBase: Colors.black,
-        cellTextEmpty: const Color(0xfffbf5df),
+        cellTextEmpty: Color(0xfffbf5df),
         cellTextFilled: Colors.white,
         cellTextError: Colors.yellowAccent,
-        cellTextComplete: const Color(0xffd39fc2),
+        cellTextComplete: Color(0xFFFFB0B0),
         controlsMoveEnabled: Colors.black,
         controlsMoveDisabled: Colors.black26),
     dark: GameTheme(
@@ -69,49 +69,49 @@ final ThemeCollection redTheme = ThemeCollection(
         brightness: Brightness.dark,
         menuBackground: Colors.black,
         gameBackground: Colors.black,
-        cellBase: Colors.redAccent.withOpacity(0.30),
-        cellEmpty: const Color(0xfffeb3ab),
-        cellFilled: Colors.redAccent.withOpacity(0.75),
-        cellTextBase: const Color(0xfffbf5df),
-        cellTextEmpty: Colors.black,
-        cellTextFilled: const Color(0xfffbf5df),
+        cellBase: Color(0xffff8b8b),
+        cellEmpty: Colors.red,
+        cellFilled: Color(0xff772525),
+        cellTextBase: Colors.black,
+        cellTextEmpty: Color(0xfffbf5df),
+        cellTextFilled: Colors.white,
         cellTextError: Colors.yellowAccent,
-        cellTextComplete: const Color(0xff787583),
+        cellTextComplete: Color(0xFFFFB0B0),
         controlsMoveEnabled: Colors.white,
-        controlsMoveDisabled: const Color.fromARGB(255, 75, 75, 75)));
+        controlsMoveDisabled: Color.fromARGB(255, 75, 75, 75)));
 
-const ThemeCollection blueTheme = ThemeCollection(
+final ThemeCollection blueTheme = ThemeCollection(
     name: "Blue",
     light: GameTheme(
         primaryColor: Colors.blue,
         brightness: Brightness.light,
         menuBackground: Colors.white,
-        gameBackground: Colors.blueGrey,
-        cellBase: Colors.blueAccent,
-        cellEmpty: Colors.white,
-        cellFilled: Colors.black,
+        gameBackground: Colors.blueGrey.shade200,
+        cellBase: Colors.teal,
+        cellEmpty: Colors.lightBlueAccent.shade100,
+        cellFilled: Colors.blue.shade900,
         cellTextBase: Colors.black,
         cellTextEmpty: Colors.black,
         cellTextFilled: Colors.white,
         cellTextError: Colors.red,
-        cellTextComplete: Colors.grey,
+        cellTextComplete: Colors.blueGrey.shade200,
         controlsMoveEnabled: Colors.black,
         controlsMoveDisabled: Colors.black26),
     dark: GameTheme(
-        primaryColor: Colors.red,
+        primaryColor: Colors.indigo,
         brightness: Brightness.dark,
-        menuBackground: Color.fromARGB(255, 240, 240, 240),
+        menuBackground: Colors.black54,
         gameBackground: Colors.black,
-        cellBase: Color.fromARGB(255, 148, 196, 190),
-        cellEmpty: Colors.white,
-        cellFilled: Color.fromARGB(255, 75, 75, 75),
+        cellBase: Color.fromARGB(255, 132, 183, 164),
+        cellEmpty: Colors.lightBlueAccent.shade100,
+        cellFilled: Colors.blue.shade900,
         cellTextBase: Colors.black,
         cellTextEmpty: Colors.black,
         cellTextFilled: Colors.white,
         cellTextError: Colors.red,
-        cellTextComplete: Colors.grey,
+        cellTextComplete: Colors.blueGrey,
         controlsMoveEnabled: Colors.white,
-        controlsMoveDisabled: Color.fromARGB(255, 75, 75, 75)));
+        controlsMoveDisabled: const Color.fromARGB(255, 75, 75, 75)));
 
 class GameTheme {
   final MaterialColor primaryColor;
