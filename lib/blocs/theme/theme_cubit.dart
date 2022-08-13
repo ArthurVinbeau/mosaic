@@ -31,6 +31,8 @@ class ThemeCubit extends Cubit<ThemeState> {
     });
   }
 
+  Brightness? get preference => _preference;
+
   void updateThemePreference(Brightness? brightness) {
     _preference = brightness;
     _getTheme();

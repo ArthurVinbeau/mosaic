@@ -8,3 +8,9 @@ class PickThemeEvent extends ThemePickerEvent {
 
   PickThemeEvent(this.collection);
 }
+
+class PickPreferenceEvent extends ThemePickerEvent {
+  final Brightness? preference;
+
+  PickPreferenceEvent(this.preference);
+}
