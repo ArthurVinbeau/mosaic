@@ -103,6 +103,17 @@ class ThemePicker extends StatelessWidget {
     );
   }
 
+  String _getBrightnessLabel(Brightness? brightness) {
+    switch (brightness) {
+      case Brightness.light:
+        return "Light";
+      case Brightness.dark:
+        return "Dark";
+      default:
+        return "Use platform theme";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ThemePickerBloc, ThemePickerState>(builder: (BuildContext context, ThemePickerState state) {
@@ -120,6 +131,35 @@ class ThemePicker extends StatelessWidget {
             final collection = state.themes[index % state.themes.length];
             return _getThemeWidget(context, size, collection, collection == state.selected);
           },
+        ),
+        bottomNavigationBar: Material(
+          elevation: 8,
+          child: Container(
+            height: 100,
+            width: double.infinity,
+            padding: const EdgeInsets.all(8.0),
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text("Theme brightness preference :"),
+                DropdownButton<Brightness?>(
+                  value: state.brightness,
+                  onChanged: (Brightness? newValue) {
+                    context.read<ThemePickerBloc>().add(PickPreferenceEvent(newValue));
+                  },
+                  alignment: Alignment.center,
+                  items: <Brightness?>[null, Brightness.light, Brightness.dark]
+                      .map<DropdownMenuItem<Brightness?>>((Brightness? value) => DropdownMenuItem<Brightness?>(
+                            value: value,
+                            alignment: Alignment.center,
+                            child: Text(_getBrightnessLabel(value)),
+                          ))
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
         ),
       );
     });
