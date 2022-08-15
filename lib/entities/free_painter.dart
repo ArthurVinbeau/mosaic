@@ -96,6 +96,8 @@ class FreePainter extends CustomPainter {
       },
     });*/
 
+    final textPainter = TextPainter(textDirection: TextDirection.ltr, textAlign: TextAlign.center);
+
     for (int i = iStart; i < min(board.height, iStart + iCount + 1); i++) {
       for (int j = jStart; j < min(board.width, jStart + jCount + 1); j++) {
         final cell = board.cells[i][j];
@@ -112,21 +114,18 @@ class FreePainter extends CustomPainter {
                     ? cellFilled
                     : cellEmpty);
         if (cell.shown) {
-          final textPainter = TextPainter(
-              text: TextSpan(
-                text: cell.clue.toString(),
-                style: cell.error
-                    ? cellTextError
-                    : cell.complete
-                        ? cellTextComplete
-                        : cell.state == null
-                            ? cellTextBase
-                            : cell.state!
-                                ? cellTextFilled
-                                : cellTextEmpty,
-              ),
-              textDirection: TextDirection.ltr,
-              textAlign: TextAlign.center);
+          textPainter.text = TextSpan(
+            text: cell.clue.toString(),
+            style: cell.error
+                ? cellTextError
+                : cell.complete
+                    ? cellTextComplete
+                    : cell.state == null
+                        ? cellTextBase
+                        : cell.state!
+                            ? cellTextFilled
+                            : cellTextEmpty,
+          );
           textPainter.layout();
           final o = Offset(offset.dx + (tileSize / 2) - (textPainter.width / 2),
               offset.dy + (tileSize / 2) - (textPainter.height / 2));
