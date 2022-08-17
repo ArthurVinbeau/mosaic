@@ -44,7 +44,8 @@ class _FreeDrawingState extends State<FreeDrawing> {
 
   @override
   void initState() {
-    _scale = widget.minScale;
+    // _scale = widget.minScale;
+    _scale = 6;
     if (widget.vibration) {
       Vibration.hasVibrator().then((value) => _vibration = value ?? false);
     } else {

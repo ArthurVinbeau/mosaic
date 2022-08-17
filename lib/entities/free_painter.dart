@@ -1,8 +1,11 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/utils/themes.dart';
+
+import '../utils/config.dart';
 
 class FreePainter extends CustomPainter {
   final Board board;
@@ -58,12 +61,25 @@ class FreePainter extends CustomPainter {
     /*final Paint cellRandom = Paint()
       ..style = PaintingStyle.fill
       ..color = Color.fromARGB(255, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));*/
+    var baseStyle = TextStyle(
+        fontFeatures: const [FontFeature.tabularFigures()],
+        height: 1,
+        fontSize: 0.75 * tileSize,
+        fontFamily: "JetBrainsMono");
 
-    final TextStyle cellTextBase = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextBase);
-    final TextStyle cellTextError = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextError);
-    final TextStyle cellTextComplete = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextComplete);
-    final TextStyle cellTextFilled = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextFilled);
-    final TextStyle cellTextEmpty = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextEmpty);
+    final textPainter = TextPainter(
+        textDirection: TextDirection.ltr, textAlign: TextAlign.center, text: TextSpan(text: "0", style: baseStyle));
+    textPainter.layout();
+
+    final letterSize = textPainter.width;
+
+    baseStyle = baseStyle.copyWith(letterSpacing: tileSize * paddingRatio * 1.02 - letterSize, height: 1.5);
+
+    final TextStyle cellTextBase = baseStyle.copyWith(color: theme.cellTextBase);
+    final TextStyle cellTextError = baseStyle.copyWith(color: theme.cellTextError);
+    final TextStyle cellTextComplete = baseStyle.copyWith(color: theme.cellTextComplete);
+    final TextStyle cellTextFilled = baseStyle.copyWith(color: theme.cellTextFilled);
+    final TextStyle cellTextEmpty = baseStyle.copyWith(color: theme.cellTextEmpty);
 
     final iStart = max(0, (boardPosition.dy - iCount / 2).floor());
     final jStart = max(0, (boardPosition.dx - jCount / 2).floor());
@@ -96,7 +112,7 @@ class FreePainter extends CustomPainter {
       },
     });*/
 
-    final textPainter = TextPainter(textDirection: TextDirection.ltr, textAlign: TextAlign.center);
+    var txt = "";
 
     for (int i = iStart; i < min(board.height, iStart + iCount + 1); i++) {
       for (int j = jStart; j < min(board.width, jStart + jCount + 1); j++) {
@@ -113,6 +129,7 @@ class FreePainter extends CustomPainter {
                 : cell.state!
                     ? cellFilled
                     : cellEmpty);
+
         if (cell.shown) {
           textPainter.text = TextSpan(
             text: cell.clue.toString(),
@@ -129,10 +146,30 @@ class FreePainter extends CustomPainter {
           textPainter.layout();
           final o = Offset(offset.dx + (tileSize / 2) - (textPainter.width / 2),
               offset.dy + (tileSize / 2) - (textPainter.height / 2));
-          textPainter.paint(canvas, o);
+          // textPainter.paint(canvas, o);
+          txt += cell.clue.toString();
+        } else {
+          txt += " ";
         }
       }
+      txt += "\n";
     }
+    logger.i(txt);
+    textPainter.text = TextSpan(text: txt, style: cellTextBase);
+    textPainter.layout();
+    final off = Offset(midW - (boardPosition.dx - jStart) * tileSize * paddingRatio + padding,
+        midH - (boardPosition.dy - iStart) * tileSize * paddingRatio + padding);
+    final origin =
+        Offset(off.dx + (tileSize / 2) - (textPainter.width / 2), off.dy + (tileSize / 2) - (textPainter.height / 2));
+    logger.i({
+      "position": boardPosition,
+      "off": off,
+      "origin": origin,
+      "start": {"i": iStart, "j": jStart},
+      "mid": {"h": midH, "w": midW},
+      "style": baseStyle,
+    });
+    textPainter.paint(canvas, off);
 
     // canvas.drawRect(Rect.fromCenter(center: Offset(pW + 50, pH + 100), width: 32, height: 32), squarePaint);
   }
