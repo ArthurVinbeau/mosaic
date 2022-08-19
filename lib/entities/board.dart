@@ -10,11 +10,37 @@ class Board {
 
   final double density;
 
-  final Random _rand = Random();
+  final Random _rand;
 
   String? _gameDesc;
 
-  Board({this.height = 8, this.width = 8, this.density = 0.5});
+  Board({this.height = 8, this.width = 8, this.density = 0.5}) : _rand = Random();
+
+  Board.from(Board other)
+      : height = other.height,
+        width = other.width,
+        density = other.density,
+        _rand = other._rand,
+        _gameDesc = other._gameDesc {
+    cells = [];
+    for (int i = 0; i < other.height; i++) {
+      final row = <Cell>[];
+      for (int j = 0; j < other.width; j++) {
+        final cell = other.cells[i][j];
+        row.add(Cell(
+          value: cell.value,
+          state: cell.state,
+          shown: cell.shown,
+          clue: cell.clue,
+          complete: cell.complete,
+          empty: cell.empty,
+          error: cell.error,
+          full: cell.full,
+        ));
+      }
+      cells.add(row);
+    }
+  }
 
   static Board fromString(String str) {
     final parts = str.split(";");
