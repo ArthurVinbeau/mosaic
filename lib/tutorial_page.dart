@@ -52,19 +52,6 @@ class TutorialPage extends StatelessWidget {
       spans.add(TextSpan(text: text));
     }
 
-    /*while (text.isNotEmpty) {
-      final index = text.indexOf(RegExp(r'&[feu];'));
-      if (index == -1) {
-        spans.add(TextSpan(text: text));
-        text = "";
-      }
-      if (index > 0) {
-        spans.add(TextSpan(text: text.substring(0, index)));
-        text = text.substring(index);
-      }
-      final modifier = text[1];
-    }*/
-
     return spans;
   }
 
@@ -98,6 +85,14 @@ class TutorialPage extends StatelessWidget {
                     canZoom: false,
                     overlay: state.overlay,
                     overlayExceptions: state.overlayExceptions,
+                    onTap: (int i, int j, bool long) {
+                      if ((state.allowTap && !long || state.allowLongTap && long) &&
+                          (!state.overlay || state.overlayExceptions.contains(Offset(j.toDouble(), i.toDouble())))) {
+                        context.read<TutorialBloc>().add(TutorialTilePressedEvent(i, j, long));
+                        return true;
+                      }
+                      return false;
+                    },
                   ),
                 ),
               ],
