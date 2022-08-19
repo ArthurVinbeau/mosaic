@@ -126,7 +126,9 @@ class FreePainter extends CustomPainter {
                         : cellTextEmpty;
 
         if (overlay) {
-          cellColor.color = cellColor.color.withOpacity(0.5);
+          cellColor = Paint()
+            ..color = cellColor.color.withOpacity(0.5)
+            ..style = cellColor.style;
           textStyle = textStyle.copyWith(color: textStyle.color!.withOpacity(0.5));
         }
 
@@ -134,29 +136,31 @@ class FreePainter extends CustomPainter {
       }
     }
 
-    for (var target in overlayExceptions) {
-      final int i = target.dy.floor();
-      final int j = target.dx.floor();
+    if (overlay) {
+      for (var target in overlayExceptions) {
+        final int i = target.dy.floor();
+        final int j = target.dx.floor();
 
-      final cell = board.cells[i][j];
-      final offset = Offset(midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
-          midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
-      var cellColor = cell.state == null
-          ? cellBase
-          : cell.state!
-              ? cellFilled
-              : cellEmpty;
-      var textStyle = cell.error
-          ? cellTextError
-          : cell.complete
-              ? cellTextComplete
-              : cell.state == null
-                  ? cellTextBase
-                  : cell.state!
-                      ? cellTextFilled
-                      : cellTextEmpty;
+        final cell = board.cells[i][j];
+        final offset = Offset(midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
+            midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
+        var cellColor = cell.state == null
+            ? cellBase
+            : cell.state!
+                ? cellFilled
+                : cellEmpty;
+        var textStyle = cell.error
+            ? cellTextError
+            : cell.complete
+                ? cellTextComplete
+                : cell.state == null
+                    ? cellTextBase
+                    : cell.state!
+                        ? cellTextFilled
+                        : cellTextEmpty;
 
-      _paintCell(canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
+        _paintCell(canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
+      }
     }
   }
 
