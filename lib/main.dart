@@ -5,8 +5,10 @@ import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/theme_picker/theme_picker_bloc.dart';
 import 'package:mosaic/blocs/timer/timer_bloc.dart';
+import 'package:mosaic/blocs/tutorial/tutorial_bloc.dart';
 import 'package:mosaic/presentation/new_game_widget.dart';
 import 'package:mosaic/theme_picker.dart';
+import 'package:mosaic/tutorial_page.dart';
 import 'package:mosaic/utils/config.dart';
 
 import 'game_page.dart';
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 ThemeCubit(MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness)),
         BlocProvider<ThemePickerBloc>(create: (context) => ThemePickerBloc(BlocProvider.of<ThemeCubit>(context))),
+        BlocProvider<TutorialBloc>(create: (context) => TutorialBloc()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
         return MaterialApp(
@@ -124,6 +127,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           listenWhen: (_, b) => b is GeneratingBoardGameState,
           listener: (context, state) {
             Navigator.push(context, MaterialPageRoute(builder: (ctx) => const GamePage()));
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.help),
+          onPressed: () {
+            context.read<TutorialBloc>().add(StartTutorialEvent());
+            Navigator.push(context, MaterialPageRoute(builder: (ctx) => const TutorialPage()));
           },
         ),
         backgroundColor: state.theme.menuBackground,
