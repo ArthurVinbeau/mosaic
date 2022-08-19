@@ -31,9 +31,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   late MoveManager moveManager;
   int validTiles;
 
-  Map<bool?, bool?> order = {true: false, false: null, null: true};
-  Map<bool?, bool?> reverseOrder = {true: null, false: true, null: false};
-  late Map<bool, Map<bool?, bool?>> usedOrder = {true: reverseOrder, false: order};
+  static const Map<bool?, bool?> order = {true: false, false: null, null: true};
+  static const Map<bool?, bool?> reverseOrder = {true: null, false: true, null: false};
+  Map<bool, Map<bool?, bool?>> usedOrder = {true: reverseOrder, false: order};
 
   GameBloc(TimerBloc timerBloc)
       : _timerBloc = timerBloc,
