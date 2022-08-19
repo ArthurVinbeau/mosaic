@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
@@ -66,7 +67,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
     board = Board(height: 3, width: 3);
     board.cells = [
       [
-        Cell(clue: 0, shown: true, value: false, state: false),
+        Cell(clue: 0, shown: true, value: false, state: false, complete: true),
         Cell(clue: 2, shown: false, value: false, state: false),
         Cell(clue: 2, shown: true, value: true)
       ],
@@ -95,9 +96,9 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
     board = Board(height: 3, width: 3);
     board.cells = [
       [
-        Cell(clue: 0, shown: true, value: false, state: false),
-        Cell(clue: 2, shown: false, value: false, state: false),
-        Cell(clue: 2, shown: true, value: true, state: true)
+        Cell(clue: 0, shown: true, value: false, state: false, complete: true),
+        Cell(clue: 2, shown: false, value: false, state: false, complete: true),
+        Cell(clue: 2, shown: true, value: true, state: true, complete: true)
       ],
       [
         Cell(clue: 2, shown: false, value: false, state: false),
@@ -125,19 +126,19 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
     board = Board(height: 3, width: 3);
     board.cells = [
       [
-        Cell(clue: 0, shown: true, value: false, state: false),
-        Cell(clue: 2, shown: false, value: false, state: false),
-        Cell(clue: 2, shown: true, value: true, state: true)
+        Cell(clue: 0, shown: true, value: false, state: false, complete: true),
+        Cell(clue: 2, shown: false, value: false, state: false, complete: true),
+        Cell(clue: 2, shown: true, value: true, state: true, complete: true)
       ],
       [
-        Cell(clue: 2, shown: false, value: false, state: false),
-        Cell(clue: 5, shown: true, value: false, state: false),
-        Cell(clue: 4, shown: false, value: true, state: true)
+        Cell(clue: 2, shown: false, value: false, state: false, complete: true),
+        Cell(clue: 5, shown: true, value: false, state: false, complete: true),
+        Cell(clue: 4, shown: false, value: true, state: true, complete: true)
       ],
       [
-        Cell(clue: 2, shown: false, value: true, state: true),
-        Cell(clue: 4, shown: true, value: true, state: true),
-        Cell(clue: 3, shown: true, value: true, state: true)
+        Cell(clue: 2, shown: false, value: true, state: true, complete: true),
+        Cell(clue: 4, shown: true, value: true, state: true, complete: true),
+        Cell(clue: 3, shown: true, value: true, state: true, complete: true)
       ],
     ];
     _steps.add(_Step(
@@ -145,6 +146,8 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
           "Congratulations, you've finished the tutorial!\nOn bigger boards you might want to pinch to zoom in and drag to move the board in order to have a better experience.",
       board: board,
       overlay: false,
+      allowTap: true,
+      allowLongTap: true,
     ));
 
     _currentStep = 0;
@@ -183,10 +186,11 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
   void _onTilePressed(TutorialTilePressedEvent event, Emitter emit) {
     if (state is TutorialBoardState) {
       final state = this.state as TutorialBoardState;
-      if ((state.allowTap && !event.long || state.allowLongTap && event.long) && !state.overlay ||
-          state.overlayExceptions.contains(Offset(event.j.toDouble(), event.i.toDouble()))) {
+      if ((state.allowTap && !event.long || state.allowLongTap && event.long) &&
+          (!state.overlay || state.overlayExceptions.contains(Offset(event.j.toDouble(), event.i.toDouble())))) {
+        final board = Board.from(state.board);
         if (state.isBucket) {
-          Board.iterateOnSquare(state.board.cells, event.i, event.j, (Cell cell, i, j) {
+          Board.iterateOnSquare(board.cells, event.i, event.j, (Cell cell, i, j) {
             if (cell.state == null) {
               if (event.long) {
                 cell.state = GameBloc.reverseOrder[cell.state];
@@ -195,14 +199,21 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
               }
             }
           });
+          for (int i = max(0, event.i - 2); i < board.height && i < event.i + 2; i++) {
+            for (int j = max(0, event.j - 2); j < board.width && j < event.j + 2; j++) {
+              GameBloc.checkCellError(board, i, j);
+            }
+          }
         } else {
           if (event.long) {
-            state.board.cells[event.i][event.j].state =
-                GameBloc.reverseOrder[state.board.cells[event.i][event.j].state];
+            board.cells[event.i][event.j].state = GameBloc.reverseOrder[board.cells[event.i][event.j].state];
           } else {
-            state.board.cells[event.i][event.j].state = GameBloc.order[state.board.cells[event.i][event.j].state];
+            board.cells[event.i][event.j].state = GameBloc.order[board.cells[event.i][event.j].state];
           }
+          Board.iterateOnSquare(board.cells, event.i, event.j, (e, i, j) => GameBloc.checkCellError(board, i, j));
         }
+        emit(TutorialBoardState(board, _currentStep, _totalSteps, state.overlay, state.overlayExceptions, state.text,
+            state.showPaintBucket, state.allowTap, state.allowLongTap, state.isBucket));
       }
     }
   }
