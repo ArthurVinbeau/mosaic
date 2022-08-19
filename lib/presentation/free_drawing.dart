@@ -17,9 +17,15 @@ class FreeDrawing extends StatefulWidget {
 
   final GameTheme? theme;
 
-  final void Function(int i, int j, bool long)? onTap;
+  final bool Function(int i, int j, bool long)? onTap;
 
   final bool vibration;
+
+  final bool canPan;
+  final bool canZoom;
+
+  final bool overlay;
+  final List<Offset> overlayExceptions;
 
   const FreeDrawing(
       {Key? key,
@@ -29,6 +35,10 @@ class FreeDrawing extends StatefulWidget {
       this.vibration = true,
       this.theme,
       this.onTap,
+      this.canPan = true,
+      this.canZoom = true,
+      this.overlay = false,
+      this.overlayExceptions = const [],
       double paddingRatio = 1 / 8})
       : paddingRatio = 1 + paddingRatio,
         super(key: key);
@@ -37,7 +47,7 @@ class FreeDrawing extends StatefulWidget {
   State<StatefulWidget> createState() => _FreeDrawingState();
 }
 
-class _FreeDrawingState extends State<FreeDrawing> {
+class _FreeDrawingState extends State<FreeDrawing> with WidgetsBindingObserver {
   late double _scale;
   Offset? _position;
   late bool _vibration;
@@ -50,7 +60,14 @@ class _FreeDrawingState extends State<FreeDrawing> {
     } else {
       _vibration = false;
     }
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   late double _scaleStart = _scale;
@@ -69,8 +86,9 @@ class _FreeDrawingState extends State<FreeDrawing> {
       // coordinate system. We first need to transpose _tapTarget to the _position system.
       final absoluteCenteredTapTarget = (_tapTarget - center) / _scale;
       final target = _getBoardPosition(_position! + absoluteCenteredTapTarget, boardSize);
-      if (long && _vibration) Vibration.vibrate(duration: 50);
-      widget.onTap!(target.dy.floor(), target.dx.floor(), long);
+      if (widget.onTap!(target.dy.floor(), target.dx.floor(), long) && long && _vibration) {
+        Vibration.vibrate(duration: 50);
+      }
     }
   }
 
@@ -104,7 +122,6 @@ class _FreeDrawingState extends State<FreeDrawing> {
           maxWidth: boardSize.maxWidth - offset,
         );
       }
-
       final boardPosition = _getBoardPosition(_position!, boardSize);
       final center = Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
 
@@ -114,13 +131,17 @@ class _FreeDrawingState extends State<FreeDrawing> {
       return GestureDetector(
         onScaleUpdate: (ScaleUpdateDetails scaleDetails) {
           setState(() {
-            _scale = (_scaleStart * scaleDetails.scale).clamp(widget.minScale, widget.maxScale);
-            _position = Offset(
-              (_position!.dx - (scaleDetails.focalPointDelta.dx / _scale))
-                  .clamp(boardSize.minWidth + limitW, boardSize.maxWidth - limitW),
-              (_position!.dy - (scaleDetails.focalPointDelta.dy / _scale))
-                  .clamp(boardSize.minHeight + limitH, boardSize.maxHeight - limitH),
-            );
+            if (widget.canZoom) {
+              _scale = (_scaleStart * scaleDetails.scale).clamp(widget.minScale, widget.maxScale);
+            }
+            if (widget.canPan) {
+              _position = Offset(
+                (_position!.dx - (scaleDetails.focalPointDelta.dx / _scale))
+                    .clamp(boardSize.minWidth + limitW, boardSize.maxWidth - limitW),
+                (_position!.dy - (scaleDetails.focalPointDelta.dy / _scale))
+                    .clamp(boardSize.minHeight + limitH, boardSize.maxHeight - limitH),
+              );
+            }
           });
           // logger.i({"constraints": constraints, "position": _position});
         },
@@ -139,8 +160,15 @@ class _FreeDrawingState extends State<FreeDrawing> {
                 theme: theme,
                 boardPosition: boardPosition,
                 scale: _scale,
-                paddingRatio: widget.paddingRatio)),
+                paddingRatio: widget.paddingRatio,
+                overlay: widget.overlay,
+                overlayExceptions: widget.overlayExceptions)),
       );
     });
+  }
+
+  @override
+  void didChangeMetrics() {
+    _position = null;
   }
 }

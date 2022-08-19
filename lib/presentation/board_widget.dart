@@ -64,6 +64,7 @@ class BoardWidget extends StatelessWidget {
               board: state.board,
               onTap: (int i, int j, bool long) {
                 context.read<GameBloc>().add(TilePressedGameEvent(i, j, long));
+                return true;
               },
             ),
           );

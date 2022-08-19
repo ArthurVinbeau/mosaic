@@ -4,12 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/utils/themes.dart';
 
+import 'cell.dart';
+
 class FreePainter extends CustomPainter {
   final Board board;
   final GameTheme theme;
   final double scale;
   final double paddingRatio;
   final Offset boardPosition;
+
+  final bool overlay;
+  final List<Offset> overlayExceptions;
 
   // static final Random rand = Random();
 
@@ -28,6 +33,8 @@ class FreePainter extends CustomPainter {
       required this.theme,
       required this.scale,
       required this.boardPosition,
+      required this.overlay,
+      required this.overlayExceptions,
       this.paddingRatio = 1.125});
 
   @override
@@ -103,38 +110,74 @@ class FreePainter extends CustomPainter {
         final cell = board.cells[i][j];
         final offset = Offset(midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
             midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
-        canvas.drawRect(
-            Rect.fromPoints(
-              offset,
-              Offset(offset.dx + tileSize, offset.dy + tileSize),
-            ),
-            cell.state == null
-                ? cellBase
-                : cell.state!
-                    ? cellFilled
-                    : cellEmpty);
-        if (cell.shown) {
-          textPainter.text = TextSpan(
-            text: cell.clue.toString(),
-            style: cell.error
-                ? cellTextError
-                : cell.complete
-                    ? cellTextComplete
-                    : cell.state == null
-                        ? cellTextBase
-                        : cell.state!
-                            ? cellTextFilled
-                            : cellTextEmpty,
-          );
-          textPainter.layout();
-          final o = Offset(offset.dx + (tileSize / 2) - (textPainter.width / 2),
-              offset.dy + (tileSize / 2) - (textPainter.height / 2));
-          textPainter.paint(canvas, o);
+        var cellColor = cell.state == null
+            ? cellBase
+            : cell.state!
+                ? cellFilled
+                : cellEmpty;
+        var textStyle = cell.error
+            ? cellTextError
+            : cell.complete
+                ? cellTextComplete
+                : cell.state == null
+                    ? cellTextBase
+                    : cell.state!
+                        ? cellTextFilled
+                        : cellTextEmpty;
+
+        if (overlay) {
+          cellColor.color = cellColor.color.withOpacity(0.5);
+          textStyle = textStyle.copyWith(color: textStyle.color!.withOpacity(0.5));
         }
+
+        _paintCell(canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
       }
     }
 
-    // canvas.drawRect(Rect.fromCenter(center: Offset(pW + 50, pH + 100), width: 32, height: 32), squarePaint);
+    for (var target in overlayExceptions) {
+      final int i = target.dy.floor();
+      final int j = target.dx.floor();
+
+      final cell = board.cells[i][j];
+      final offset = Offset(midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
+          midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
+      var cellColor = cell.state == null
+          ? cellBase
+          : cell.state!
+              ? cellFilled
+              : cellEmpty;
+      var textStyle = cell.error
+          ? cellTextError
+          : cell.complete
+              ? cellTextComplete
+              : cell.state == null
+                  ? cellTextBase
+                  : cell.state!
+                      ? cellTextFilled
+                      : cellTextEmpty;
+
+      _paintCell(canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
+    }
+  }
+
+  void _paintCell(
+      Canvas canvas, Offset offset, Cell cell, Paint cellColor, double tileSize, textPainter, TextStyle textStyle) {
+    canvas.drawRect(
+        Rect.fromPoints(
+          offset,
+          Offset(offset.dx + tileSize, offset.dy + tileSize),
+        ),
+        cellColor);
+    if (cell.shown) {
+      textPainter.text = TextSpan(
+        text: cell.clue.toString(),
+        style: textStyle,
+      );
+      textPainter.layout();
+      final o = Offset(
+          offset.dx + (tileSize / 2) - (textPainter.width / 2), offset.dy + (tileSize / 2) - (textPainter.height / 2));
+      textPainter.paint(canvas, o);
+    }
   }
 
   @override

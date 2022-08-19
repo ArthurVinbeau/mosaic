@@ -76,7 +76,10 @@ class ThemePicker extends StatelessWidget {
                       minScale: 1,
                       maxScale: 1,
                       theme: collection.light,
-                      onTap: (i, j, long) => context.read<ThemePickerBloc>().add(PickThemeEvent(collection)),
+                      onTap: (i, j, long) {
+                        context.read<ThemePickerBloc>().add(PickThemeEvent(collection));
+                        return false;
+                      },
                     ),
                   ),
                   Container(
@@ -89,7 +92,10 @@ class ThemePicker extends StatelessWidget {
                       minScale: 1,
                       maxScale: 1,
                       theme: collection.dark,
-                      onTap: (i, j, long) => context.read<ThemePickerBloc>().add(PickThemeEvent(collection)),
+                      onTap: (i, j, long) {
+                        context.read<ThemePickerBloc>().add(PickThemeEvent(collection));
+                        return false;
+                      },
                     ),
                   ),
                 ],
