@@ -151,6 +151,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       allowTap: true,
       allowLongTap: true,
       boardCheck: false,
+      canMove: true,
     ));
 
     _currentStep = 0;
@@ -166,7 +167,8 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
         _steps.first.allowTap,
         _steps.first.allowLongTap,
         _steps.first.isBucket,
-        !_steps.first.boardCheck));
+        !_steps.first.boardCheck,
+        _steps.first.canMove));
   }
 
   void _onNext(NextTutorialStepEvent event, Emitter emit) {
@@ -174,7 +176,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       _currentStep++;
       final step = _steps[_currentStep];
       emit(TutorialBoardState(step.board, _currentStep, _totalSteps, step.overlay, step.overlayExceptions, step.text,
-          step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket, !step.boardCheck));
+          step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket, !step.boardCheck, step.canMove));
     }
   }
 
@@ -183,7 +185,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       _currentStep--;
       final step = _steps[_currentStep];
       emit(TutorialBoardState(step.board, _currentStep, _totalSteps, step.overlay, step.overlayExceptions, step.text,
-          step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket, !step.boardCheck));
+          step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket, !step.boardCheck, step.canMove));
     }
   }
 
@@ -226,7 +228,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
         }
 
         emit(TutorialBoardState(board, _currentStep, _totalSteps, state.overlay, state.overlayExceptions, state.text,
-            state.showPaintBucket, state.allowTap, state.allowLongTap, state.isBucket, canContinue));
+            state.showPaintBucket, state.allowTap, state.allowLongTap, state.isBucket, canContinue, state.canMove));
       }
     }
   }
@@ -243,6 +245,7 @@ class _Step {
   final bool allowLongTap;
   final bool isBucket;
   final bool boardCheck;
+  final bool canMove;
 
   _Step(
       {required this.text,
@@ -253,5 +256,6 @@ class _Step {
       this.allowTap = false,
       this.allowLongTap = false,
       this.isBucket = false,
-      this.boardCheck = true});
+      this.boardCheck = true,
+      this.canMove = false});
 }

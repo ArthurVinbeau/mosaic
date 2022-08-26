@@ -22,8 +22,9 @@ class TutorialBoardState extends TutorialState {
   final bool allowTap;
   final bool allowLongTap;
   final bool isBucket;
+  final bool canMove;
 
   const TutorialBoardState(this.board, int currentStep, int totalSteps, this.overlay, this.overlayExceptions, this.text,
-      this.showPaintBucket, this.allowTap, this.allowLongTap, this.isBucket, bool canContinue)
+      this.showPaintBucket, this.allowTap, this.allowLongTap, this.isBucket, bool canContinue, this.canMove)
       : super(currentStep, totalSteps, canContinue);
 }

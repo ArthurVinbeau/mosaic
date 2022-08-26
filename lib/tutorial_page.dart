@@ -78,8 +78,8 @@ class TutorialPage extends StatelessWidget {
             Expanded(
               child: FreeDrawing(
                 board: state.board,
-                canPan: false,
-                canZoom: false,
+                canPan: state.canMove,
+                canZoom: state.canMove,
                 overlay: state.overlay,
                 overlayExceptions: state.overlayExceptions,
                 onTap: (int i, int j, bool long) {
