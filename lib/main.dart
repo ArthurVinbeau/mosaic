@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/app_state/app_state_bloc.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
@@ -42,8 +43,10 @@ class MyApp extends StatelessWidget {
       ],
       child: BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
         return MaterialApp(
-          title: 'Mosaic',
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
           navigatorKey: navigatorKey,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: ThemeData(
             primarySwatch: state.theme.primaryColor,
             brightness: state.theme.brightness,
@@ -84,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     return BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text("Mosaic"),
+          title: Text(AppLocalizations.of(context)!.appTitle),
           centerTitle: true,
           actions: [
             IconButton(
@@ -113,7 +116,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                           padding: const EdgeInsets.all(32.0),
                           width: double.infinity,
                           child: ElevatedButton(
-                            child: Text("Resume Game (${state.baseHeight}x${state.baseWidth})"),
+                            child: Text(
+                                "${AppLocalizations.of(context)!.resumeGame} (${state.baseHeight}x${state.baseWidth})"),
                             onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
                           ),
                         ),

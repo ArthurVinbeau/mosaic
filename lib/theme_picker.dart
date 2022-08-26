@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme_picker/theme_picker_bloc.dart';
 import 'package:mosaic/presentation/free_drawing.dart';
 import 'package:mosaic/utils/themes.dart';
@@ -36,7 +37,8 @@ class ThemePicker extends StatelessWidget {
     return board;
   }
 
-  Widget _getThemeWidget(BuildContext context, double size, ThemeCollection collection, bool selected) {
+  Widget _getThemeWidget(
+      BuildContext context, double size, ThemeCollection collection, bool selected, AppLocalizations loc) {
     final theme = Theme.of(context);
 
     return InkWell(
@@ -57,9 +59,9 @@ class ThemePicker extends StatelessWidget {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                Text("Light"),
-                Text("Dark"),
+              children: [
+                Text(loc.lightTheme),
+                Text(loc.darkTheme),
               ],
             ),
             LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
@@ -107,26 +109,28 @@ class ThemePicker extends StatelessWidget {
     );
   }
 
-  String _getBrightnessLabel(Brightness? brightness) {
+  String _getBrightnessLabel(Brightness? brightness, AppLocalizations loc) {
     switch (brightness) {
       case Brightness.light:
-        return "Light";
+        return loc.lightTheme;
       case Brightness.dark:
-        return "Dark";
+        return loc.darkTheme;
       default:
-        return "Use platform theme";
+        return loc.platformTheme;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return BlocBuilder<ThemePickerBloc, ThemePickerState>(builder: (BuildContext context, ThemePickerState state) {
       final size = min(MediaQuery.of(context).size.width / 2, 250.0);
       final theme = context.read<ThemeCubit>().state.theme;
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text("Theme Picker"),
+          title: Text(loc.themePickerTitle),
         ),
         backgroundColor: theme.menuBackground,
         body: GridView.builder(
@@ -135,7 +139,7 @@ class ThemePicker extends StatelessWidget {
               maxCrossAxisExtent: size * 2, childAspectRatio: 1.9, crossAxisSpacing: 8.0, mainAxisSpacing: 8.0),
           itemBuilder: (context, index) {
             final collection = state.themes[index];
-            return _getThemeWidget(context, size, collection, collection == state.selected);
+            return _getThemeWidget(context, size, collection, collection == state.selected, loc);
           },
         ),
         bottomNavigationBar: Material(
@@ -148,7 +152,7 @@ class ThemePicker extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text("Theme brightness preference :"),
+                Text(loc.brightnessPreference),
                 DropdownButton<Brightness?>(
                   value: state.brightness,
                   onChanged: (Brightness? newValue) {
@@ -159,7 +163,7 @@ class ThemePicker extends StatelessWidget {
                       .map<DropdownMenuItem<Brightness?>>((Brightness? value) => DropdownMenuItem<Brightness?>(
                             value: value,
                             alignment: Alignment.center,
-                            child: Text(_getBrightnessLabel(value)),
+                            child: Text(_getBrightnessLabel(value, loc)),
                           ))
                       .toList(),
                 ),

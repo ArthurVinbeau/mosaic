@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 
 class NewGameWidget extends StatefulWidget {
@@ -35,6 +36,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
   Widget _getInputWidget(
       {required BuildContext context,
       required String label,
+      required String Function(String, int) errorString,
       required void Function(int? value) onSaved,
       required TextEditingController controller}) {
     final enabled = _dropDownValue == options.length - 1;
@@ -49,7 +51,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
         style: enabled
             ? theme.textTheme.titleMedium
             : theme.textTheme.titleMedium?.copyWith(color: theme.textTheme.titleMedium?.color?.withOpacity(0.35)),
-        decoration: InputDecoration(label: Text("Board $label"), errorMaxLines: 10),
+        decoration: InputDecoration(label: Text(label), errorMaxLines: 10),
         onSaved: (String? value) {
           if (value != null) {
             onSaved(int.tryParse(value));
@@ -58,7 +60,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
         validator: (String? value) {
           int? val;
           if (value == null || (val = int.tryParse(value)) == null || val! < 3) {
-            return "$label must be a valid number and be greater or equal to 3";
+            return errorString(label, 3);
           }
           return null;
         },
@@ -69,10 +71,21 @@ class _NewGameWidgetState extends State<NewGameWidget> {
   @override
   Widget build(BuildContext context) {
     final List<DropdownMenuItem<int>> opts = [];
+    final loc = AppLocalizations.of(context)!;
+    final difficulties = [
+      loc.beginnerLevel,
+      loc.easyLevel,
+      loc.normalLevel,
+      loc.intermediateLevel,
+      loc.challengerLevel,
+      loc.hardLevel,
+      loc.extremeLevel,
+      loc.customLevel,
+    ];
 
     for (int i = 0; i < options.length; i++) {
       final o = options[i];
-      var text = o.name;
+      var text = difficulties[i];
       if (o.height != null && o.width != null) {
         text += " (${o.height}x${o.width})";
       }
@@ -84,7 +97,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 24.0),
-          child: Text("Pick a difficulty", style: Theme.of(context).textTheme.titleLarge),
+          child: Text(loc.difficultyPickerHeader, style: Theme.of(context).textTheme.titleLarge),
         ),
         DropdownButton<int>(
           value: _dropDownValue,
@@ -110,13 +123,15 @@ class _NewGameWidgetState extends State<NewGameWidget> {
               children: [
                 _getInputWidget(
                   context: context,
-                  label: "Height",
+                  label: loc.boardHeight,
+                  errorString: loc.boardSizeError,
                   onSaved: (value) => _height = value ?? _height,
                   controller: _heightController,
                 ),
                 _getInputWidget(
                   context: context,
-                  label: "Width",
+                  label: loc.boardWidth,
+                  errorString: loc.boardSizeError,
                   onSaved: (value) => _width = value ?? _width,
                   controller: _widthController,
                 ),
@@ -125,7 +140,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           ),
         ),
         ElevatedButton(
-          child: const Text("New Game"),
+          child: Text(loc.newGame),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
@@ -139,6 +154,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
 }
 
 class _GameOpts {
+  /// Used for indicative purpose only, see l10n for real values
   final String name;
   final int? height;
   final int? width;

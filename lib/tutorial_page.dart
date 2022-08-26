@@ -1,14 +1,20 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/tutorial/tutorial_bloc.dart';
 import 'package:mosaic/presentation/free_drawing.dart';
+import 'package:mosaic/utils/config.dart';
 import 'package:mosaic/utils/themes.dart';
 
 class TutorialPage extends StatelessWidget {
   const TutorialPage({Key? key}) : super(key: key);
 
-  List<TextSpan> _parseText(BuildContext context, GameTheme theme, String text) {
+  List<TextSpan> _getText(BuildContext context, GameTheme theme, int step, AppLocalizations loc) {
+    String text = [loc.tutorialStep0, loc.tutorialStep1, loc.tutorialStep2, loc.tutorialStep3, loc.tutorialStep4][step];
+
     List<TextSpan> spans = [];
     final regex = RegExp(r'&([feu]);(\w+)', multiLine: true);
     final matches = regex.allMatches(text);
@@ -55,8 +61,13 @@ class TutorialPage extends StatelessWidget {
     return spans;
   }
 
+  String _padString(String str, int maxSize) =>
+      str.padLeft(((maxSize - str.length + 1) / 2).floor(), ' ').padRight(((maxSize - str.length) / 2).floor(), ' ');
+
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return BlocBuilder<TutorialBloc, TutorialState>(builder: (BuildContext context, TutorialState state) {
       Widget body;
       final theme = context.read<ThemeCubit>().state.theme;
@@ -71,7 +82,7 @@ class TutorialPage extends StatelessWidget {
               child: RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  children: _parseText(context, theme, state.text),
+                  children: _getText(context, theme, state.currentStep, loc),
                 ),
               ),
             ),
@@ -98,9 +109,12 @@ class TutorialPage extends StatelessWidget {
         Navigator.pop(context);
         body = const Center(child: CircularProgressIndicator());
       }
+
+      final maxSize = max(loc.finish.length, max(loc.previous.length, loc.next.length));
+
       return Scaffold(
         appBar: AppBar(
-          title: const Text("Tutorial"),
+          title: Text(loc.tutorialTitle),
           centerTitle: true,
         ),
         body: body,
@@ -118,7 +132,7 @@ class TutorialPage extends StatelessWidget {
                           }
                         : null,
                     icon: const Icon(Icons.chevron_left),
-                    label: const Text("Previous")),
+                    label: Text(_padString(loc.previous, maxSize))),
                 if (state is TutorialBoardState && state.showPaintBucket)
                   Ink(
                     decoration: ShapeDecoration(shape: const CircleBorder(), color: theme.cellFilled),
@@ -129,6 +143,7 @@ class TutorialPage extends StatelessWidget {
                   child: ElevatedButton.icon(
                       onPressed: state.canContinue
                           ? () {
+                              logger.i("${state.currentStep}, ${state.totalSteps}");
                               if (state.currentStep + 1 < state.totalSteps) {
                                 context.read<TutorialBloc>().add(NextTutorialStepEvent());
                               } else {
@@ -137,8 +152,9 @@ class TutorialPage extends StatelessWidget {
                             }
                           : null,
                       icon: const Icon(Icons.chevron_left),
-                      label:
-                          state.currentStep + 1 < state.totalSteps ? const Text("  Next  ") : const Text(" Finish ")),
+                      label: state.currentStep + 1 < state.totalSteps
+                          ? Text(_padString(loc.next, maxSize))
+                          : Text(_padString(loc.finish, maxSize))),
                 ),
               ],
             ),

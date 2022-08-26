@@ -1,0 +1,216 @@
+{
+  "appTitle": "Mosaic",
+  "@appTitle": {
+    "description": "The app's title"
+  },
+  "resumeGame": "Resume game",
+  "@resumeGame": {
+    "description": "The text used on the Resume Game button"
+  },
+  "restartGame": "Restart game",
+  "@restartGame": {
+    "description": "The tooltip for the restart game button"
+  },
+  "lightTheme": "Light",
+  "@lightTheme": {
+    "description": "The 'light' type of theme"
+  },
+  "darkTheme": "Dark",
+  "@darkTheme": {
+    "description": "The 'dart' type of theme"
+  },
+  "platformTheme": "Use platform theme",
+  "@platformTheme": {
+    "description": "Use the platform theme"
+  },
+  "themePickerTitle": "Theme Picker",
+  "@themePickerTitle": {
+    "description": "The title of the theme picker page"
+  },
+  "brightnessPreference": "Theme brightness preference :",
+  "@brightnessPreference": {
+    "description": "The theme brightness preference label"
+  },
+  "tutorialTitle": "Tutorial",
+  "@tutorialTitle": {
+    "description": "The tutorial page's title"
+  },
+  "previous": "Previous",
+  "@previous": {
+    "description": "Previous button"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "Next button"
+  },
+  "finish": "Finish",
+  "@Finish": {
+    "description": "Finish button"
+  },
+  "beginnerLevel": "Beginner",
+  "@beginnerLevel": {
+    "description": "Beginner game level"
+  },
+  "easyLevel": "Easy",
+  "@easyLevel": {
+    "description": "Easy game level"
+  },
+  "normalLevel": "Normal",
+  "@normalLevel": {
+    "description": "Normal game level"
+  },
+  "intermediateLevel": "Intermediate",
+  "@intermediateLevel": {
+    "description": "Intermediate game level"
+  },
+  "challengerLevel": "Challenger",
+  "@challengerLevel": {
+    "description": "Challenger game level"
+  },
+  "hardLevel": "Hard",
+  "@hardLevel": {
+    "description": "Hard game level"
+  },
+  "extremeLevel": "Extreme",
+  "@extremeLevel": {
+    "description": "Extreme game level"
+  },
+  "customLevel": "Custom",
+  "@customLevel": {
+    "description": "Custom game level"
+  },
+  "boardHeight": "Board Height",
+  "@boardHeight": {
+    "description": "The Board Height"
+  },
+  "boardWidth": "Board Width",
+  "@boardWidth": {
+    "description": "The Board Width"
+  },
+  "boardSizeError": "{label} must be a valid number and be greater or equal to {min}",
+  "@boardSizeError": {
+    "description": "The error message displayed when the input size is invalid",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "Board Height"
+      },
+      "min": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "difficultyPickerHeader": "Pick a difficulty",
+  "@difficultyPickerHeader": {
+    "description": "The header displayed above the difficulty picker"
+  },
+  "newGame": "New Game",
+  "@newGame": {
+    "description": "The new game button label"
+  },
+  "generatingBoard": "Generating a new board...",
+  "@generatingBoard": {
+    "description": "The text displayed when generating a new board"
+  },
+  "tutorialStep0": "Fill the board by following the clues to win the game.\nEach clue represents the amount of &f;black tiles in a 3x3 square around it, including the clue's own tile.",
+  "@tutorialStep0": {
+    "description": "The first tutorial step"
+  },
+  "tutorialStep1": "According to the clues, this square is composed of &e;white tiles only.\nTap on a tile to change its color, a long tap will cycle the colors in the reverse order",
+  "@tutorialStep1": {
+    "description": "The second tutorial step"
+  },
+  "tutorialStep2": "These two tiles must be filled in &f;black.\nTap on a tile to change its color, a long tap will cycle the colors in the reverse order",
+  "@tutorialStep2": {
+    "description": "The third tutorial step"
+  },
+  "tutorialStep3": "The ink bucket might come in handy to help you fill the board faster, using it on a tile will color all &u;unfilled tiles in a 3x3 square around your tap.",
+  "@tutorialStep3": {
+    "description": "The last tutorial step"
+  },
+  "tutorialStep4": "Congratulations, you've finished the tutorial!\nOn bigger boards you might want to pinch to zoom in and drag to move the board in order to have a better experience.",
+  "@tutorialStep4": {
+    "description": "The last tutorial step"
+  },
+  "elapsedSeconds": "{elapsed} seconds",
+  "@elapsedSeconds": {
+    "description": "A string to display the seconds spent in a game",
+    "placeholders": {
+      "elapsed": {
+        "type": "String",
+        "example": "01"
+      }
+    }
+  },
+  "elapsedMinutes": "{elapsed} minutes and {secondsString}",
+  "@elapsedMinutes": {
+    "description": "A string to display the minutes spent in a game, will always be paired with the elapsedSeconds string",
+    "placeholders": {
+      "elapsed": {
+        "type": "String",
+        "example": "36"
+      },
+      "secondsString": {
+        "type": "String",
+        "example": "01 seconds"
+      }
+    }
+  },
+  "elapsedHours": "{elapsed} hours, {minutesAndSecondsString}",
+  "@elapsedHours": {
+    "description": "A string to display the hours spent in a game, will always be paired with the elapsedMinutes & elapsedSeconds strings",
+    "placeholders": {
+      "elapsed": {
+        "type": "String",
+        "example": "06"
+      },
+      "minutesAndSecondsString": {
+        "type": "String",
+        "example": "36 minutes and 01 seconds"
+      }
+    }
+  },
+  "youWin": "You win!",
+  "@youWin": {
+    "description": "The statement displayed when the player wins"
+  },
+  "winDescription": "You took {elapsed} to finish this {height}x{width} board!",
+  "@winDescription": {
+    "description": "Shows the amount of time spent and the size of the board",
+    "placeholders": {
+      "elapsed": {
+        "type": "String",
+        "example": "06 hours, 36 minutes and 01 seconds"
+      },
+      "height": {
+        "type": "int",
+        "example": "50"
+      },
+      "width": {
+        "type": "int",
+        "example": "8"
+      }
+    }
+  },
+  "dismiss": "Dismiss",
+  "@dismiss": {
+    "description": "Dismiss button"
+  },
+  "restartConfirmation": "Restart the current game?",
+  "@restartConfirmation": {
+    "description": "Ask for a confirmation about restarting the game"
+  },
+  "restartConfirmationDescription": "You will lose your current progress",
+  "@restartConfirmationDescription": {
+    "description": "Additional restart information (loss of the progress)"
+  },
+  "confirmDialog": "yes",
+  "@confirmDialog": {
+    "description": "Confirm dialog option"
+  },
+  "denyDialog": "no",
+  "@denyDialog": {
+    "description": "Deny dialog action"
+  }
+}

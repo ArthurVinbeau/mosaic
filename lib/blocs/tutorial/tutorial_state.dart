@@ -17,14 +17,13 @@ class TutorialBoardState extends TutorialState {
   final Board board;
   final bool overlay;
   final List<Offset> overlayExceptions;
-  final String text;
   final bool showPaintBucket;
   final bool allowTap;
   final bool allowLongTap;
   final bool isBucket;
   final bool canMove;
 
-  const TutorialBoardState(this.board, int currentStep, int totalSteps, this.overlay, this.overlayExceptions, this.text,
+  const TutorialBoardState(this.board, int currentStep, int totalSteps, this.overlay, this.overlayExceptions,
       this.showPaintBucket, this.allowTap, this.allowLongTap, this.isBucket, bool canContinue, this.canMove)
       : super(currentStep, totalSteps, canContinue);
 }

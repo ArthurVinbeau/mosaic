@@ -31,20 +31,29 @@ class NewBoardGameState extends BoardGameState {
 }
 
 class ShowDialogState extends GameState {
-  final String title;
-  final String? description;
-  final String confirmation;
-  final String dismiss;
   final GameEvent confirmationEvent;
   final bool pop;
 
-  ShowDialogState(
-      {required this.title,
-      this.description,
-      this.confirmation = "yes",
-      this.dismiss = "no",
-      required this.confirmationEvent,
-      this.pop = false});
+  ShowDialogState({required this.confirmationEvent, this.pop = false});
+}
+
+class ShowWinDialogState extends ShowDialogState {
+  final String elapsedTime;
+  final int height;
+  final int width;
+
+  ShowWinDialogState(
+      {required GameEvent confirmationEvent,
+      bool pop = false,
+      required this.elapsedTime,
+      required this.height,
+      required this.width})
+      : super(confirmationEvent: confirmationEvent, pop: pop);
+}
+
+class ShowRestartDialogState extends ShowDialogState {
+  ShowRestartDialogState({required GameEvent confirmationEvent, bool pop = false})
+      : super(confirmationEvent: confirmationEvent, pop: pop);
 }
 
 class ControlsGameState extends GameState {

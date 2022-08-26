@@ -47,8 +47,6 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       ],
     ];
     _steps.add(_Step(
-      text:
-          "Fill the board by following the clues to win the game.\nEach clue represents the amount of &f;black tiles in a 3x3 square around it, including the clue's own tile.",
       board: board,
       overlay: false,
       boardCheck: false,
@@ -56,8 +54,6 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
 
     // Step 1
     _steps.add(_Step(
-      text:
-          "According to the clues, this square is comprised of &e;white tiles only.\nTap on a tile to change its color, a long tap will cycle the colors in the reverse order",
       board: board,
       allowTap: true,
       allowLongTap: true,
@@ -85,8 +81,6 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       ],
     ];
     _steps.add(_Step(
-      text:
-          "These two tiles must be filled in &f;black.\nTap on a tile to change its color, a long tap will cycle the colors in the reverse order",
       board: board,
       allowTap: true,
       allowLongTap: true,
@@ -114,8 +108,6 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       ],
     ];
     _steps.add(_Step(
-      text:
-          "The ink bucket might come in handy to help you fill the board faster, using it on a tile will color all &u;unfilled tiles in a 3x3 square around your tap.",
       board: board,
       allowTap: true,
       isBucket: true,
@@ -144,8 +136,6 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       ],
     ];
     _steps.add(_Step(
-      text:
-          "Congratulations, you've finished the tutorial!\nOn bigger boards you might want to pinch to zoom in and drag to move the board in order to have a better experience.",
       board: board,
       overlay: false,
       allowTap: true,
@@ -162,7 +152,6 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
         _totalSteps,
         _steps.first.overlay,
         _steps.first.overlayExceptions,
-        _steps.first.text,
         _steps.first.showPaintBucket,
         _steps.first.allowTap,
         _steps.first.allowLongTap,
@@ -175,7 +164,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
     if (_currentStep + 1 < _totalSteps) {
       _currentStep++;
       final step = _steps[_currentStep];
-      emit(TutorialBoardState(step.board, _currentStep, _totalSteps, step.overlay, step.overlayExceptions, step.text,
+      emit(TutorialBoardState(step.board, _currentStep, _totalSteps, step.overlay, step.overlayExceptions,
           step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket, !step.boardCheck, step.canMove));
     }
   }
@@ -184,7 +173,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
     if (_currentStep - 1 >= 0) {
       _currentStep--;
       final step = _steps[_currentStep];
-      emit(TutorialBoardState(step.board, _currentStep, _totalSteps, step.overlay, step.overlayExceptions, step.text,
+      emit(TutorialBoardState(step.board, _currentStep, _totalSteps, step.overlay, step.overlayExceptions,
           step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket, !step.boardCheck, step.canMove));
     }
   }
@@ -227,7 +216,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
           }
         }
 
-        emit(TutorialBoardState(board, _currentStep, _totalSteps, state.overlay, state.overlayExceptions, state.text,
+        emit(TutorialBoardState(board, _currentStep, _totalSteps, state.overlay, state.overlayExceptions,
             state.showPaintBucket, state.allowTap, state.allowLongTap, state.isBucket, canContinue, state.canMove));
       }
     }
@@ -235,7 +224,6 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
 }
 
 class _Step {
-  final String text;
   final Board board;
   final bool overlay;
   final List<Offset> overlayExceptions;
@@ -248,8 +236,7 @@ class _Step {
   final bool canMove;
 
   _Step(
-      {required this.text,
-      required this.board,
+      {required this.board,
       this.overlay = false,
       this.overlayExceptions = const [],
       this.showPaintBucket = false,

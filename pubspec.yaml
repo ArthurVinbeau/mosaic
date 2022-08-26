@@ -29,6 +29,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   shared_preferences: ^2.0.13
   logger: ^1.1.0
@@ -38,6 +40,7 @@ dependencies:
   meta: ^1.7.0
   equatable: ^2.0.3
   vibration: ^1.7.5
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -53,3 +56,4 @@ flutter_icons:
 
 flutter:
   uses-material-design: true
+  generate: true

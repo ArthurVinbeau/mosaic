@@ -81,11 +81,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _showRestartGameConfirmation(RestartGameButtonEvent event, Emitter emit) {
-    emit(ShowDialogState(
-        title: "Restart the current game?",
-        description: "You will loose your current progress",
-        confirmationEvent: RestartGameEvent(),
-        pop: false));
+    emit(ShowRestartDialogState(confirmationEvent: RestartGameEvent(), pop: false));
   }
 
   void _restartGame(RestartGameEvent event, Emitter emit) {
@@ -165,20 +161,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       logger.i("You win!");
       status = GameStatus.win;
       _removeSave();
-      final elapsed = _timerBloc.state.toString().split(":");
-      var str = "${elapsed[2]} seconds";
-      if (elapsed[1] != "00" || elapsed[0] != "00") {
-        str = "${elapsed[1]} minutes and $str";
-      }
-      if (elapsed[0] != "00") {
-        str = "${elapsed[0]} hours, $str";
-      }
-      emit(ShowDialogState(
-          title: "You win!",
-          description: "You took $str to finish this ${board!.height}x${board!.width} board!",
+      emit(ShowWinDialogState(
+          elapsedTime: _timerBloc.state.toString(),
+          height: board!.height,
+          width: board!.width,
           confirmationEvent: ShowNewGameOptionsEvent(),
-          confirmation: "Start new game",
-          dismiss: "Dismiss",
           pop: true));
     }
 

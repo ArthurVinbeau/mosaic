@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/timer/timer_bloc.dart';
 import 'package:mosaic/utils/themes.dart';
@@ -107,7 +108,7 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
             IconButton(
               onPressed: () => context.read<GameBloc>().add(RestartGameButtonEvent()),
               icon: const Icon(Icons.refresh),
-              tooltip: "Restart game",
+              tooltip: AppLocalizations.of(context)!.restartGame,
             )
           ],
         ),

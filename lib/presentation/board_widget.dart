@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/presentation/free_drawing.dart';
 import 'package:mosaic/utils/config.dart';
@@ -9,26 +10,53 @@ class BoardWidget extends StatelessWidget {
 
   void _showBlocDialog(BuildContext context, ShowDialogState state) async {
     final theme = Theme.of(context);
+    final loc = AppLocalizations.of(context)!;
     Widget? content;
-    if (state.description != null) {
-      content = Text(state.description!);
+    String title = "";
+    String? description;
+    String confirmation = loc.confirmDialog;
+    String dismiss = loc.denyDialog;
+
+    if (state is ShowWinDialogState) {
+      title = loc.youWin;
+      confirmation = loc.newGame;
+      dismiss = loc.dismiss;
+
+      final elapsed = state.elapsedTime.split(":");
+      var str = loc.elapsedSeconds(elapsed[2]);
+      if (elapsed[1] != "00" || elapsed[0] != "00") {
+        str = loc.elapsedMinutes(elapsed[1], str);
+      }
+      if (elapsed[0] != "00") {
+        str = loc.elapsedHours(elapsed[0], str);
+      }
+      description = loc.winDescription(str, state.height, state.width);
+    } else if (state is ShowRestartDialogState) {
+      title = loc.restartConfirmation;
+      description = loc.restartConfirmationDescription;
+      content = Text(loc.restartConfirmationDescription);
     }
+
+    if (description != null) {
+      content = Text(description);
+    }
+
     final pop = await showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-              title: Text(state.title),
+              title: Text(title),
               content: content,
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(primary: theme.errorColor),
-                    child: Text(state.dismiss)),
+                    child: Text(dismiss)),
                 ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context, state.pop);
                       context.read<GameBloc>().add(state.confirmationEvent);
                     },
-                    child: Text(state.confirmation)),
+                    child: Text(confirmation)),
               ],
             ));
     if (pop ?? false) {
@@ -51,9 +79,9 @@ class BoardWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CircularProgressIndicator(value: state.progress),
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text("Generating a new board..."),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(AppLocalizations.of(context)!.generatingBoard),
                 ),
               ],
             ),
