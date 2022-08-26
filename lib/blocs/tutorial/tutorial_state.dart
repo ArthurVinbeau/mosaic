@@ -4,12 +4,13 @@ part of 'tutorial_bloc.dart';
 abstract class TutorialState {
   final int currentStep;
   final int totalSteps;
+  final bool canContinue;
 
-  const TutorialState(this.currentStep, this.totalSteps);
+  const TutorialState(this.currentStep, this.totalSteps, this.canContinue);
 }
 
 class TutorialInitial extends TutorialState {
-  const TutorialInitial(int totalSteps) : super(0, totalSteps);
+  const TutorialInitial(int totalSteps) : super(0, totalSteps, false);
 }
 
 class TutorialBoardState extends TutorialState {
@@ -23,6 +24,6 @@ class TutorialBoardState extends TutorialState {
   final bool isBucket;
 
   const TutorialBoardState(this.board, int currentStep, int totalSteps, this.overlay, this.overlayExceptions, this.text,
-      this.showPaintBucket, this.allowTap, this.allowLongTap, this.isBucket)
-      : super(currentStep, totalSteps);
+      this.showPaintBucket, this.allowTap, this.allowLongTap, this.isBucket, bool canContinue)
+      : super(currentStep, totalSteps, canContinue);
 }

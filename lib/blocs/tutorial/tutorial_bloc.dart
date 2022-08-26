@@ -47,10 +47,12 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       ],
     ];
     _steps.add(_Step(
-        text:
-            "Fill the board by following the clues to win the game.\nEach clue represents the amount of &f;black tiles in a 3x3 square around it, including the clue's own tile.",
-        board: board,
-        overlay: false));
+      text:
+          "Fill the board by following the clues to win the game.\nEach clue represents the amount of &f;black tiles in a 3x3 square around it, including the clue's own tile.",
+      board: board,
+      overlay: false,
+      boardCheck: false,
+    ));
 
     // Step 1
     _steps.add(_Step(
@@ -148,6 +150,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       overlay: false,
       allowTap: true,
       allowLongTap: true,
+      boardCheck: false,
     ));
 
     _currentStep = 0;
@@ -162,7 +165,8 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
         _steps.first.showPaintBucket,
         _steps.first.allowTap,
         _steps.first.allowLongTap,
-        _steps.first.isBucket));
+        _steps.first.isBucket,
+        !_steps.first.boardCheck));
   }
 
   void _onNext(NextTutorialStepEvent event, Emitter emit) {
@@ -170,7 +174,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       _currentStep++;
       final step = _steps[_currentStep];
       emit(TutorialBoardState(step.board, _currentStep, _totalSteps, step.overlay, step.overlayExceptions, step.text,
-          step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket));
+          step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket, !step.boardCheck));
     }
   }
 
@@ -179,7 +183,7 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
       _currentStep--;
       final step = _steps[_currentStep];
       emit(TutorialBoardState(step.board, _currentStep, _totalSteps, step.overlay, step.overlayExceptions, step.text,
-          step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket));
+          step.showPaintBucket, step.allowTap, step.allowLongTap, step.isBucket, !step.boardCheck));
     }
   }
 
@@ -212,8 +216,17 @@ class TutorialBloc extends Bloc<TutorialEvent, TutorialState> {
           }
           Board.iterateOnSquare(board.cells, event.i, event.j, (e, i, j) => GameBloc.checkCellError(board, i, j));
         }
+        bool canContinue = true;
+
+        if (_steps[_currentStep].boardCheck && state.overlay && state.overlayExceptions.isNotEmpty) {
+          for (var except in state.overlayExceptions) {
+            final cell = board.cells[except.dy.floor()][except.dx.floor()];
+            canContinue &= cell.state == cell.value;
+          }
+        }
+
         emit(TutorialBoardState(board, _currentStep, _totalSteps, state.overlay, state.overlayExceptions, state.text,
-            state.showPaintBucket, state.allowTap, state.allowLongTap, state.isBucket));
+            state.showPaintBucket, state.allowTap, state.allowLongTap, state.isBucket, canContinue));
       }
     }
   }
@@ -229,6 +242,7 @@ class _Step {
   final bool allowTap;
   final bool allowLongTap;
   final bool isBucket;
+  final bool boardCheck;
 
   _Step(
       {required this.text,
@@ -238,5 +252,6 @@ class _Step {
       this.showPaintBucket = false,
       this.allowTap = false,
       this.allowLongTap = false,
-      this.isBucket = false});
+      this.isBucket = false,
+      this.boardCheck = true});
 }
