@@ -39,5 +39,9 @@
   "restartConfirmation": "Redémarrer la partie actuelle ?",
   "restartConfirmationDescription": "Vous perdrez votre progression actuelle",
   "confirmDialog": "oui",
-  "denyDialog": "non"
+  "denyDialog": "non",
+  "settingsTitle": "Paramètres",
+  "themeSettingsButton": "Paramètres des thèmes",
+  "localePicker": "Préférence de langue :",
+  "useSystemLocale": "Utiliser la langue de l'appareil"
 }

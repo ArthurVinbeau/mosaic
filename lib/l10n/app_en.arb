@@ -212,5 +212,21 @@
   "denyDialog": "no",
   "@denyDialog": {
     "description": "Deny dialog action"
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Settings page title"
+  },
+  "themeSettingsButton": "Theme settings",
+  "@themeSettingsButton": {
+    "description": "The button that leads to the theme settings"
+  },
+  "localePicker": "Select your locale preference :",
+  "@localePicker": {
+    "description": "Locale preference picker label"
+  },
+  "useSystemLocale": "Use system locale",
+  "@useSystemLocale": {
+    "description": "use system locale"
   }
 }
