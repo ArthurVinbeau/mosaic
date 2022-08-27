@@ -1,0 +1,1 @@
+Chaque indice indique le nombre de cases noires dans le carré de 3x3 entourant le chiffre (0 à 9), il n'existe qu'une seule solution valide, saurez-vous la retrouver ?
