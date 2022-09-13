@@ -5,8 +5,9 @@ abstract class GameEvent {}
 
 class CreateGameEvent extends GameEvent {
   final int height, width;
+  final int version;
 
-  CreateGameEvent(this.height, this.width);
+  CreateGameEvent(this.height, this.width, [this.version = 0]);
 }
 
 class ShowNewGameOptionsEvent extends GameEvent {}

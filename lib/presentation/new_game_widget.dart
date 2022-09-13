@@ -140,11 +140,38 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           ),
         ),
         ElevatedButton(
-          child: Text(loc.newGame),
+          child: Text("${loc.newGame} V0"),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
               context.read<GameBloc>().add(CreateGameEvent(_height, _width));
+            }
+          },
+        ),
+        ElevatedButton(
+          child: Text("${loc.newGame} V1"),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 1));
+            }
+          },
+        ),
+        ElevatedButton(
+          child: Text("${loc.newGame} V2"),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 2));
+            }
+          },
+        ),
+        ElevatedButton(
+          child: Text("${loc.newGame} V3"),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 3));
             }
           },
         ),
