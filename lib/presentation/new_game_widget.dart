@@ -175,6 +175,15 @@ class _NewGameWidgetState extends State<NewGameWidget> {
             }
           },
         ),
+        ElevatedButton(
+          child: Text("${loc.newGame} V4"),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 4));
+            }
+          },
+        ),
       ],
     );
   }

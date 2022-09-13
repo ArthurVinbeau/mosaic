@@ -153,6 +153,8 @@ class Board {
       cells = _genV3();
     } else if (genVersion == 3) {
       cells = _genV4();
+    } else if (genVersion == 4) {
+      cells = _genV5();
     } else {
       while (!valid) {
         _generateNewBoard();
@@ -686,6 +688,113 @@ class Board {
         logger.d(
             "filled ${filled.length} cells out of $size (${(filled.length / size * 100).toStringAsFixed(2)}%) with ${pending.length} pending and ${processed.length} processed");
         timer.reset();
+      }
+    }
+
+    logger.i("$shown/$size (${(shown / size * 100).toStringAsFixed(0)}%) clues displayed");
+
+    for (var row in list) {
+      for (var cell in row) {
+        cell.state = null;
+      }
+    }
+
+    return list;
+  }
+
+  List<List<Cell>> _genV5() {
+    final List<List<Cell?>> cells = List.generate(height, (i) => List.generate(width, (j) => null));
+    final Set<_NeededItem> pending = {_NeededItem(_rand.nextInt(height), _rand.nextInt(width))};
+    final Set<_NeededItem> filled = {};
+    final Set<_NeededItem> startPositions = {pending.first};
+    final size = height * width;
+    final Stopwatch timer = Stopwatch();
+    timer.start();
+
+    while (pending.isNotEmpty) {
+      var target = pending.elementAt(_rand.nextInt(pending.length));
+      pending.remove(target);
+
+      var filling = _rand.nextBool();
+      var clue = 0;
+
+      final count = iterateOnSquare(cells, target.i, target.j, (Cell? e, int i, int j) {
+        if (e == null) {
+          e = Cell(value: filling, shown: false, clue: -1);
+          cells[i][j] = e;
+          filled.add(_NeededItem(i, j));
+        }
+        clue += e.value ? 1 : 0;
+        if (e.clue == -1) pending.add(_NeededItem(i, j));
+      });
+
+      if (clue == 0 || clue == count) {
+        startPositions.add(target);
+      }
+
+      var cell = cells[target.i][target.j]!;
+
+      cell.clue = clue;
+
+      if (timer.elapsed > const Duration(seconds: 15)) {
+        logger.d("filled ${filled.length} cells out of $size (${(filled.length / size * 100).toStringAsFixed(2)}%)");
+        timer.reset();
+      }
+    }
+
+    final list = cells.map((row) => row.map((cell) => cell!).toList(growable: false)).toList(growable: false);
+
+    // V5
+
+    logger.i("${startPositions.length} start positions");
+
+    pending.clear();
+    filled.clear();
+    final Set<Cell> processed = {};
+    int shown = 0;
+
+    while (filled.length < size) {
+      final startPos = startPositions.elementAt(_rand.nextInt(startPositions.length));
+      startPositions.remove(startPos);
+      pending.add(startPos);
+      while (pending.isNotEmpty && filled.length < size) {
+        var target = pending.elementAt(_rand.nextInt(pending.length));
+        final cell = list[target.i][target.j];
+
+        int black = 0, empty = 0;
+
+        iterateOnSquare(list, target.i, target.j, (Cell cell, i, j) {
+          switch (cell.state) {
+            case true:
+              black++;
+              break;
+            case null:
+              empty++;
+          }
+        });
+
+        processed.add(cell);
+
+        if (empty == 0) {
+          pending.remove(target);
+        } else if (black == cell.clue || empty + black == cell.clue) {
+          cell.shown = true;
+          shown++;
+          iterateOnSquare(list, target.i, target.j, (Cell e, i, j) {
+            e.state ??= black != cell.clue;
+            filled.add(_NeededItem(i, j)); // ptet optimiser avec un if
+            if (!processed.contains(e)) {
+              // ptet uniquement quand elles sont vide au suivant
+              pending.add(_NeededItem(i, j));
+            }
+          });
+          pending.remove(target);
+        }
+        if (timer.elapsed > const Duration(seconds: 5)) {
+          logger.d(
+              "filled ${filled.length} cells out of $size (${(filled.length / size * 100).toStringAsFixed(2)}%) with ${pending.length} pending and ${processed.length} processed");
+          timer.reset();
+        }
       }
     }
 
