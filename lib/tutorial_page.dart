@@ -18,12 +18,16 @@ class TutorialPage extends StatelessWidget {
     List<TextSpan> spans = [];
     final regex = RegExp(r'&([feu]);(\w+)', multiLine: true);
     final matches = regex.allMatches(text);
+    final baseStyle = TextStyle(
+        color: ThemeData.estimateBrightnessForColor(theme.gameBackground) == Brightness.light
+            ? Colors.black
+            : Colors.white);
 
     var previous = 0;
     if (matches.isNotEmpty) {
       for (var match in matches) {
         if (match.start - 1 != previous) {
-          spans.add(TextSpan(text: text.substring(previous, match.start)));
+          spans.add(TextSpan(text: text.substring(previous, match.start), style: baseStyle));
         }
         final modifier = match[1]!;
         TextStyle? style;
@@ -52,10 +56,10 @@ class TutorialPage extends StatelessWidget {
         previous = match.end;
       }
       if (previous < text.length) {
-        spans.add(TextSpan(text: text.substring(previous)));
+        spans.add(TextSpan(style: baseStyle, text: text.substring(previous)));
       }
     } else {
-      spans.add(TextSpan(text: text));
+      spans.add(TextSpan(style: baseStyle, text: text));
     }
 
     return spans;
