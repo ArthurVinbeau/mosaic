@@ -52,7 +52,7 @@ class TutorialPage extends StatelessWidget {
             break;
         }
 
-        spans.add(TextSpan(text: " ${match[2]!} ", style: style));
+        spans.add(TextSpan(text: "\u00A0${match[2]!}\u00A0", style: style));
         previous = match.end;
       }
       if (previous < text.length) {
