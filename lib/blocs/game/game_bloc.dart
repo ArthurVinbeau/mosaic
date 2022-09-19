@@ -12,7 +12,6 @@ import 'package:mosaic/utils/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'game_event.dart';
-
 part 'game_state.dart';
 
 Board _generateBoard(Board board) {
@@ -99,14 +98,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   static void checkCellError(Board board, int i, int j) {
-    var countF = 0, countE = 0, empty = 0;
-    final countC = Board.iterateOnSquare(board.cells, i, j, (Cell e, p1, p2) {
-      countF += (e.state ?? false) ? 1 : 0;
-      countE += (e.state ?? true) ? 0 : 1;
-      empty += e.state == null ? 1 : 0;
-    });
-    board.cells[i][j].error = countF > board.cells[i][j].clue || countC - countE < board.cells[i][j].clue;
-    board.cells[i][j].complete = empty == 0;
+    if (board.cells[i][j].clue >= 0) {
+      var countF = 0, countE = 0, empty = 0;
+      final countC = Board.iterateOnSquare(board.cells, i, j, (Cell e, p1, p2) {
+        countF += (e.state ?? false) ? 1 : 0;
+        countE += (e.state ?? true) ? 0 : 1;
+        empty += e.state == null ? 1 : 0;
+      });
+      board.cells[i][j].error = countF > board.cells[i][j].clue || countC - countE < board.cells[i][j].clue;
+      board.cells[i][j].complete = empty == 0;
+    }
   }
 
   void _cellPressed(Cell cell, bool? newState) {
@@ -139,8 +140,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       });
       if (moves.isNotEmpty) {
         moveManager.add(moves);
-        for (int i = max(0, event.i - 2); i < board!.height && i < event.i + 2; i++) {
-          for (int j = max(0, event.j - 2); j < board!.width && j < event.j + 2; j++) {
+        for (int i = max(0, event.i - 2); i < board!.height && i <= event.i + 2; i++) {
+          for (int j = max(0, event.j - 2); j < board!.width && j <= event.j + 2; j++) {
             checkCellError(board!, i, j);
           }
         }
