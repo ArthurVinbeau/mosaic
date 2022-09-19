@@ -149,6 +149,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           },
         ),
         floatingActionButton: FloatingActionButton(
+          backgroundColor: context.read<ThemeCubit>().state.theme.primaryColor,
           child: const Icon(Icons.help),
           onPressed: () {
             context.read<TutorialBloc>().add(StartTutorialEvent());
