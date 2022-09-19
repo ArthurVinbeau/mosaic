@@ -140,65 +140,11 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           ),
         ),
         ElevatedButton(
-          child: Text("${loc.newGame} V0"),
+          child: Text(loc.newGame),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
               context.read<GameBloc>().add(CreateGameEvent(_height, _width));
-            }
-          },
-        ),
-        ElevatedButton(
-          child: const Text("generator path (V1)"),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 1));
-            }
-          },
-        ),
-        ElevatedButton(
-          child: const Text("generator path, remove 3x3 blocs (V2)"),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 2));
-            }
-          },
-        ),
-        ElevatedButton(
-          child: const Text("new path 3x3, generator start pos (V3)"),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 3));
-            }
-          },
-        ),
-        ElevatedButton(
-          child: const Text("new path 3x3, one start pos at a time (V4)"),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 4));
-            }
-          },
-        ),
-        ElevatedButton(
-          child: const Text("new path 5x5, all start pos at once (V5)"),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 5));
-            }
-          },
-        ),
-        ElevatedButton(
-          child: const Text("generator path, remove 3x3 blocs, remove unnecessary 0s & 9s (V7)"),
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 6));
             }
           },
         ),

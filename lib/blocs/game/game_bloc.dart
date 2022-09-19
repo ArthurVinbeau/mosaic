@@ -67,7 +67,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _timerBloc.add(const TimerReset());
     status = GameStatus.generating;
     emit(GeneratingBoardGameState());
-    board = await compute(_generateBoard, Board(height: event.height, width: event.width, genVersion: event.version));
+    board = await compute(_generateBoard, Board(height: event.height, width: event.width));
     status = GameStatus.running;
     validTiles = 0;
     moveManager = MoveManager();
