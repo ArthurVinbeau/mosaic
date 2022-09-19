@@ -149,7 +149,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           },
         ),
         ElevatedButton(
-          child: Text("${loc.newGame} V1"),
+          child: const Text("generator path (V1)"),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
@@ -158,7 +158,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           },
         ),
         ElevatedButton(
-          child: Text("${loc.newGame} V2"),
+          child: const Text("generator path, remove 3x3 blocs (V2)"),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
@@ -167,7 +167,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           },
         ),
         ElevatedButton(
-          child: Text("${loc.newGame} V3"),
+          child: const Text("new path 3x3, generator start pos (V3)"),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
@@ -176,11 +176,29 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           },
         ),
         ElevatedButton(
-          child: Text("${loc.newGame} V4"),
+          child: const Text("new path 3x3, one start pos at a time (V4)"),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
               context.read<GameBloc>().add(CreateGameEvent(_height, _width, 4));
+            }
+          },
+        ),
+        ElevatedButton(
+          child: const Text("new path 5x5, all start pos at once (V5)"),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 5));
+            }
+          },
+        ),
+        ElevatedButton(
+          child: const Text("generator path, remove 3x3 blocs, remove unnecessary 0s & 9s (V7)"),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              context.read<GameBloc>().add(CreateGameEvent(_height, _width, 6));
             }
           },
         ),
