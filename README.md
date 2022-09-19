@@ -1,4 +1,4 @@
-# mosaic `1.2.0`
+# mosaic `1.5.0+9`
 
 A flutter implementation of Mosaic from [Simon Tatham's Portable Puzzle Collection](https://www.chiark.greenend.org.uk/~sgtatham/puzzles/)
 
