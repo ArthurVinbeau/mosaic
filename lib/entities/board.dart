@@ -102,17 +102,6 @@ class Board {
     }
   }
 
-  void _generateNewBoard() {
-    cells = [];
-    for (int i = 0; i < height; i++) {
-      List<Cell> row = [];
-      for (int j = 0; j < width; j++) {
-        row.add(Cell(value: _rand.nextDouble() <= density));
-      }
-      cells.add(row);
-    }
-  }
-
   static int iterateOnSquare<T>(List<List<T>> list, int i, int j, void Function(T e, int i, int j) callback) {
     int count = 0;
     for (int k = -1; k < 2; k++) {
@@ -130,42 +119,13 @@ class Board {
     return count;
   }
 
-  int _getSquareValue(int i, int j) {
-    var counter = 0;
-    iterateOnSquare(cells, i, j, (Cell cell, targetI, targetJ) => counter += cell.value ? 1 : 0);
-    return counter;
-  }
-
   String newGameDesc() {
-    bool valid = false;
-
     String compressed = "";
     int baseSpace = 'a'.codeUnitAt(0) - 1;
     int maxSpace = 'z'.codeUnitAt(0);
     int spaceCount = baseSpace;
 
-    while (!valid) {
-      _generateNewBoard();
-
-      for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-          _populateCell(i, j);
-        }
-      }
-
-      valid = _startPointCheck();
-
-      if (!valid) {
-        logger.d("Not valid, regenerating.");
-      } else {
-        valid = _solveCheck().result;
-        if (!valid) {
-          logger.d("Couldn't solve, regenerating.");
-        } else {
-          _hideClues();
-        }
-      }
-    }
+    cells = _genV7();
 
     // uncompressed string generation omitted
 
@@ -190,211 +150,11 @@ class Board {
     if (spaceCount > baseSpace) {
       compressed += String.fromCharCode(spaceCount);
     }
-    logger.d("Compressed description: $compressed");
+    logger.d("Compressed description : $compressed");
 
     _gameDesc = compressed;
 
     return compressed;
-  }
-
-  void _populateCell(int i, int j) {
-    int clue = _getSquareValue(i, j);
-    bool xEdge = j == 0 || j + 1 == width;
-    bool yEdge = i == 0 || i + 1 == height;
-
-    final cell = cells[i][j];
-    if (clue == 0) {
-      cell.empty = true;
-      cell.full = false;
-    } else {
-      // setting the default
-      cell.empty = false;
-      cell.full = false;
-      if (clue == 9) {
-        cell.full = true;
-      } else if ((xEdge && yEdge && clue == 4) || ((xEdge || yEdge) && clue == 6)) {
-        cell.full = true;
-      }
-    }
-
-    cell.shown = true;
-    cell.clue = clue;
-  }
-
-  bool _startPointCheck() {
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        if (cells[i][j].full || cells[i][j].empty) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  _SolutionResult _solveCheck() {
-    List<List<_SolutionCell>> sol =
-        List.generate(height, (i) => List.generate(width, (j) => _SolutionCell(), growable: false), growable: false);
-    bool progress = true, error = false;
-    int solved = 0, curr = 0, shown = 0;
-    List<_NeededItem> neededList = [];
-
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        if (cells[i][j].shown) {
-          neededList.add(_NeededItem(i, j));
-          shown++;
-        }
-      }
-    }
-    neededList.shuffle();
-
-    while (solved < shown && progress && !error) {
-      progress = false;
-      for (int k = 0; k < shown; k++) {
-        curr = _solveCell(cells, sol, neededList[k].i, neededList[k].j);
-        if (curr < 0) {
-          error = true;
-          logger.d("error in cell [${neededList[k].i}][${neededList[k].j}]");
-          break;
-        }
-        if (curr > 0) {
-          solved++;
-          progress = true;
-        }
-      }
-    }
-
-    solved = 0;
-    /* verifying all the board is solved */
-    if (progress) {
-      for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
-          if ((sol[i][j].cell & (CellState.marked | CellState.blank)) > 0) {
-            solved++;
-          }
-        }
-      }
-    }
-
-    return _SolutionResult(sol, solved == height * width);
-  }
-
-  int _solveCell(List<List<Cell>>? desc, List<List<_SolutionCell>> sol, int i, int j) {
-    if (sol[i][j].solved) {
-      return 0;
-    }
-
-    Cell curr = Cell(
-      value: desc?[i][j].value ?? cells[i][j].value,
-      shown: desc?[i][j].shown ?? cells[i][j].shown,
-      clue: desc?[i][j].clue ?? cells[i][j].clue,
-      full: desc?[i][j].full ?? cells[i][j].full,
-      empty: desc?[i][j].empty ?? cells[i][j].empty,
-    );
-
-    _MarkCounter counter = _countAround(sol, i, j);
-
-    if (curr.shown) {
-      if (curr.full) {
-        sol[i][j].solved = true;
-        if (counter.marked + counter.blank < counter.total) {
-          sol[i][j].needed = true;
-        }
-        _markAround(sol, i, j, CellState.marked);
-        return 1;
-      }
-      if (curr.empty) {
-        sol[i][j].solved = true;
-        if (counter.marked + counter.blank < counter.total) {
-          sol[i][j].needed = true;
-        }
-        _markAround(sol, i, j, CellState.blank);
-        return 1;
-      }
-      if (!sol[i][j].solved) {
-        if (counter.marked == curr.clue) {
-          sol[i][j].solved = true;
-          if (counter.total != counter.marked + counter.blank) {
-            sol[i][j].needed = true;
-          }
-          _markAround(sol, i, j, CellState.blank);
-        } else if (curr.clue == (counter.total - counter.blank)) {
-          sol[i][j].solved = true;
-          if (counter.total != counter.marked + counter.blank) {
-            sol[i][j].needed = true;
-          }
-          _markAround(sol, i, j, CellState.marked);
-        } else if (counter.total == counter.marked + counter.blank) {
-          return -1;
-        } else {
-          return 0;
-        }
-        return 1;
-      }
-      return 0;
-    } else if (counter.total == counter.marked + counter.blank) {
-      sol[i][j].solved = true;
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  static _MarkCounter _countAround(List<List<_SolutionCell>> sol, int i, int j) {
-    var counter = _MarkCounter();
-    iterateOnSquare(sol, i, j, (_SolutionCell cell, p1, p2) {
-      counter.total++;
-      if (cell.cell & CellState.blank != 0) {
-        counter.blank++;
-      } else if (cell.cell & CellState.marked != 0) {
-        counter.marked++;
-      }
-    });
-    return counter;
-  }
-
-  static void _markAround(List<List<_SolutionCell>> sol, int i, int j, int mark) {
-    int marked = 0;
-    iterateOnSquare(sol, i, j, (_SolutionCell cell, p1, p2) {
-      if (cell.cell == CellState.unmarked) {
-        cell.cell = mark;
-        marked++;
-      }
-    });
-    logger.v("Marked $marked cells with $mark.");
-  }
-
-  void _hideClues() {
-    int needed = 0;
-    List<_NeededItem> neededList = [];
-
-    logger.d("Hiding clues");
-    List<List<_SolutionCell>> sol = _solveCheck().sol;
-
-    for (int i = 0; i < height; i++) {
-      for (int j = 0; j < width; j++) {
-        if (sol[i][j].needed) {
-          neededList.add(_NeededItem(i, j));
-          needed++;
-        } else if (!sol[i][j].needed) {
-          cells[i][j].shown = false;
-        }
-      }
-    }
-
-    neededList.shuffle();
-
-    for (int k = 0; k < needed; k++) {
-      var curr = cells[neededList[k].i][neededList[k].j];
-      curr.shown = false;
-      if (!_solveCheck().result) {
-        logger.v("Hiding cell [${neededList[k].i}][${neededList[k].j}] not possible.");
-        curr.shown = true;
-      }
-    }
-
-    logger.d("needed $needed");
   }
 
   static int _getIntFromBool(bool? value) => {null: 0, true: 1, false: 2}[value]!;
@@ -435,47 +195,186 @@ class Board {
     return compressed;
   }
 
+  /// This algorithm may result in cells having ```{clue=-1, shown=false}```. Replace ```while (filled.length < size)```
+  /// with ```while (pending.isNotEmpty)``` to fill all the clues.
+  List<List<Cell>> _genV7() {
+    final List<List<Cell?>> cells = List.generate(height, (i) => List.generate(width, (j) => null));
+    final Set<_Coordinates> pending = {_Coordinates(_rand.nextInt(height), _rand.nextInt(width))};
+    final Set<_Coordinates> filled = {};
+    final size = height * width;
+    final startPos = pending.first;
+    int shown = 0;
+
+    // board generation
+    while (filled.length < size) {
+      var target = pending.elementAt(_rand.nextInt(pending.length));
+      pending.remove(target);
+
+      var filling = _rand.nextBool();
+      var clue = 0;
+      var added = 0;
+
+      iterateOnSquare(cells, target.i, target.j, (Cell? e, int i, int j) {
+        if (e == null) {
+          e = Cell(value: filling, shown: false, clue: -1);
+          cells[i][j] = e;
+          filled.add(_Coordinates(i, j));
+          added++;
+        }
+        clue += e.value ? 1 : 0;
+        if (e.clue == -1) pending.add(_Coordinates(i, j));
+      });
+
+      var cell = cells[target.i][target.j]!;
+
+      cell.clue = clue;
+      if (added != 0) {
+        cell.shown = true;
+        shown++;
+      }
+    }
+
+    final list = cells.map((row) => row.map((cell) => cell!).toList(growable: false)).toList(growable: false);
+
+    // remove some excess clues
+
+    pending.clear();
+    pending.add(startPos);
+    filled.clear();
+    final Set<Cell> processed = {};
+    final Set<_Coordinates> whole = {};
+
+    while (filled.length < size) {
+      var target = pending.elementAt(_rand.nextInt(pending.length));
+      final cell = list[target.i][target.j];
+
+      if (!cell.shown) continue;
+
+      int black = 0,
+          empty = 0;
+
+      iterateOnSquare(list, target.i, target.j, (Cell cell, i, j) {
+        switch (cell.state) {
+          case true:
+            black++;
+            break;
+          case null:
+            empty++;
+        }
+      });
+
+      processed.add(cell);
+
+      if (cell.clue == 0 || cell.clue == 9) {
+        whole.add(target);
+      }
+
+      if (empty == 0) {
+        pending.remove(target);
+      } else if (black == cell.clue || empty + black == cell.clue) {
+        iterateOnSquare(list, target.i, target.j, (Cell e, i, j) {
+          if (e.state == null) {
+            e.state = black != cell.clue;
+            filled.add(_Coordinates(i, j));
+          }
+
+          if (e.shown && !processed.contains(e)) {
+            pending.add(_Coordinates(i, j));
+          }
+        });
+        pending.remove(target);
+      }
+    }
+
+    // remove unused clues
+    for (var e in pending) {
+      list[e.j][e.j].shown = false;
+    }
+    int removed = pending.length;
+
+    /*
+    * remove excess 9s & 0s (the center one in the following examples)
+    * .9.  ...  9.9
+    * .9.  000  .9.
+    * .9.  ...  9.9
+     */
+    for (var target in whole) {
+      final cell = list[target.i][target.j];
+      if (cell.shown) {
+        int notCorner = 0;
+        if (target.i > 1 && target.i + 1 < height) {
+          notCorner++;
+          final upper = list[target.i - 1][target.j];
+          final lower = list[target.i + 1][target.j];
+          if (upper.shown && upper.clue == cell.clue && lower.shown && lower.clue == cell.clue) {
+            cell.shown = false;
+            removed++;
+            continue;
+          }
+        }
+
+        if (target.j > 1 && target.j + 1 < width) {
+          notCorner++;
+          final left = list[target.i][target.j - 1];
+          final right = list[target.i][target.j + 1];
+          if (left.shown && left.clue == cell.clue && right.shown && right.clue == cell.clue) {
+            cell.shown = false;
+            removed++;
+            continue;
+          }
+        }
+
+        if (notCorner == 2) {
+          final upperLeft = list[target.i - 1][target.j - 1];
+          final upperRight = list[target.i - 1][target.j + 1];
+          final lowerLeft = list[target.i + 1][target.j - 1];
+          final lowerRight = list[target.i + 1][target.j + 1];
+          if (upperLeft.shown &&
+              upperLeft.clue == cell.clue &&
+              upperRight.shown &&
+              upperRight.clue == cell.clue &&
+              lowerLeft.shown &&
+              lowerLeft.clue == cell.clue &&
+              lowerRight.shown &&
+              lowerRight.clue == cell.clue) {
+            cell.shown = false;
+            removed++;
+            continue;
+          }
+        }
+      }
+    }
+
+    shown -= removed;
+
+    logger.d("removed $removed clues\n$shown/$size (${(shown / size * 100).toStringAsFixed(0)}%) clues displayed");
+
+    for (var row in list) {
+      for (var cell in row) {
+        cell.state = null;
+      }
+    }
+
+    return list;
+  }
+
   @override
   String toString() {
-    return "$height;$width;$_gameDesc;${_getCompressedString((cell) => cell.value)};${_getCompressedString((cell) => cell.state)}";
+    return "$height;$width;$_gameDesc;${_getCompressedString((cell) => cell.value)};${_getCompressedString((
+        cell) => cell.state)}";
   }
 }
 
-abstract class CellState {
-  static const int unmarked = 0;
-  static const int marked = 1;
-  static const int blank = 2;
-  static const int solved = 4;
-  static const int error = 8;
-  static const int unmarkedError = error | unmarked;
-  static const int markedError = error | marked;
-  static const int blankError = error | blank;
-  static const int blankSolved = solved | blank;
-  static const int markedSolved = marked | solved;
-  static const int okNum = blank | marked;
-}
-
-class _NeededItem {
+class _Coordinates {
   int i, j;
 
-  _NeededItem(this.i, this.j);
-}
+  _Coordinates(this.i, this.j);
 
-class _SolutionCell {
-  int cell = CellState.unmarked;
-  bool solved = false;
-  bool needed = false;
-}
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is _Coordinates && runtimeType == other.runtimeType && i == other.i && j == other.j;
 
-class _SolutionResult {
-  List<List<_SolutionCell>> sol;
-  bool result;
-
-  _SolutionResult(this.sol, this.result);
-}
-
-class _MarkCounter {
-  int marked = 0;
-  int total = 0;
-  int blank = 0;
+  @override
+  int get hashCode => i.hashCode ^ j.hashCode;
 }
