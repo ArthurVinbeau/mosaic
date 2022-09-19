@@ -1,3 +1,3 @@
-The tutorial is here! You will no longer need to explain the game every time you present it to someone!
+The board generation algorithm has been improved and is incredibly faster!
 
-Added French translation & language selection
+This update contains various visual improvements and bug fixes.

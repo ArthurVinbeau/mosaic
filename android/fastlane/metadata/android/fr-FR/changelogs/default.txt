@@ -1,3 +1,3 @@
-Le tutoriel est là ! Vous n'aurez plus besoin d'expliquer le jeu à chaque fois que vous le présentez à quelqu'un !
+La génération de plateau a été améliorée et est incroyablement plus rapide !
 
-Ajout de la traduction française et de la sélection de langue
+Cette mise à jour contient diverses améliorations visuelles et corrections de bugs
