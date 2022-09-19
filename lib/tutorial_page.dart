@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -126,39 +127,59 @@ class TutorialPage extends StatelessWidget {
           elevation: 8.0,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              clipBehavior: Clip.none,
               children: [
-                ElevatedButton.icon(
-                    onPressed: state.currentStep != 0
-                        ? () {
-                            context.read<TutorialBloc>().add(PreviousTutorialStepEvent());
-                          }
-                        : null,
-                    icon: const Icon(Icons.chevron_left),
-                    label: Text(_padString(loc.previous, maxSize))),
                 if (state is TutorialBoardState && state.showPaintBucket)
-                  Ink(
-                    decoration: ShapeDecoration(shape: const CircleBorder(), color: theme.cellFilled),
-                    child: IconButton(onPressed: null, icon: Icon(Icons.format_color_fill, color: theme.cellEmpty)),
+                  Positioned(
+                    bottom: 0,
+                    child: AnimateWidget(
+                      duration: const Duration(milliseconds: 750),
+                      cycles: 0,
+                      triggerOnInit: true,
+                      builder: (BuildContext context, Animate animate) {
+                        return Ink(
+                          decoration: ShapeDecoration(shape: const CircleBorder(), color: theme.cellFilled),
+                          child: IconButton(
+                            onPressed: null,
+                            iconSize: 24 * (animate.fromTween((currentValue) => 0.9.tweenTo(1.2)))!,
+                            icon: Icon(Icons.format_color_fill, color: theme.cellEmpty),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: ElevatedButton.icon(
-                      onPressed: state.canContinue
-                          ? () {
-                              logger.i("${state.currentStep}, ${state.totalSteps}");
-                              if (state.currentStep + 1 < state.totalSteps) {
-                                context.read<TutorialBloc>().add(NextTutorialStepEvent());
-                              } else {
-                                Navigator.pop(context);
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton.icon(
+                        onPressed: state.currentStep != 0
+                            ? () {
+                                context.read<TutorialBloc>().add(PreviousTutorialStepEvent());
                               }
-                            }
-                          : null,
-                      icon: const Icon(Icons.chevron_left),
-                      label: state.currentStep + 1 < state.totalSteps
-                          ? Text(_padString(loc.next, maxSize))
-                          : Text(_padString(loc.finish, maxSize))),
+                            : null,
+                        icon: const Icon(Icons.chevron_left),
+                        label: Text(_padString(loc.previous, maxSize))),
+                    Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ElevatedButton.icon(
+                          onPressed: state.canContinue
+                              ? () {
+                                  logger.i("${state.currentStep}, ${state.totalSteps}");
+                                  if (state.currentStep + 1 < state.totalSteps) {
+                                    context.read<TutorialBloc>().add(NextTutorialStepEvent());
+                                  } else {
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              : null,
+                          icon: const Icon(Icons.chevron_left),
+                          label: state.currentStep + 1 < state.totalSteps
+                              ? Text(_padString(loc.next, maxSize))
+                              : Text(_padString(loc.finish, maxSize))),
+                    ),
+                  ],
                 ),
               ],
             ),
