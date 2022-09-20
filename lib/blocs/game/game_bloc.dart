@@ -12,6 +12,7 @@ import 'package:mosaic/utils/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'game_event.dart';
+
 part 'game_state.dart';
 
 Board _generateBoard(Board board) {
@@ -59,14 +60,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (status == GameStatus.running || status == GameStatus.win) {
       emit(NewBoardGameState(board!, controls));
     } else if (status == GameStatus.generating) {
-      emit(GeneratingBoardGameState());
+      emit(GeneratingBoardGameState(height: board?.height, width: board?.width));
     }
   }
 
   void _newGame(CreateGameEvent event, Emitter emit) async {
     _timerBloc.add(const TimerReset());
     status = GameStatus.generating;
-    emit(GeneratingBoardGameState());
+    emit(GeneratingBoardGameState(height: event.height, width: event.width));
     board = await compute(_generateBoard, Board(height: event.height, width: event.width));
     status = GameStatus.running;
     validTiles = 0;
@@ -155,6 +156,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         checkCellError(board!, p1, p2);
       });
     }
+
+    logger.i(validTiles);
 
     emit(BoardGameState(board!));
     if (validTiles == board!.height * board!.width) {
