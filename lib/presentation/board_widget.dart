@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/presentation/free_drawing.dart';
+import 'package:mosaic/presentation/loading_board_indicator.dart';
 import 'package:mosaic/utils/config.dart';
 
 class BoardWidget extends StatelessWidget {
@@ -74,18 +75,7 @@ class BoardWidget extends StatelessWidget {
       buildWhen: (_, b) => b is BoardGameState || b is GeneratingBoardGameState,
       builder: (BuildContext context, state) {
         if (state is GeneratingBoardGameState) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(value: state.progress),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(AppLocalizations.of(context)!.generatingBoard),
-                ),
-              ],
-            ),
-          );
+          return LoadingBoardIndicator();
         } else if (state is BoardGameState) {
           return SizedBox.expand(
             child: FreeDrawing(
