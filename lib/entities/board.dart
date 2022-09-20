@@ -237,121 +237,121 @@ class Board {
     final list = cells.map((row) => row.map((cell) => cell!).toList(growable: false)).toList(growable: false);
 
     // remove some excess clues
+    if (height * width > 25) {
+      pending.clear();
+      pending.add(startPos);
+      filled.clear();
+      final Set<Cell> processed = {};
+      final Set<_Coordinates> whole = {};
 
-    pending.clear();
-    pending.add(startPos);
-    filled.clear();
-    final Set<Cell> processed = {};
-    final Set<_Coordinates> whole = {};
+      while (filled.length < size) {
+        var target = pending.elementAt(_rand.nextInt(pending.length));
+        final cell = list[target.i][target.j];
 
-    while (filled.length < size) {
-      var target = pending.elementAt(_rand.nextInt(pending.length));
-      final cell = list[target.i][target.j];
+        if (!cell.shown) continue;
 
-      if (!cell.shown) continue;
+        int black = 0, empty = 0;
 
-      int black = 0,
-          empty = 0;
-
-      iterateOnSquare(list, target.i, target.j, (Cell cell, i, j) {
-        switch (cell.state) {
-          case true:
-            black++;
-            break;
-          case null:
-            empty++;
-        }
-      });
-
-      processed.add(cell);
-
-      if (cell.clue == 0 || cell.clue == 9) {
-        whole.add(target);
-      }
-
-      if (empty == 0) {
-        pending.remove(target);
-      } else if (black == cell.clue || empty + black == cell.clue) {
-        iterateOnSquare(list, target.i, target.j, (Cell e, i, j) {
-          if (e.state == null) {
-            e.state = black != cell.clue;
-            filled.add(_Coordinates(i, j));
-          }
-
-          if (e.shown && !processed.contains(e)) {
-            pending.add(_Coordinates(i, j));
+        iterateOnSquare(list, target.i, target.j, (Cell cell, i, j) {
+          switch (cell.state) {
+            case true:
+              black++;
+              break;
+            case null:
+              empty++;
           }
         });
-        pending.remove(target);
+
+        processed.add(cell);
+
+        if (cell.clue == 0 || cell.clue == 9) {
+          whole.add(target);
+        }
+
+        if (empty == 0) {
+          pending.remove(target);
+        } else if (black == cell.clue || empty + black == cell.clue) {
+          iterateOnSquare(list, target.i, target.j, (Cell e, i, j) {
+            if (e.state == null) {
+              e.state = black != cell.clue;
+              filled.add(_Coordinates(i, j));
+            }
+
+            if (e.shown && !processed.contains(e)) {
+              pending.add(_Coordinates(i, j));
+            }
+          });
+          pending.remove(target);
+        }
       }
-    }
 
-    // remove unused clues
-    for (var e in pending) {
-      list[e.j][e.j].shown = false;
-    }
-    int removed = pending.length;
+      // remove unused clues
+      for (var e in pending) {
+        list[e.j][e.j].shown = false;
+      }
+      int removed = pending.length;
 
-    /*
+      /*
     * remove excess 9s & 0s (the center one in the following examples)
     * .9.  ...  9.9
     * .9.  000  .9.
     * .9.  ...  9.9
      */
-    for (var target in whole) {
-      final cell = list[target.i][target.j];
-      if (cell.shown) {
-        int notCorner = 0;
-        if (target.i > 1 && target.i + 1 < height) {
-          notCorner++;
-          final upper = list[target.i - 1][target.j];
-          final lower = list[target.i + 1][target.j];
-          if (upper.shown && upper.clue == cell.clue && lower.shown && lower.clue == cell.clue) {
-            cell.shown = false;
-            removed++;
-            continue;
+      for (var target in whole) {
+        final cell = list[target.i][target.j];
+        if (cell.shown) {
+          int notCorner = 0;
+          if (target.i > 1 && target.i + 1 < height) {
+            notCorner++;
+            final upper = list[target.i - 1][target.j];
+            final lower = list[target.i + 1][target.j];
+            if (upper.shown && upper.clue == cell.clue && lower.shown && lower.clue == cell.clue) {
+              cell.shown = false;
+              removed++;
+              continue;
+            }
           }
-        }
 
-        if (target.j > 1 && target.j + 1 < width) {
-          notCorner++;
-          final left = list[target.i][target.j - 1];
-          final right = list[target.i][target.j + 1];
-          if (left.shown && left.clue == cell.clue && right.shown && right.clue == cell.clue) {
-            cell.shown = false;
-            removed++;
-            continue;
+          if (target.j > 1 && target.j + 1 < width) {
+            notCorner++;
+            final left = list[target.i][target.j - 1];
+            final right = list[target.i][target.j + 1];
+            if (left.shown && left.clue == cell.clue && right.shown && right.clue == cell.clue) {
+              cell.shown = false;
+              removed++;
+              continue;
+            }
           }
-        }
 
-        if (notCorner == 2) {
-          final upperLeft = list[target.i - 1][target.j - 1];
-          final upperRight = list[target.i - 1][target.j + 1];
-          final lowerLeft = list[target.i + 1][target.j - 1];
-          final lowerRight = list[target.i + 1][target.j + 1];
-          if (upperLeft.shown &&
-              upperLeft.clue == cell.clue &&
-              upperRight.shown &&
-              upperRight.clue == cell.clue &&
-              lowerLeft.shown &&
-              lowerLeft.clue == cell.clue &&
-              lowerRight.shown &&
-              lowerRight.clue == cell.clue) {
-            cell.shown = false;
-            removed++;
-            continue;
+          if (notCorner == 2) {
+            final upperLeft = list[target.i - 1][target.j - 1];
+            final upperRight = list[target.i - 1][target.j + 1];
+            final lowerLeft = list[target.i + 1][target.j - 1];
+            final lowerRight = list[target.i + 1][target.j + 1];
+            if (upperLeft.shown &&
+                upperLeft.clue == cell.clue &&
+                upperRight.shown &&
+                upperRight.clue == cell.clue &&
+                lowerLeft.shown &&
+                lowerLeft.clue == cell.clue &&
+                lowerRight.shown &&
+                lowerRight.clue == cell.clue) {
+              cell.shown = false;
+              removed++;
+              continue;
+            }
           }
         }
       }
-    }
 
-    shown -= removed;
+      shown -= removed;
 
-    logger.d("removed $removed clues\n$shown/$size (${(shown / size * 100).toStringAsFixed(0)}%) clues displayed");
+      logger.d("removed $removed clues\n$shown/$size (${(shown / size * 100).toStringAsFixed(0)}%) clues displayed");
 
-    for (var row in list) {
-      for (var cell in row) {
-        cell.state = null;
+      for (var row in list) {
+        for (var cell in row) {
+          cell.state = null;
+        }
       }
     }
 
@@ -360,8 +360,7 @@ class Board {
 
   @override
   String toString() {
-    return "$height;$width;$_gameDesc;${_getCompressedString((cell) => cell.value)};${_getCompressedString((
-        cell) => cell.state)}";
+    return "$height;$width;$_gameDesc;${_getCompressedString((cell) => cell.value)};${_getCompressedString((cell) => cell.state)}";
   }
 }
 
@@ -373,7 +372,7 @@ class _Coordinates {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is _Coordinates && runtimeType == other.runtimeType && i == other.i && j == other.j;
+      other is _Coordinates && runtimeType == other.runtimeType && i == other.i && j == other.j;
 
   @override
   int get hashCode => i.hashCode ^ j.hashCode;
