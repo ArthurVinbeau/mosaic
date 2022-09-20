@@ -6,7 +6,10 @@ import 'package:mosaic/entities/loading_painter.dart';
 import '../blocs/theme/theme_cubit.dart';
 
 class LoadingBoardIndicator extends StatefulWidget {
-  const LoadingBoardIndicator({Key? key}) : super(key: key);
+  final int height;
+  final int width;
+
+  const LoadingBoardIndicator({Key? key, required this.height, required this.width}) : super(key: key);
 
   @override
   State<LoadingBoardIndicator> createState() => _LoadingBoardIndicatorState();
@@ -30,14 +33,14 @@ class _LoadingBoardIndicatorState extends State<LoadingBoardIndicator> {
           builder: (BuildContext context, AnimatorState animatorState, Widget? _) {
             final progress = animatorState.value;
             return Container(
-              padding: const EdgeInsets.all(64),
+              // padding: const EdgeInsets.all(64),
               width: double.infinity,
               height: double.infinity,
               child: CustomPaint(
                 painter: LoadingPainter(
                     theme: state.theme,
-                    boardSize: 4,
-                    maxTileSize: 50,
+                    height: widget.height,
+                    width: widget.width,
                     paddingRatio: 1.125,
                     progress: progress,
                     cycle: cycle),

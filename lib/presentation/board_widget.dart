@@ -75,7 +75,10 @@ class BoardWidget extends StatelessWidget {
       buildWhen: (_, b) => b is BoardGameState || b is GeneratingBoardGameState,
       builder: (BuildContext context, state) {
         if (state is GeneratingBoardGameState) {
-          return LoadingBoardIndicator();
+          return LoadingBoardIndicator(
+            height: state.height,
+            width: state.width,
+          );
         } else if (state is BoardGameState) {
           return SizedBox.expand(
             child: FreeDrawing(

@@ -7,32 +7,31 @@ import '../utils/themes.dart';
 class LoadingPainter extends CustomPainter {
   final GameTheme theme;
   final double paddingRatio;
-  final double maxTileSize;
-  final int boardSize;
+  final int height;
+  final int width;
   final double progress;
   final int cycle;
 
   LoadingPainter(
       {required this.theme,
       required this.paddingRatio,
-      required this.maxTileSize,
-      required this.boardSize,
+      required this.height,
+      required this.width,
       required this.progress,
       required this.cycle});
 
   @override
   void paint(Canvas canvas, Size size) {
     final screenRatio = size.height / size.width;
+    final boardRatio = height / width;
 
     double tileSize;
 
-    if (screenRatio > 1) {
-      tileSize = size.width / boardSize / paddingRatio;
+    if (screenRatio > boardRatio) {
+      tileSize = size.width * 0.9 / width / paddingRatio;
     } else {
-      tileSize = size.height / boardSize / paddingRatio;
+      tileSize = size.height * 0.9 / height / paddingRatio;
     }
-
-    tileSize = min(tileSize, maxTileSize);
 
     final padding = (tileSize * paddingRatio - tileSize) / 2;
 
@@ -50,10 +49,10 @@ class LoadingPainter extends CustomPainter {
       "progress": progress,
     });*/
 
-    for (int i = 0; i < boardSize; i++) {
-      for (int j = 0; j < boardSize; j++) {
-        final offset = Offset(midW - (boardSize / 2 - j) * tileSize * paddingRatio + padding,
-            midH - (boardSize / 2 - i) * tileSize * paddingRatio + padding);
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        final offset = Offset(midW - (width / 2 - j) * tileSize * paddingRatio + padding,
+            midH - (height / 2 - i) * tileSize * paddingRatio + padding);
         final cellColor = Paint()
           ..style = PaintingStyle.fill
           ..color = theme.cellBase;
@@ -72,7 +71,7 @@ class LoadingPainter extends CustomPainter {
         final overlayColor = Paint()
           ..style = PaintingStyle.fill
           ..color = (cycle % 2 == 0 ? theme.cellFilled : theme.cellEmpty)
-              .withOpacity(max(0, sin(tmp - 1 / 2 * pi * (i + j) / boardSize)));
+              .withOpacity(max(0, sin(tmp - 1 / 2 * pi * (i + j) / max(height, width))));
 
         canvas.drawRect(Rect.fromPoints(offset, Offset(offset.dx + tileSize, offset.dy + tileSize)), overlayColor);
       }
