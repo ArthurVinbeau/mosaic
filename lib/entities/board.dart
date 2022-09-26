@@ -289,81 +289,82 @@ class Board {
         }
       }
 
-    // remove unused clues
-    for (var e in pending) {
-      final cell = list[e.j][e.j];
-      cell.shown = false;
-      debugStreamSink
-          ?.add(BoardGenerationStepHide(i: e.i, j: e.j, clue: cell.clue, value: cell.value, type: HideType.newPath));
-    }
-    int removed = pending.length;
+      // remove unused clues
+      for (var e in pending) {
+        final cell = list[e.j][e.j];
+        cell.shown = false;
+        debugStreamSink
+            ?.add(BoardGenerationStepHide(i: e.i, j: e.j, clue: cell.clue, value: cell.value, type: HideType.newPath));
+      }
+      int removed = pending.length;
 
-    /*
+      /*
     * remove excess 9s & 0s (the center one in the following examples)
     * .9.  ...  9.9
     * .9.  000  .9.
     * .9.  ...  9.9
      */
-    for (var target in whole) {
-      final cell = list[target.i][target.j];
-      if (cell.shown) {
-        int notCorner = 0;
-        if (target.i > 1 && target.i + 1 < height) {
-          notCorner++;
-          final upper = list[target.i - 1][target.j];
-          final lower = list[target.i + 1][target.j];
-          if (upper.shown && upper.clue == cell.clue && lower.shown && lower.clue == cell.clue) {
-            cell.shown = false;
-            removed++;
-            debugStreamSink?.add(BoardGenerationStepHide(
-                i: target.i, j: target.j, clue: cell.clue, value: cell.value, type: HideType.fullSquare));
-            continue;
+      for (var target in whole) {
+        final cell = list[target.i][target.j];
+        if (cell.shown) {
+          int notCorner = 0;
+          if (target.i > 1 && target.i + 1 < height) {
+            notCorner++;
+            final upper = list[target.i - 1][target.j];
+            final lower = list[target.i + 1][target.j];
+            if (upper.shown && upper.clue == cell.clue && lower.shown && lower.clue == cell.clue) {
+              cell.shown = false;
+              removed++;
+              debugStreamSink?.add(BoardGenerationStepHide(
+                  i: target.i, j: target.j, clue: cell.clue, value: cell.value, type: HideType.fullSquare));
+              continue;
+            }
           }
-        }
 
-        if (target.j > 1 && target.j + 1 < width) {
-          notCorner++;
-          final left = list[target.i][target.j - 1];
-          final right = list[target.i][target.j + 1];
-          if (left.shown && left.clue == cell.clue && right.shown && right.clue == cell.clue) {
-            cell.shown = false;
-            removed++;
-            debugStreamSink?.add(BoardGenerationStepHide(
-                i: target.i, j: target.j, clue: cell.clue, value: cell.value, type: HideType.fullSquare));
-            continue;
+          if (target.j > 1 && target.j + 1 < width) {
+            notCorner++;
+            final left = list[target.i][target.j - 1];
+            final right = list[target.i][target.j + 1];
+            if (left.shown && left.clue == cell.clue && right.shown && right.clue == cell.clue) {
+              cell.shown = false;
+              removed++;
+              debugStreamSink?.add(BoardGenerationStepHide(
+                  i: target.i, j: target.j, clue: cell.clue, value: cell.value, type: HideType.fullSquare));
+              continue;
+            }
           }
-        }
 
-        if (notCorner == 2) {
-          final upperLeft = list[target.i - 1][target.j - 1];
-          final upperRight = list[target.i - 1][target.j + 1];
-          final lowerLeft = list[target.i + 1][target.j - 1];
-          final lowerRight = list[target.i + 1][target.j + 1];
-          if (upperLeft.shown &&
-              upperLeft.clue == cell.clue &&
-              upperRight.shown &&
-              upperRight.clue == cell.clue &&
-              lowerLeft.shown &&
-              lowerLeft.clue == cell.clue &&
-              lowerRight.shown &&
-              lowerRight.clue == cell.clue) {
-            cell.shown = false;
-            removed++;
-            debugStreamSink?.add(BoardGenerationStepHide(
-                i: target.i, j: target.j, clue: cell.clue, value: cell.value, type: HideType.fullSquare));
-            continue;
+          if (notCorner == 2) {
+            final upperLeft = list[target.i - 1][target.j - 1];
+            final upperRight = list[target.i - 1][target.j + 1];
+            final lowerLeft = list[target.i + 1][target.j - 1];
+            final lowerRight = list[target.i + 1][target.j + 1];
+            if (upperLeft.shown &&
+                upperLeft.clue == cell.clue &&
+                upperRight.shown &&
+                upperRight.clue == cell.clue &&
+                lowerLeft.shown &&
+                lowerLeft.clue == cell.clue &&
+                lowerRight.shown &&
+                lowerRight.clue == cell.clue) {
+              cell.shown = false;
+              removed++;
+              debugStreamSink?.add(BoardGenerationStepHide(
+                  i: target.i, j: target.j, clue: cell.clue, value: cell.value, type: HideType.fullSquare));
+              continue;
+            }
           }
         }
       }
-    }
 
-    shown -= removed;
+      shown -= removed;
 
-    logger.d("removed $removed clues\n$shown/$size (${(shown / size * 100).toStringAsFixed(0)}%) clues displayed");
+      logger.d("removed $removed clues\n$shown/$size (${(shown / size * 100).toStringAsFixed(0)}%) clues displayed");
 
-    for (var row in list) {
-      for (var cell in row) {
-        cell.state = null;
+      for (var row in list) {
+        for (var cell in row) {
+          cell.state = null;
+        }
       }
     }
 
