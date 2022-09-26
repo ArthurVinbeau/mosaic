@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme_picker/theme_picker_bloc.dart';
-import 'package:mosaic/presentation/free_drawing.dart';
+import 'package:mosaic/presentation/elements/free_drawing.dart';
 import 'package:mosaic/utils/themes.dart';
 
-import 'blocs/theme/theme_cubit.dart';
-import 'entities/board.dart';
+import '../../blocs/theme/theme_cubit.dart';
+import '../../entities/board.dart';
 
 class ThemePicker extends StatelessWidget {
   const ThemePicker({Key? key}) : super(key: key);

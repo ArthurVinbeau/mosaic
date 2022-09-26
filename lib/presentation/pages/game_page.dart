@@ -5,10 +5,10 @@ import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/timer/timer_bloc.dart';
 import 'package:mosaic/utils/themes.dart';
 
-import 'blocs/app_state/app_state_bloc.dart';
-import 'blocs/game/game_bloc.dart';
-import 'entities/game_controls.dart';
-import 'presentation/board_widget.dart';
+import '../../blocs/app_state/app_state_bloc.dart';
+import '../../blocs/game/game_bloc.dart';
+import '../../entities/game_controls.dart';
+import '../elements/board_widget.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({Key? key}) : super(key: key);

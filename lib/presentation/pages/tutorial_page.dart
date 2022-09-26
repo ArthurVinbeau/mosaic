@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/tutorial/tutorial_bloc.dart';
-import 'package:mosaic/presentation/free_drawing.dart';
+import 'package:mosaic/presentation/elements/free_drawing.dart';
 import 'package:mosaic/utils/config.dart';
 import 'package:mosaic/utils/themes.dart';
 

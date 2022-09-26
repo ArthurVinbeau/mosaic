@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
-import 'package:mosaic/theme_picker.dart';
+import 'package:mosaic/presentation/pages/theme_picker.dart';
 
-import 'blocs/locale/locale_bloc.dart';
+import '../../blocs/locale/locale_bloc.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);

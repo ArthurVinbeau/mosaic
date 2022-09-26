@@ -4,8 +4,8 @@ import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:vibration/vibration.dart';
 
-import '../entities/free_painter.dart';
-import '../utils/themes.dart';
+import '../../entities/free_painter.dart';
+import '../../utils/themes.dart';
 
 class FreeDrawing extends StatefulWidget {
   final Board board;

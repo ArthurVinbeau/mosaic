@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
-import 'package:mosaic/presentation/free_drawing.dart';
+import 'package:mosaic/presentation/elements/free_drawing.dart';
 import 'package:mosaic/utils/config.dart';
 
 class BoardWidget extends StatelessWidget {
