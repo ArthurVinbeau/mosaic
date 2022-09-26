@@ -241,53 +241,53 @@ class Board {
     final list = cells.map((row) => row.map((cell) => cell!).toList(growable: false)).toList(growable: false);
 
     // remove some excess clues
+    if (height * width > 25) {
+      pending.clear();
+      pending.add(startPos);
+      filled.clear();
+      final Set<Cell> processed = {};
+      final Set<_Coordinates> whole = {};
 
-    pending.clear();
-    pending.add(startPos);
-    filled.clear();
-    final Set<Cell> processed = {};
-    final Set<_Coordinates> whole = {};
+      while (filled.length < size) {
+        var target = pending.elementAt(_rand.nextInt(pending.length));
+        final cell = list[target.i][target.j];
 
-    while (filled.length < size) {
-      var target = pending.elementAt(_rand.nextInt(pending.length));
-      final cell = list[target.i][target.j];
+        if (!cell.shown) continue;
 
-      if (!cell.shown) continue;
+        int black = 0, empty = 0;
 
-      int black = 0, empty = 0;
-
-      iterateOnSquare(list, target.i, target.j, (Cell cell, i, j) {
-        switch (cell.state) {
-          case true:
-            black++;
-            break;
-          case null:
-            empty++;
-        }
-      });
-
-      processed.add(cell);
-
-      if (cell.clue == 0 || cell.clue == 9) {
-        whole.add(target);
-      }
-
-      if (empty == 0) {
-        pending.remove(target);
-      } else if (black == cell.clue || empty + black == cell.clue) {
-        iterateOnSquare(list, target.i, target.j, (Cell e, i, j) {
-          if (e.state == null) {
-            e.state = black != cell.clue;
-            filled.add(_Coordinates(i, j));
-          }
-
-          if (e.shown && !processed.contains(e)) {
-            pending.add(_Coordinates(i, j));
+        iterateOnSquare(list, target.i, target.j, (Cell cell, i, j) {
+          switch (cell.state) {
+            case true:
+              black++;
+              break;
+            case null:
+              empty++;
           }
         });
-        pending.remove(target);
+
+        processed.add(cell);
+
+        if (cell.clue == 0 || cell.clue == 9) {
+          whole.add(target);
+        }
+
+        if (empty == 0) {
+          pending.remove(target);
+        } else if (black == cell.clue || empty + black == cell.clue) {
+          iterateOnSquare(list, target.i, target.j, (Cell e, i, j) {
+            if (e.state == null) {
+              e.state = black != cell.clue;
+              filled.add(_Coordinates(i, j));
+            }
+
+            if (e.shown && !processed.contains(e)) {
+              pending.add(_Coordinates(i, j));
+            }
+          });
+          pending.remove(target);
+        }
       }
-    }
 
     // remove unused clues
     for (var e in pending) {

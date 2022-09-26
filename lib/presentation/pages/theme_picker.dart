@@ -23,6 +23,7 @@ class ThemePicker extends StatelessWidget {
     for (int i = 0; i < board.height; i++) {
       for (int j = 0; j < board.width; j++) {
         final cell = board.cells[i][j];
+        cell.clue = j - 1 + i * 3;
         cell.shown = j != hidden;
         cell.complete = j == complete;
         cell.error = j == error;

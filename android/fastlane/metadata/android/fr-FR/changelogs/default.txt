@@ -1,3 +1,3 @@
-La génération de plateau a été améliorée et est incroyablement plus rapide !
+Nouvelle animation de chargement
 
 Cette mise à jour contient diverses améliorations visuelles et corrections de bugs

@@ -11,9 +11,12 @@ class NotStartedGameState extends GameState {
 }
 
 class GeneratingBoardGameState extends GameState {
-  final double? progress;
+  final int height;
+  final int width;
 
-  GeneratingBoardGameState({this.progress});
+  GeneratingBoardGameState({int? height, int? width})
+      : height = height ?? 5,
+        width = width ?? 5;
 }
 
 class CheckingForSavesState extends GameState {}
