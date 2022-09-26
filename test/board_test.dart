@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:mosaic/entities/board.dart';
@@ -86,6 +87,35 @@ void main() {
             expect(b.clue, a.clue, reason: reason);
             expect(b.error, a.error, reason: reason);
             expect(b.complete, a.complete, reason: reason);
+          }
+        }
+      }
+    });
+  });
+
+  group("board generation", () {
+    test("Board should be complete and empty", () {
+      final sizes = [[3, 3], [8, 8], [25, 25], [100, 100], [50, 10]];
+
+      final debugStreamController = StreamController<BoardGenerationStep>();
+      final List<BoardGenerationStep> steps = [];
+      debugStreamController.stream.listen(steps.add);
+      for (var size in sizes) {
+        final board = Board(height: size[0], width: size[1]);
+        board.newGameDesc(debugStreamSink: debugStreamController.sink);
+
+        expect(board.height, size[0]);
+        expect(board.width, size[1]);
+        expect(board.cells.length, size[0]);
+
+        for (int i = 0; i < size[0]; i++) {
+          expect(board.cells[i].length, size[1]);
+          for (int j = 0; j < size[1]; j++) {
+            final cell = board.cells[i][j];
+
+            expect(cell.state, null);
+            expect(cell.clue, greaterThan(-2));
+            expect(cell.clue, lessThan(10));
           }
         }
       }
