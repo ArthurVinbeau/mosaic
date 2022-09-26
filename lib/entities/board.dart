@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:mosaic/entities/cell.dart';
@@ -119,13 +120,13 @@ class Board {
     return count;
   }
 
-  String newGameDesc() {
+  String newGameDesc({StreamSink<BoardGenerationStep>? debugStreamSink}) {
     String compressed = "";
     int baseSpace = 'a'.codeUnitAt(0) - 1;
     int maxSpace = 'z'.codeUnitAt(0);
     int spaceCount = baseSpace;
 
-    cells = _genV7();
+    cells = _genV7(debugStreamSink);
 
     // uncompressed string generation omitted
 
@@ -197,7 +198,7 @@ class Board {
 
   /// This algorithm may result in cells having ```{clue=-1, shown=false}```. Replace ```while (filled.length < size)```
   /// with ```while (pending.isNotEmpty)``` to fill all the clues.
-  List<List<Cell>> _genV7() {
+  List<List<Cell>> _genV7(StreamSink<BoardGenerationStep>? debugStreamSink) {
     final List<List<Cell?>> cells = List.generate(height, (i) => List.generate(width, (j) => null));
     final Set<_Coordinates> pending = {_Coordinates(_rand.nextInt(height), _rand.nextInt(width))};
     final Set<_Coordinates> filled = {};
@@ -227,6 +228,9 @@ class Board {
 
       var cell = cells[target.i][target.j]!;
 
+      debugStreamSink
+          ?.add(BoardGenerationStepFill(i: target.i, j: target.j, clue: clue, value: cell.value, fill: filling));
+
       cell.clue = clue;
       if (added != 0) {
         cell.shown = true;
@@ -250,8 +254,7 @@ class Board {
 
       if (!cell.shown) continue;
 
-      int black = 0,
-          empty = 0;
+      int black = 0, empty = 0;
 
       iterateOnSquare(list, target.i, target.j, (Cell cell, i, j) {
         switch (cell.state) {
@@ -288,7 +291,10 @@ class Board {
 
     // remove unused clues
     for (var e in pending) {
-      list[e.j][e.j].shown = false;
+      final cell = list[e.j][e.j];
+      cell.shown = false;
+      debugStreamSink
+          ?.add(BoardGenerationStepHide(i: e.i, j: e.j, clue: cell.clue, value: cell.value, type: HideType.newPath));
     }
     int removed = pending.length;
 
@@ -309,6 +315,8 @@ class Board {
           if (upper.shown && upper.clue == cell.clue && lower.shown && lower.clue == cell.clue) {
             cell.shown = false;
             removed++;
+            debugStreamSink?.add(BoardGenerationStepHide(
+                i: target.i, j: target.j, clue: cell.clue, value: cell.value, type: HideType.fullSquare));
             continue;
           }
         }
@@ -320,6 +328,8 @@ class Board {
           if (left.shown && left.clue == cell.clue && right.shown && right.clue == cell.clue) {
             cell.shown = false;
             removed++;
+            debugStreamSink?.add(BoardGenerationStepHide(
+                i: target.i, j: target.j, clue: cell.clue, value: cell.value, type: HideType.fullSquare));
             continue;
           }
         }
@@ -339,6 +349,8 @@ class Board {
               lowerRight.clue == cell.clue) {
             cell.shown = false;
             removed++;
+            debugStreamSink?.add(BoardGenerationStepHide(
+                i: target.i, j: target.j, clue: cell.clue, value: cell.value, type: HideType.fullSquare));
             continue;
           }
         }
@@ -360,8 +372,7 @@ class Board {
 
   @override
   String toString() {
-    return "$height;$width;$_gameDesc;${_getCompressedString((cell) => cell.value)};${_getCompressedString((
-        cell) => cell.state)}";
+    return "$height;$width;$_gameDesc;${_getCompressedString((cell) => cell.value)};${_getCompressedString((cell) => cell.state)}";
   }
 }
 
@@ -373,8 +384,84 @@ class _Coordinates {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is _Coordinates && runtimeType == other.runtimeType && i == other.i && j == other.j;
+      other is _Coordinates && runtimeType == other.runtimeType && i == other.i && j == other.j;
 
   @override
   int get hashCode => i.hashCode ^ j.hashCode;
+}
+
+abstract class BoardGenerationStep {
+  final int i;
+  final int j;
+  final int clue;
+  final bool value;
+
+  const BoardGenerationStep(this.i, this.j, this.clue, this.value);
+}
+
+class BoardGenerationStepFill extends BoardGenerationStep {
+  final bool? fill;
+
+  const BoardGenerationStepFill({
+    required int i,
+    required int j,
+    required int clue,
+    required bool value,
+    this.fill,
+  }) : super(i, j, clue, value);
+
+  @override
+  String toString() {
+    return 'BoardGenerationStepFill{i: $i, j: $j, clue: $clue, value: $value, fill: $fill}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BoardGenerationStepFill &&
+          runtimeType == other.runtimeType &&
+          i == other.i &&
+          j == other.j &&
+          fill == other.fill &&
+          value == other.value &&
+          clue == other.clue;
+
+  @override
+  int get hashCode => i.hashCode ^ j.hashCode ^ fill.hashCode ^ clue.hashCode ^ value.hashCode;
+}
+
+enum HideType {
+  newPath,
+  fullSquare,
+}
+
+class BoardGenerationStepHide extends BoardGenerationStep {
+  final HideType type;
+
+  const BoardGenerationStepHide({
+    required int i,
+    required int j,
+    required int clue,
+    required bool value,
+    required this.type,
+  }) : super(i, j, clue, value);
+
+  @override
+  String toString() {
+    return 'BoardGenerationStepHide{i: $i, j: $j, clue: $clue, value: $value, type: $type}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BoardGenerationStepHide &&
+          runtimeType == other.runtimeType &&
+          i == other.i &&
+          j == other.j &&
+          type == other.type &&
+          value == other.value &&
+          clue == other.clue;
+
+  @override
+  int get hashCode => i.hashCode ^ j.hashCode ^ type.hashCode ^ clue.hashCode ^ value.hashCode;
 }
