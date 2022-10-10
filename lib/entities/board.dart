@@ -103,7 +103,7 @@ class Board {
     }
   }
 
-  static int iterateOnSquare<T>(List<List<T>> list, int i, int j, void Function(T e, int i, int j) callback) {
+  static int iterateOnSquare<T>(List<List<T>> list, int i, int j, void Function(T e, int i, int j)? callback) {
     int count = 0;
     for (int k = -1; k < 2; k++) {
       final targetI = i + k;
@@ -111,7 +111,7 @@ class Board {
         for (int n = -1; n < 2; n++) {
           final targetJ = j + n;
           if (targetJ >= 0 && targetJ < list[targetI].length) {
-            callback(list[targetI][targetJ], targetI, targetJ);
+            callback?.call(list[targetI][targetJ], targetI, targetJ);
             count++;
           }
         }
@@ -200,8 +200,8 @@ class Board {
   /// with ```while (pending.isNotEmpty)``` to fill all the clues.
   List<List<Cell>> _genV7(StreamSink<BoardGenerationStep>? debugStreamSink) {
     final List<List<Cell?>> cells = List.generate(height, (i) => List.generate(width, (j) => null));
-    final Set<_Coordinates> pending = {_Coordinates(_rand.nextInt(height), _rand.nextInt(width))};
-    final Set<_Coordinates> filled = {};
+    final Set<Coordinates> pending = {Coordinates(_rand.nextInt(height), _rand.nextInt(width))};
+    final Set<Coordinates> filled = {};
     final size = height * width;
     final startPos = pending.first;
     int shown = 0;
@@ -219,11 +219,11 @@ class Board {
         if (e == null) {
           e = Cell(value: filling, shown: false, clue: -1);
           cells[i][j] = e;
-          filled.add(_Coordinates(i, j));
+          filled.add(Coordinates(i, j));
           added++;
         }
         clue += e.value ? 1 : 0;
-        if (e.clue == -1) pending.add(_Coordinates(i, j));
+        if (e.clue == -1 && (target.i != i || target.j != j)) pending.add(Coordinates(i, j));
       });
 
       var cell = cells[target.i][target.j]!;
@@ -246,7 +246,7 @@ class Board {
       pending.add(startPos);
       filled.clear();
       final Set<Cell> processed = {};
-      final Set<_Coordinates> whole = {};
+      final Set<Coordinates> whole = {};
 
       while (filled.length < size) {
         var target = pending.elementAt(_rand.nextInt(pending.length));
@@ -278,11 +278,11 @@ class Board {
           iterateOnSquare(list, target.i, target.j, (Cell e, i, j) {
             if (e.state == null) {
               e.state = black != cell.clue;
-              filled.add(_Coordinates(i, j));
+              filled.add(Coordinates(i, j));
             }
 
             if (e.shown && !processed.contains(e)) {
-              pending.add(_Coordinates(i, j));
+              pending.add(Coordinates(i, j));
             }
           });
           pending.remove(target);
@@ -377,15 +377,15 @@ class Board {
   }
 }
 
-class _Coordinates {
+class Coordinates {
   int i, j;
 
-  _Coordinates(this.i, this.j);
+  Coordinates(this.i, this.j);
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is _Coordinates && runtimeType == other.runtimeType && i == other.i && j == other.j;
+      other is Coordinates && runtimeType == other.runtimeType && i == other.i && j == other.j;
 
   @override
   int get hashCode => i.hashCode ^ j.hashCode;
