@@ -45,7 +45,6 @@ class ThemePicker extends StatelessWidget {
     return InkWell(
       onTap: () => context.read<ThemePickerBloc>().add(PickThemeEvent(collection)),
       child: Container(
-        height: size,
         width: size * 2,
         alignment: Alignment.center,
         padding: const EdgeInsets.all(8.0),
@@ -54,56 +53,62 @@ class ThemePicker extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              collection.name,
-              style: theme.textTheme.headline6,
+            Flexible(
+              flex: 1,
+              child: Text(
+                collection.name,
+                style: theme.textTheme.titleLarge,
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(loc.lightTheme),
-                Text(loc.darkTheme),
-              ],
-            ),
-            LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-              final size = constraints.maxWidth / 2;
-              return Row(
+            Flexible(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Container(
-                    width: size,
-                    height: size / 4 * 3.125,
-                    padding: const EdgeInsets.all(8.0),
-                    color: collection.light.gameBackground,
-                    child: FreeDrawing(
-                      board: _board,
-                      minScale: 1,
-                      maxScale: 1,
-                      theme: collection.light,
-                      onTap: (i, j, long) {
-                        context.read<ThemePickerBloc>().add(PickThemeEvent(collection));
-                        return false;
-                      },
+                  Text(loc.lightTheme),
+                  Text(loc.darkTheme),
+                ],
+              ),
+            ),
+            Flexible(
+              flex: 4,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      color: collection.light.gameBackground,
+                      child: FreeDrawing(
+                        board: _board,
+                        minScale: 1,
+                        maxScale: 1,
+                        theme: collection.light,
+                        onTap: (i, j, long) {
+                          context.read<ThemePickerBloc>().add(PickThemeEvent(collection));
+                          return false;
+                        },
+                      ),
                     ),
                   ),
-                  Container(
-                    width: size,
-                    height: size / 4 * 3.125,
-                    padding: const EdgeInsets.all(8.0),
-                    color: collection.dark.gameBackground,
-                    child: FreeDrawing(
-                      board: _board,
-                      minScale: 1,
-                      maxScale: 1,
-                      theme: collection.dark,
-                      onTap: (i, j, long) {
-                        context.read<ThemePickerBloc>().add(PickThemeEvent(collection));
-                        return false;
-                      },
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      color: collection.dark.gameBackground,
+                      child: FreeDrawing(
+                        board: _board,
+                        minScale: 1,
+                        maxScale: 1,
+                        theme: collection.dark,
+                        onTap: (i, j, long) {
+                          context.read<ThemePickerBloc>().add(PickThemeEvent(collection));
+                          return false;
+                        },
+                      ),
                     ),
                   ),
                 ],
-              );
-            }),
+              ),
+            ),
           ],
         ),
       ),
