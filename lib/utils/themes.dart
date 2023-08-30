@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class ThemeCollection {
+class ThemeCollection implements Equatable {
   final GameTheme light;
   final GameTheme dark;
   final String name;
@@ -10,6 +11,17 @@ class ThemeCollection {
   const ThemeCollection.unique({required GameTheme theme, required this.name})
       : light = theme,
         dark = theme;
+
+  @override
+  List<Object?> get props => [light, dark, name];
+
+  @override
+  bool? get stringify => false;
+
+  @override
+  String toString() {
+    return 'ThemeCollection `$name`: {\n\tlight: $light,\n\rdark: $dark,\n}';
+  }
 }
 
 final List<ThemeCollection> themeCollections = [baseTheme, redTheme, blueTheme];
@@ -113,7 +125,7 @@ final ThemeCollection blueTheme = ThemeCollection(
         controlsMoveEnabled: Colors.white,
         controlsMoveDisabled: const Color.fromARGB(255, 75, 75, 75)));
 
-class GameTheme {
+class GameTheme implements Equatable {
   final MaterialColor primaryColor;
   final Brightness brightness;
   final Color menuBackground;
@@ -145,4 +157,25 @@ class GameTheme {
     required this.controlsMoveEnabled,
     required this.controlsMoveDisabled,
   });
+
+  @override
+  List<Object?> get props => [
+        primaryColor,
+        brightness,
+        menuBackground,
+        gameBackground,
+        cellBase,
+        cellEmpty,
+        cellFilled,
+        cellTextBase,
+        cellTextEmpty,
+        cellTextFilled,
+        cellTextError,
+        cellTextComplete,
+        controlsMoveEnabled,
+        controlsMoveDisabled,
+      ];
+
+  @override
+  bool? get stringify => true;
 }
