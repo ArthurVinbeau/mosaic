@@ -40,6 +40,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.appTitle),
+          backgroundColor: state.theme.menuBackground,
           centerTitle: true,
           actions: [
             IconButton(

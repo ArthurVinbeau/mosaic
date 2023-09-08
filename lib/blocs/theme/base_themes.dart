@@ -1,28 +1,7 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class ThemeCollection implements Equatable {
-  final GameTheme light;
-  final GameTheme dark;
-  final String name;
-
-  const ThemeCollection({required this.light, required this.dark, required this.name});
-
-  const ThemeCollection.unique({required GameTheme theme, required this.name})
-      : light = theme,
-        dark = theme;
-
-  @override
-  List<Object?> get props => [light, dark, name];
-
-  @override
-  bool? get stringify => false;
-
-  @override
-  String toString() {
-    return 'ThemeCollection `$name`: {\n\tlight: $light,\n\rdark: $dark,\n}';
-  }
-}
+import '../../entities/game_theme.dart';
+import '../../entities/theme_collection.dart';
 
 final List<ThemeCollection> themeCollections = [baseTheme, redTheme, blueTheme];
 
@@ -124,58 +103,3 @@ final ThemeCollection blueTheme = ThemeCollection(
         cellTextComplete: Colors.blueGrey,
         controlsMoveEnabled: Colors.white,
         controlsMoveDisabled: const Color.fromARGB(255, 75, 75, 75)));
-
-class GameTheme implements Equatable {
-  final MaterialColor primaryColor;
-  final Brightness brightness;
-  final Color menuBackground;
-  final Color gameBackground;
-  final Color cellBase;
-  final Color cellEmpty;
-  final Color cellFilled;
-  final Color cellTextBase;
-  final Color cellTextEmpty;
-  final Color cellTextFilled;
-  final Color cellTextError;
-  final Color cellTextComplete;
-  final Color controlsMoveEnabled;
-  final Color controlsMoveDisabled;
-
-  const GameTheme({
-    required this.primaryColor,
-    required this.brightness,
-    required this.menuBackground,
-    required this.gameBackground,
-    required this.cellBase,
-    required this.cellEmpty,
-    required this.cellFilled,
-    required this.cellTextBase,
-    required this.cellTextEmpty,
-    required this.cellTextFilled,
-    required this.cellTextError,
-    required this.cellTextComplete,
-    required this.controlsMoveEnabled,
-    required this.controlsMoveDisabled,
-  });
-
-  @override
-  List<Object?> get props => [
-        primaryColor,
-        brightness,
-        menuBackground,
-        gameBackground,
-        cellBase,
-        cellEmpty,
-        cellFilled,
-        cellTextBase,
-        cellTextEmpty,
-        cellTextFilled,
-        cellTextError,
-        cellTextComplete,
-        controlsMoveEnabled,
-        controlsMoveDisabled,
-      ];
-
-  @override
-  bool? get stringify => true;
-}

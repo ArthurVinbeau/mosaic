@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../utils/themes.dart';
+import 'game_theme.dart';
 
 class LoadingPainter extends CustomPainter {
   final GameTheme theme;

@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/timer/timer_bloc.dart';
-import 'package:mosaic/utils/themes.dart';
 
 import '../../blocs/app_state/app_state_bloc.dart';
 import '../../blocs/game/game_bloc.dart';
 import '../../entities/game_controls.dart';
+import '../../entities/game_theme.dart';
 import '../elements/board_widget.dart';
 
 class GamePage extends StatefulWidget {

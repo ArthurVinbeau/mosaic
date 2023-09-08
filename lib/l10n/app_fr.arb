@@ -40,6 +40,8 @@
   "restartConfirmationDescription": "Vous perdrez votre progression actuelle",
   "confirmDialog": "oui",
   "denyDialog": "non",
+  "acceptDialog": "ok",
+  "cancelDialog": "annuler",
   "settingsTitle": "Paramètres",
   "themeSettingsButton": "Paramètres des thèmes",
   "localePicker": "Préférence de langue :",

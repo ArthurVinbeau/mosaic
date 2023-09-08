@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:mosaic/entities/board.dart';
-import 'package:mosaic/utils/themes.dart';
 
 import 'cell.dart';
+import 'game_theme.dart';
 
 class FreePainter extends CustomPainter {
   final Board board;

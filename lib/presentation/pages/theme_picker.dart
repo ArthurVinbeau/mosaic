@@ -3,19 +3,21 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mosaic/blocs/theme_creator/theme_creator_bloc.dart';
 import 'package:mosaic/blocs/theme_picker/theme_picker_bloc.dart';
 import 'package:mosaic/presentation/elements/free_drawing.dart';
-import 'package:mosaic/utils/themes.dart';
+import 'package:mosaic/presentation/pages/theme_creator.dart';
 
 import '../../blocs/theme/theme_cubit.dart';
 import '../../entities/board.dart';
+import '../../entities/theme_collection.dart';
 
 class ThemePicker extends StatelessWidget {
   const ThemePicker({Key? key}) : super(key: key);
 
-  static final Board _board = _getBoard();
+  static final Board _board = getDemoBoard();
 
-  static Board _getBoard() {
+  static Board getDemoBoard() {
     final Board board = Board(height: 3, width: 4)..newGameDesc();
 
     const int hidden = 0, complete = 2, error = 3, filled = 1, empty = 2;
@@ -132,11 +134,26 @@ class ThemePicker extends StatelessWidget {
 
     return BlocBuilder<ThemePickerBloc, ThemePickerState>(builder: (BuildContext context, ThemePickerState state) {
       final size = min(MediaQuery.of(context).size.width / 2, 250.0);
-      final theme = context.read<ThemeCubit>().state.theme;
+      final themeCubit = context.read<ThemeCubit>();
+      final theme = themeCubit.state.theme;
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,
           title: Text(loc.themePickerTitle),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BlocProvider<ThemeCreatorBloc>(
+                          create: (context) => ThemeCreatorBloc(themeCubit: themeCubit),
+                          child: const ThemeCreator(),
+                        ),
+                      ));
+                },
+                icon: const Icon(Icons.add))
+          ],
         ),
         backgroundColor: theme.menuBackground,
         body: GridView.builder(

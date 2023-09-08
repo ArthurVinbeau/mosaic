@@ -213,6 +213,14 @@
   "@denyDialog": {
     "description": "Deny dialog action"
   },
+  "acceptDialog": "ok",
+  "@confirmDialog": {
+    "description": "Accept dialog option"
+  },
+  "cancelDialog": "cancel",
+  "@denyDialog": {
+    "description": "Cancel dialog action"
+  },
   "settingsTitle": "Settings",
   "@settingsTitle": {
     "description": "Settings page title"

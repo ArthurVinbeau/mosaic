@@ -8,7 +8,8 @@ import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/tutorial/tutorial_bloc.dart';
 import 'package:mosaic/presentation/elements/free_drawing.dart';
 import 'package:mosaic/utils/config.dart';
-import 'package:mosaic/utils/themes.dart';
+
+import '../../entities/game_theme.dart';
 
 class TutorialPage extends StatelessWidget {
   const TutorialPage({Key? key}) : super(key: key);

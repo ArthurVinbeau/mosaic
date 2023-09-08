@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/presentation/pages/theme_picker.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../blocs/locale/locale_bloc.dart';
 
@@ -75,6 +76,21 @@ class SettingsPage extends StatelessWidget {
                                         : null));
                               }
                             },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: ElevatedButton(
+                                onPressed: () async {
+                                  final info = await PackageInfo.fromPlatform();
+                                  // if (!context.mounted) return;
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (ctx) => AboutDialog(
+                                                applicationVersion: info.buildNumber,
+                                              )));
+                                },
+                                child: Text('About')),
                           ),
                         ],
                       ),

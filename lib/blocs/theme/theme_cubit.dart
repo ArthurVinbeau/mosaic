@@ -1,7 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:mosaic/utils/themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../entities/game_theme.dart';
+import '../../entities/theme_collection.dart';
+import 'base_themes.dart';
 
 part 'theme_state.dart';
 
@@ -13,13 +16,26 @@ class ThemeCubit extends Cubit<ThemeState> {
   ThemeCollection _collection;
   late GameTheme _theme;
 
+  late List<ThemeCollection> customThemes;
+
+  List<ThemeCollection> get combinedLists => themeCollections + customThemes;
+
+  ThemeCollection get defaultTheme => baseTheme;
+
   ThemeCubit(this._platformBrightness)
       : _collection = baseTheme,
         super(GameThemeState(baseTheme.light, baseTheme)) {
     SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      customThemes = prefs
+              .getStringList(ThemeKeys.custom)
+              ?.map((e) => ThemeCollection.deserialize(e))
+              .whereType<ThemeCollection>()
+              .toList() ??
+          [];
+
       final index = prefs.getInt(ThemeKeys.index) ?? -1;
-      if (index >= 0 && index < themeCollections.length) {
-        _collection = themeCollections[index];
+      if (index >= 0 && index < combinedLists.length) {
+        _collection = combinedLists[index];
       }
 
       final prefIndex = prefs.getInt(ThemeKeys.preference);
@@ -41,7 +57,7 @@ class ThemeCubit extends Cubit<ThemeState> {
 
   void setTheme(ThemeCollection collection) {
     _collection = collection;
-    SharedPreferences.getInstance().then((pref) => pref.setInt(ThemeKeys.index, themeCollections.indexOf(collection)));
+    SharedPreferences.getInstance().then((pref) => pref.setInt(ThemeKeys.index, combinedLists.indexOf(collection)));
     _getTheme();
   }
 
@@ -55,6 +71,22 @@ class ThemeCubit extends Cubit<ThemeState> {
     _theme = brightness == Brightness.light ? _collection.light : _collection.dark;
     emit(GameThemeState(_theme, _collection));
     return _theme;
+  }
+
+  void saveCustomTheme(ThemeCollection collection) {
+    final index = customThemes.indexWhere((element) => element.name == collection.name);
+
+    if (index > -1) {
+      customThemes[index] = collection;
+    } else {
+      customThemes.add(collection);
+    }
+
+    SharedPreferences.getInstance().then((pref) {
+      pref.setStringList(ThemeKeys.custom, customThemes.map((e) => e.serialize()).toList());
+    });
+
+    setTheme(collection);
   }
 }
 
