@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme_creator/theme_creator_bloc.dart';
+import 'package:mosaic/entities/theme_collection.dart';
 import 'package:mosaic/presentation/pages/color_picker_dialog.dart';
 import 'package:mosaic/presentation/pages/theme_picker.dart';
+import 'package:mosaic/utils/colors_ext.dart';
 
 import '../elements/free_drawing.dart';
 
@@ -12,9 +14,75 @@ class ThemeCreator extends StatelessWidget {
 
   const ThemeCreator({Key? key}) : super(key: key);
 
-  Widget _getRow(BuildContext context, String label, Color light, Color dark,
-      void Function(Brightness brightness, Color color) onColorPick) {
-    final loc = AppLocalizations.of(context)!;
+  Color _getBackground(Color color) => color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+
+  Widget _getColorRow({
+    required BuildContext context,
+    required String label,
+    required ThemeCollection collection,
+    required String colorKey,
+    bool outputMaterialColor = false,
+  }) {
+    final light = collection.light[colorKey];
+    final dark = collection.dark[colorKey];
+
+    return _getBaseRow(
+      context: context,
+      label: label,
+      collection: collection,
+      colorKey: colorKey,
+      outputMaterialColor: outputMaterialColor,
+      lightChild: Container(
+        color: _getBackground(light),
+        padding: const EdgeInsets.all(4),
+        child: Container(color: light),
+      ),
+      darkChild: Container(
+        color: _getBackground(dark),
+        padding: const EdgeInsets.all(4),
+        child: Container(color: dark),
+      ),
+    );
+  }
+
+  Widget _getControlsRow({
+    required BuildContext context,
+    required String label,
+    required ThemeCollection collection,
+    required String colorKey,
+  }) {
+    final light = collection.light[colorKey];
+    final dark = collection.dark[colorKey];
+
+    return _getBaseRow(
+        context: context,
+        label: label,
+        collection: collection,
+        colorKey: colorKey,
+        outputMaterialColor: false,
+        lightChild: Container(
+          color: collection.light.gameBackground,
+          padding: const EdgeInsets.all(16),
+          child: Icon(Icons.redo, color: light),
+        ),
+        darkChild: Container(
+          color: collection.dark.gameBackground,
+          padding: const EdgeInsets.all(16),
+          child: Icon(Icons.undo, color: dark),
+        ));
+  }
+
+  Widget _getBaseRow({
+    required BuildContext context,
+    required String label,
+    required ThemeCollection collection,
+    required String colorKey,
+    required bool outputMaterialColor,
+    required Widget lightChild,
+    required Widget darkChild,
+  }) {
+    final light = collection.light[colorKey];
+    final dark = collection.dark[colorKey];
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -28,18 +96,13 @@ class ThemeCreator extends StatelessWidget {
                 builder: (context) => ColorPickerDialog(color: light),
               );
 
-              if (result != null) {
-                onColorPick(Brightness.light, result);
+              if (result != null && context.mounted) {
+                context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
+                    collection.light.copyWithKey(colorKey, outputMaterialColor ? result.toMaterialColor() : result),
+                    Brightness.light));
               }
             },
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                color: Colors.black,
-                padding: const EdgeInsets.all(4),
-                child: Container(color: light),
-              ),
-            ),
+            child: AspectRatio(aspectRatio: 1, child: lightChild),
           ),
         ),
         Expanded(
@@ -57,17 +120,15 @@ class ThemeCreator extends StatelessWidget {
                 builder: (context) => ColorPickerDialog(color: dark),
               );
 
-              if (result != null) {
-                onColorPick(Brightness.dark, result);
+              if (result != null && context.mounted) {
+                context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
+                    collection.dark.copyWithKey(colorKey, outputMaterialColor ? result.toMaterialColor() : result),
+                    Brightness.dark));
               }
             },
             child: AspectRatio(
               aspectRatio: 1,
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.all(4),
-                child: Container(color: dark),
-              ),
+              child: darkChild,
             ),
           ),
         ),
@@ -79,7 +140,6 @@ class ThemeCreator extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCreatorBloc, ThemeCreatorState>(
       builder: ((context, state) {
-        final theme = Theme.of(context);
         final loc = AppLocalizations.of(context)!;
 
         return Scaffold(
@@ -152,90 +212,85 @@ class ThemeCreator extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _getRow(
-                              context,
-                              "Menu background",
-                              state.collection.light.menuBackground,
-                              state.collection.dark.menuBackground,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                                  state.collection.light.copyWith(menuBackground: color), brightness))),
-                          _getRow(
-                              context,
-                              "Game background",
-                              state.collection.light.gameBackground,
-                              state.collection.dark.gameBackground,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                                  state.collection.light.copyWith(gameBackground: color), brightness))),
-                          _getRow(
-                              context,
-                              "Cell base",
-                              state.collection.light.cellBase,
-                              state.collection.dark.cellBase,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(
-                                  SetThemeColorsEvent(state.collection.light.copyWith(cellBase: color), brightness))),
-                          _getRow(
-                              context,
-                              "Cell text base",
-                              state.collection.light.cellTextBase,
-                              state.collection.dark.cellTextBase,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                                  state.collection.light.copyWith(cellTextBase: color), brightness))),
-                          _getRow(
-                              context,
-                              "Cell empty",
-                              state.collection.light.cellEmpty,
-                              state.collection.dark.cellEmpty,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(
-                                  SetThemeColorsEvent(state.collection.light.copyWith(cellEmpty: color), brightness))),
-                          _getRow(
-                              context,
-                              "Cell text empty",
-                              state.collection.light.cellTextEmpty,
-                              state.collection.dark.cellTextEmpty,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                                  state.collection.light.copyWith(cellTextEmpty: color), brightness))),
-                          _getRow(
-                              context,
-                              "Cell filled",
-                              state.collection.light.cellFilled,
-                              state.collection.dark.cellFilled,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(
-                                  SetThemeColorsEvent(state.collection.light.copyWith(cellFilled: color), brightness))),
-                          _getRow(
-                              context,
-                              "Cell text filled",
-                              state.collection.light.cellTextFilled,
-                              state.collection.dark.cellTextFilled,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                                  state.collection.light.copyWith(cellTextFilled: color), brightness))),
-                          _getRow(
-                              context,
-                              "Cell text error",
-                              state.collection.light.cellTextError,
-                              state.collection.dark.cellTextError,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                                  state.collection.light.copyWith(cellTextError: color), brightness))),
-                          _getRow(
-                              context,
-                              "Cell text complete",
-                              state.collection.light.cellTextComplete,
-                              state.collection.dark.cellTextComplete,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                                  state.collection.light.copyWith(cellTextComplete: color), brightness))),
-                          _getRow(
-                              context,
-                              "Controls move enabled",
-                              state.collection.light.controlsMoveEnabled,
-                              state.collection.dark.controlsMoveEnabled,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                                  state.collection.light.copyWith(controlsMoveEnabled: color), brightness))),
-                          _getRow(
-                              context,
-                              "Controls move disabled",
-                              state.collection.light.controlsMoveDisabled,
-                              state.collection.dark.controlsMoveDisabled,
-                              (brightness, color) => context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                                  state.collection.light.copyWith(controlsMoveDisabled: color), brightness))),
+                          _getColorRow(
+                            context: context,
+                            label: "Primary color",
+                            collection: state.collection,
+                            colorKey: 'primaryColor',
+                            outputMaterialColor: true,
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Menu background",
+                            collection: state.collection,
+                            colorKey: 'menuBackground',
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Game background",
+                            collection: state.collection,
+                            colorKey: 'gameBackground',
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Cell base",
+                            collection: state.collection,
+                            colorKey: 'cellBase',
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Cell text base",
+                            collection: state.collection,
+                            colorKey: 'cellTextBase',
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Cell empty",
+                            collection: state.collection,
+                            colorKey: 'cellEmpty',
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Cell text empty",
+                            collection: state.collection,
+                            colorKey: 'cellTextEmpty',
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Cell filled",
+                            collection: state.collection,
+                            colorKey: 'cellFilled',
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Cell text filled",
+                            collection: state.collection,
+                            colorKey: 'cellTextFilled',
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Cell text error",
+                            collection: state.collection,
+                            colorKey: 'cellTextError',
+                          ),
+                          _getColorRow(
+                            context: context,
+                            label: "Cell text complete",
+                            collection: state.collection,
+                            colorKey: 'cellTextComplete',
+                          ),
+                          _getControlsRow(
+                            context: context,
+                            label: "Controls move enabled",
+                            collection: state.collection,
+                            colorKey: 'controlsMoveEnabled',
+                          ),
+                          _getControlsRow(
+                            context: context,
+                            label: "Controls move disabled",
+                            collection: state.collection,
+                            colorKey: 'controlsMoveDisabled',
+                          ),
                         ],
                       ),
                     ),
