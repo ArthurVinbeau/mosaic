@@ -37,7 +37,8 @@ class GameTheme implements Equatable {
   });
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         primaryColor,
         brightness,
         menuBackground,
@@ -86,6 +87,58 @@ class GameTheme implements Equatable {
       controlsMoveEnabled: controlsMoveEnabled ?? this.controlsMoveEnabled,
       controlsMoveDisabled: controlsMoveDisabled ?? this.controlsMoveDisabled,
     );
+  }
+
+  GameTheme copyWithKey(String key, Object value) {
+    return GameTheme(
+      primaryColor: key == 'primaryColor' ? value as MaterialColor : primaryColor,
+      brightness: key == 'brightness' ? value as Brightness : brightness,
+      menuBackground: key == 'menuBackground' ? value as Color : menuBackground,
+      gameBackground: key == 'gameBackground' ? value as Color : gameBackground,
+      cellBase: key == 'cellBase' ? value as Color : cellBase,
+      cellEmpty: key == 'cellEmpty' ? value as Color : cellEmpty,
+      cellFilled: key == 'cellFilled' ? value as Color : cellFilled,
+      cellTextBase: key == 'cellTextBase' ? value as Color : cellTextBase,
+      cellTextEmpty: key == 'cellTextEmpty' ? value as Color : cellTextEmpty,
+      cellTextFilled: key == 'cellTextFilled' ? value as Color : cellTextFilled,
+      cellTextError: key == 'cellTextError' ? value as Color : cellTextError,
+      cellTextComplete: key == 'cellTextComplete' ? value as Color : cellTextComplete,
+      controlsMoveEnabled: key == 'controlsMoveEnabled' ? value as Color : controlsMoveEnabled,
+      controlsMoveDisabled: key == 'controlsMoveDisabled' ? value as Color : controlsMoveDisabled,
+    );
+  }
+
+  Color operator [](String key) {
+    switch (key) {
+      case 'primaryColor':
+        return primaryColor;
+      case 'menuBackground':
+        return menuBackground;
+      case 'gameBackground':
+        return gameBackground;
+      case 'cellBase':
+        return cellBase;
+      case 'cellEmpty':
+        return cellEmpty;
+      case 'cellFilled':
+        return cellFilled;
+      case 'cellTextBase':
+        return cellTextBase;
+      case 'cellTextEmpty':
+        return cellTextEmpty;
+      case 'cellTextFilled':
+        return cellTextFilled;
+      case 'cellTextError':
+        return cellTextError;
+      case 'cellTextComplete':
+        return cellTextComplete;
+      case 'controlsMoveEnabled':
+        return controlsMoveEnabled;
+      case 'controlsMoveDisabled':
+        return controlsMoveDisabled;
+      default:
+        throw ArgumentError('The color `$key` is not a valid key');
+    }
   }
 
   String serialize() {
