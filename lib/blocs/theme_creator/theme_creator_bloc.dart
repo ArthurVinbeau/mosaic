@@ -19,21 +19,31 @@ class ThemeCreatorBloc extends Bloc<ThemeCreatorEvent, ThemeCreatorState> {
   ThemeCreatorBloc({required this.themeCubit, ThemeCollection? original})
       : _collection = original?.copyWith() ?? themeCubit.defaultTheme.copyWith(name: "New Theme"),
         super(ThemeCreatorInitial(original ?? themeCubit.defaultTheme)) {
-    on<SetThemeColorsEvent>((event, emit) {
-      _collection = _collection.copyWith(
-        light: event.brightness == Brightness.light ? event.theme : null,
-        dark: event.brightness == Brightness.dark ? event.theme : null,
-      );
+    on<SetThemeColorsEvent>(_setThemeColor);
+    on<SetThemeNameEvent>(_setThemeName);
+    on<SaveThemeEvent>(_saveTheme);
+  }
+
+  void _setThemeColor(SetThemeColorsEvent event, Emitter emit) {
+    _collection = _collection.copyWith(
+      light: event.brightness == Brightness.light ? event.theme : null,
+      dark: event.brightness == Brightness.dark ? event.theme : null,
+    );
+    emit(ThemeCreatorInitial(_collection));
+  }
+
+  void _setThemeName(SetThemeNameEvent event, Emitter emit) {
+    if (event.name
+        .trim()
+        .isNotEmpty) {
+      _collection = _collection.copyWith(name: event.name.trim());
       emit(ThemeCreatorInitial(_collection));
-    });
-    on<SetThemeName>((event, emit) {
-      if (event.name.trim().isNotEmpty) {
-        _collection = _collection.copyWith(name: event.name.trim());
-        emit(ThemeCreatorInitial(_collection));
-      } else {
-        emit(ThemeNameErrorState('Name must not be empty', _collection));
-      }
-    });
-    on<SaveThemeEvent>((event, emit) {});
+    } else {
+      emit(ThemeNameErrorState('Name must not be empty', _collection));
+    }
+  }
+
+  void _saveTheme(SaveThemeEvent event, Emitter emit) {
+
   }
 }

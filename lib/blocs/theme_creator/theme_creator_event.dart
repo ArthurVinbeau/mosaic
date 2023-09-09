@@ -21,10 +21,10 @@ class SaveThemeEvent extends ThemeCreatorEvent {
   List<Object?> get props => [];
 }
 
-class SetThemeName extends ThemeCreatorEvent {
+class SetThemeNameEvent extends ThemeCreatorEvent {
   final String name;
 
-  const SetThemeName(this.name);
+  const SetThemeNameEvent(this.name);
 
   @override
   List<Object?> get props => [name];
