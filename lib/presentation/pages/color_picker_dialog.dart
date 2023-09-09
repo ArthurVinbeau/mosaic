@@ -29,6 +29,7 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
       content: SingleChildScrollView(
         child: ColorPicker(
           pickerColor: _color,
+          enableAlpha: false,
           onColorChanged: (value) => setState(() {
             _color = value;
           }),
