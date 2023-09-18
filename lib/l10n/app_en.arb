@@ -214,11 +214,11 @@
     "description": "Deny dialog action"
   },
   "acceptDialog": "ok",
-  "@confirmDialog": {
+  "@acceptDialog": {
     "description": "Accept dialog option"
   },
   "cancelDialog": "cancel",
-  "@denyDialog": {
+  "@cancelDialog": {
     "description": "Cancel dialog action"
   },
   "settingsTitle": "Settings",
@@ -236,5 +236,57 @@
   "useSystemLocale": "Use system locale",
   "@useSystemLocale": {
     "description": "use system locale"
+  },
+  "themePrimaryColor": "Primary color",
+  "@themePrimaryColor": {
+    "description": "Game theme primary color"
+  },
+  "themeMenuBackground": "Menu background",
+  "@themeMenuBackground": {
+    "description": "Game theme Menu background color"
+  },
+  "themeGameBackground": "Game background",
+  "@themeGameBackground": {
+    "description": "Game theme game background color"
+  },
+  "themeCellBase": "Base cell",
+  "@themeCellBase": {
+    "description": "Game theme base cell color"
+  },
+  "themeCellEmpty": "Empty cell",
+  "@themeCellEmpty": {
+    "description": "Game theme empty cell color"
+  },
+  "themeCellFilled": "Filled cell",
+  "@themeCellFilled": {
+    "description": "Game theme filled cell color"
+  },
+  "themeCellTextBase": "Base cell text",
+  "@themeCellTextBase": {
+    "description": "Game theme base cell text color"
+  },
+  "themeCellTextEmpty": "Empty cell text",
+  "@themeCellTextEmpty": {
+    "description": "Game theme empty cell text color"
+  },
+  "themeCellTextFilled": "Filled cell text",
+  "@themeCellTextFilled": {
+    "description": "Game theme filled cell text color"
+  },
+  "themeCellTextError": "Cell text error",
+  "@themeCellTextError": {
+    "description": "Game theme cell text error color"
+  },
+  "themeCellTextComplete": "Cell text complete",
+  "@themeCellTextComplete": {
+    "description": "Game theme cell text complete color"
+  },
+  "themeControlsMoveEnabled": "Controls enabled",
+  "@themeControlsMoveEnabled": {
+    "description": "Game theme move controls enabled color"
+  },
+  "themeControlsMoveDisabled": "Controls disabled",
+  "@themeControlsMoveDisabled": {
+    "description": "Game theme move controls disabled color"
   }
 }

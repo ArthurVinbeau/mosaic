@@ -45,5 +45,18 @@
   "settingsTitle": "Paramètres",
   "themeSettingsButton": "Paramètres des thèmes",
   "localePicker": "Préférence de langue :",
-  "useSystemLocale": "Utiliser la langue de l'appareil"
+  "useSystemLocale": "Utiliser la langue de l'appareil",
+  "themePrimaryColor": "Couleur principale",
+  "themeMenuBackground": "Fond du menu",
+  "themeGameBackground": "Fond du plateau",
+  "themeCellBase": "Case de base",
+  "themeCellEmpty": "Case vide",
+  "themeCellFilled": "Case remplie",
+  "themeCellTextBase": "Texte de case de base",
+  "themeCellTextEmpty": "Texte de case vide",
+  "themeCellTextFilled": "Texte de case remplie",
+  "themeCellTextError": "Texte d'erreur",
+  "themeCellTextComplete": "Texte de case terminée",
+  "themeControlsMoveEnabled": "Contrôle activé",
+  "themeControlsMoveDisabled": "Contrôle désactivé"
 }
