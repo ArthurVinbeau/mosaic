@@ -48,3 +48,66 @@ dependencies.
 ## Run the application
 
 Either use the builtin run function in your IDE or use `flutter run`
+
+# App localization
+
+> See the [official flutter doc](https://docs.flutter.dev/ui/accessibility-and-localization/internationalization) for more information
+
+## Add a new localized message
+
+In `${FLUTTER_PROJECT}/lib/l10n`, add a new message to the `app_en.arb` template file. For example:
+```json
+{
+  "helloWorld": "Hello World!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+  }
+}
+```
+
+Then edit the other language files to provide a translation like this in the `app_fr.arb` template file:
+```json
+{
+  "helloWorld": "Bonjour le monde!"
+}
+```
+
+Finally, run this command to generate the corresponding dart files in `${FLUTTER_PROJECT}/.dart_tool/flutter_gen/gen_l10n` and use it in your code:
+```sh
+flutter gen-l10n
+```
+
+## Usage example
+
+```dart
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+//  ...
+
+return const MaterialApp(
+  title: 'Localizations Sample App',
+  localizationsDelegates: [
+    AppLocalizations.delegate, // Add this line
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
+  supportedLocales: [
+    Locale('en'), // English
+    Locale('fr'), // French
+  ],
+  home: MyHomePage(),
+);
+
+class MyHomePage extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations loc = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      appBar: AppBar(title: loc.helloWorld)
+    );
+  }
+}
+
+```
