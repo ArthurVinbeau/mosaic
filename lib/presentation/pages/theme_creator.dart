@@ -61,14 +61,22 @@ class ThemeCreator extends StatelessWidget {
         colorKey: colorKey,
         outputMaterialColor: false,
         lightChild: Container(
-          color: collection.light.gameBackground,
-          padding: const EdgeInsets.all(16),
-          child: Icon(Icons.redo, color: light),
+          color: _getBackground(collection.light.gameBackground),
+          padding: const EdgeInsets.all(4),
+          child: Container(
+            color: collection.light.gameBackground,
+            alignment: Alignment.center,
+            child: Icon(Icons.redo, color: light),
+          ),
         ),
         darkChild: Container(
-          color: collection.dark.gameBackground,
-          padding: const EdgeInsets.all(16),
-          child: Icon(Icons.undo, color: dark),
+          color: _getBackground(collection.dark.gameBackground),
+          padding: const EdgeInsets.all(4),
+          child: Container(
+            color: collection.dark.gameBackground,
+            alignment: Alignment.center,
+            child: Icon(Icons.undo, color: dark),
+          ),
         ));
   }
 
