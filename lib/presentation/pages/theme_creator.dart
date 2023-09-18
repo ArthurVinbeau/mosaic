@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme_creator/theme_creator_bloc.dart';
 import 'package:mosaic/entities/theme_collection.dart';
-import 'package:mosaic/presentation/pages/color_picker_dialog.dart';
+import 'package:mosaic/presentation/elements/color_picker_dialog.dart';
 import 'package:mosaic/presentation/pages/theme_picker.dart';
 import 'package:mosaic/utils/colors_ext.dart';
 
