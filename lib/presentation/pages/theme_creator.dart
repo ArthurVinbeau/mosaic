@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme_creator/theme_creator_bloc.dart';
 import 'package:mosaic/entities/theme_collection.dart';
 import 'package:mosaic/presentation/elements/color_picker_dialog.dart';
+import 'package:mosaic/presentation/elements/theme_creator_name_field.dart';
 import 'package:mosaic/presentation/pages/theme_picker.dart';
 import 'package:mosaic/utils/colors_ext.dart';
 
@@ -152,7 +153,10 @@ class ThemeCreator extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(state.collection.name),
+            title: const Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 32),
+              child: ThemeCreatorNameField(),
+            ),
             centerTitle: true,
           ),
           body: Container(
