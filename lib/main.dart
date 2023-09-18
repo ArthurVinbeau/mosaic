@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -33,8 +35,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<AppStateBloc>(
           create: (context) => AppStateBloc(BlocProvider.of<GameBloc>(context)),
         ),
-        BlocProvider<ThemeCubit>(
-            create: (context) => ThemeCubit(MediaQueryData.fromView(View.of(context)).platformBrightness)),
+        BlocProvider<ThemeCubit>(create: (context) => ThemeCubit(PlatformDispatcher.instance.platformBrightness)),
         BlocProvider<ThemePickerBloc>(create: (context) => ThemePickerBloc(BlocProvider.of<ThemeCubit>(context))),
         BlocProvider<TutorialBloc>(create: (context) => TutorialBloc()),
         BlocProvider<LocaleBloc>(
