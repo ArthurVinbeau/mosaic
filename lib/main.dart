@@ -34,8 +34,7 @@ class MyApp extends StatelessWidget {
           create: (context) => AppStateBloc(BlocProvider.of<GameBloc>(context)),
         ),
         BlocProvider<ThemeCubit>(
-            create: (context) =>
-                ThemeCubit(MediaQueryData.fromWindow(WidgetsBinding.instance.window).platformBrightness)),
+            create: (context) => ThemeCubit(MediaQueryData.fromView(View.of(context)).platformBrightness)),
         BlocProvider<ThemePickerBloc>(create: (context) => ThemePickerBloc(BlocProvider.of<ThemeCubit>(context))),
         BlocProvider<TutorialBloc>(create: (context) => TutorialBloc()),
         BlocProvider<LocaleBloc>(
