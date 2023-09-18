@@ -29,3 +29,17 @@ class SetThemeNameEvent extends ThemeCreatorEvent {
   @override
   List<Object?> get props => [name];
 }
+
+class ExitPageEvent extends ThemeCreatorEvent {
+  const ExitPageEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ConfirmExitPageEvent extends ThemeCreatorEvent {
+  const ConfirmExitPageEvent();
+
+  @override
+  List<Object?> get props => [];
+}

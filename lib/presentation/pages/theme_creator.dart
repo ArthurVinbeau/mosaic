@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/theme_creator/theme_creator_bloc.dart';
 import 'package:mosaic/entities/theme_collection.dart';
 import 'package:mosaic/presentation/elements/color_picker_dialog.dart';
@@ -147,174 +148,222 @@ class ThemeCreator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeCreatorBloc, ThemeCreatorState>(
-      builder: ((context, state) {
-        final loc = AppLocalizations.of(context)!;
+    final brightness = context.read<ThemeCubit>().state.theme.brightness;
+    final loc = AppLocalizations.of(context)!;
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 48),
-              child: ThemeCreatorNameField(),
-            ),
-            centerTitle: true,
-          ),
-          body: Container(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8.0),
-                  child: AspectRatio(
-                    aspectRatio: 2,
-                    child: Column(
+    return BlocConsumer<ThemeCreatorBloc, ThemeCreatorState>(
+      listenWhen: (previous, current) => current is ExitPageState || current is ShowExiConfirmationState,
+      listener: (context, state) {
+        if (state is ExitPageState) {
+          Navigator.pop(context, state.returnValue);
+        } else if (state is ShowExiConfirmationState) {
+          final bloc = context.read<ThemeCreatorBloc>();
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text(loc.discardChanges),
+                    content: Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Flexible(
-                          flex: 1,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(loc.lightTheme),
-                              Text(loc.darkTheme),
-                            ],
-                          ),
-                        ),
-                        Flexible(
-                          flex: 4,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  color: state.collection.light.gameBackground,
-                                  child: FreeDrawing(
-                                    board: _board,
-                                    minScale: 1,
-                                    maxScale: 1,
-                                    theme: state.collection.light,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  color: state.collection.dark.gameBackground,
-                                  child: FreeDrawing(
-                                    board: _board,
-                                    minScale: 1,
-                                    maxScale: 1,
-                                    theme: state.collection.dark,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        Text(loc.looseThemeChanges),
+                        Text(loc.cannotBeUndone, style: const TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(context), child: Text(loc.cancelDialog)),
+                      FilledButton(
+                          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+                          onPressed: () {
+                            bloc.add(const ConfirmExitPageEvent());
+                            Navigator.pop(context);
+                          },
+                          child: Text(loc.confirmDialog))
+                    ],
+                  ));
+        }
+      },
+      builder: ((context, state) {
+        return WillPopScope(
+          onWillPop: () async {
+            context.read<ThemeCreatorBloc>().add(const ExitPageEvent());
+            return false;
+          },
+          child: Scaffold(
+            backgroundColor: brightness == Brightness.light
+                ? state.collection.light.menuBackground
+                : state.collection.dark.menuBackground,
+            appBar: AppBar(
+              title: const Padding(
+                padding: EdgeInsets.only(left: 16.0, right: 48),
+                child: ThemeCreatorNameField(),
+              ),
+              centerTitle: true,
+            ),
+            body: Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AspectRatio(
+                      aspectRatio: 2,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          _getColorRow(
-                            context: context,
-                            label: loc.themePrimaryColor,
-                            collection: state.collection,
-                            colorKey: 'primaryColor',
-                            outputMaterialColor: true,
+                          Flexible(
+                            flex: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(loc.lightTheme),
+                                Text(loc.darkTheme),
+                              ],
+                            ),
                           ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeMenuBackground,
-                            collection: state.collection,
-                            colorKey: 'menuBackground',
-                          ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeGameBackground,
-                            collection: state.collection,
-                            colorKey: 'gameBackground',
-                          ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeCellBase,
-                            collection: state.collection,
-                            colorKey: 'cellBase',
-                          ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeCellTextBase,
-                            collection: state.collection,
-                            colorKey: 'cellTextBase',
-                          ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeCellEmpty,
-                            collection: state.collection,
-                            colorKey: 'cellEmpty',
-                          ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeCellTextEmpty,
-                            collection: state.collection,
-                            colorKey: 'cellTextEmpty',
-                          ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeCellFilled,
-                            collection: state.collection,
-                            colorKey: 'cellFilled',
-                          ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeCellTextFilled,
-                            collection: state.collection,
-                            colorKey: 'cellTextFilled',
-                          ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeCellTextError,
-                            collection: state.collection,
-                            colorKey: 'cellTextError',
-                          ),
-                          _getColorRow(
-                            context: context,
-                            label: loc.themeCellTextComplete,
-                            collection: state.collection,
-                            colorKey: 'cellTextComplete',
-                          ),
-                          _getControlsRow(
-                            context: context,
-                            label: loc.themeControlsMoveEnabled,
-                            collection: state.collection,
-                            colorKey: 'controlsMoveEnabled',
-                          ),
-                          _getControlsRow(
-                            context: context,
-                            label: loc.themeControlsMoveDisabled,
-                            collection: state.collection,
-                            colorKey: 'controlsMoveDisabled',
+                          Flexible(
+                            flex: 4,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    color: state.collection.light.gameBackground,
+                                    child: FreeDrawing(
+                                      board: _board,
+                                      minScale: 1,
+                                      maxScale: 1,
+                                      theme: state.collection.light,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    color: state.collection.dark.gameBackground,
+                                    child: FreeDrawing(
+                                      board: _board,
+                                      minScale: 1,
+                                      maxScale: 1,
+                                      theme: state.collection.dark,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-
-                    /*
-        primaryColor,
-        controlsMoveEnabled,
-        controlsMoveDisabled,
-         */
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _getColorRow(
+                              context: context,
+                              label: loc.themePrimaryColor,
+                              collection: state.collection,
+                              colorKey: 'primaryColor',
+                              outputMaterialColor: true,
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeMenuBackground,
+                              collection: state.collection,
+                              colorKey: 'menuBackground',
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeGameBackground,
+                              collection: state.collection,
+                              colorKey: 'gameBackground',
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeCellBase,
+                              collection: state.collection,
+                              colorKey: 'cellBase',
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeCellTextBase,
+                              collection: state.collection,
+                              colorKey: 'cellTextBase',
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeCellEmpty,
+                              collection: state.collection,
+                              colorKey: 'cellEmpty',
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeCellTextEmpty,
+                              collection: state.collection,
+                              colorKey: 'cellTextEmpty',
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeCellFilled,
+                              collection: state.collection,
+                              colorKey: 'cellFilled',
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeCellTextFilled,
+                              collection: state.collection,
+                              colorKey: 'cellTextFilled',
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeCellTextError,
+                              collection: state.collection,
+                              colorKey: 'cellTextError',
+                            ),
+                            _getColorRow(
+                              context: context,
+                              label: loc.themeCellTextComplete,
+                              collection: state.collection,
+                              colorKey: 'cellTextComplete',
+                            ),
+                            _getControlsRow(
+                              context: context,
+                              label: loc.themeControlsMoveEnabled,
+                              collection: state.collection,
+                              colorKey: 'controlsMoveEnabled',
+                            ),
+                            _getControlsRow(
+                              context: context,
+                              label: loc.themeControlsMoveDisabled,
+                              collection: state.collection,
+                              colorKey: 'controlsMoveDisabled',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                          backgroundColor: brightness == Brightness.light
+                              ? state.collection.light.primaryColor
+                              : state.collection.dark.primaryColor),
+                      onPressed: () {
+                        context.read<ThemeCreatorBloc>().add(const SaveThemeEvent());
+                      },
+                      child: Text(loc.saveAndExit),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         );

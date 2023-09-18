@@ -14,10 +14,23 @@ class ThemeCreatorInitial extends ThemeCreatorState {
 }
 
 class ThemeNameErrorState extends ThemeCreatorState {
-  final String errorMessage;
+  final ThemeCreatorNameError error;
 
-  const ThemeNameErrorState(this.errorMessage, ThemeCollection collection) : super(collection);
+  const ThemeNameErrorState(this.error, ThemeCollection collection) : super(collection);
 
   @override
-  List<Object> get props => [collection, errorMessage];
+  List<Object> get props => [collection, error];
+}
+
+class ShowExiConfirmationState extends ThemeCreatorState {
+  const ShowExiConfirmationState(ThemeCollection collection) : super(collection);
+}
+
+class ExitPageState extends ThemeCreatorState {
+  final bool returnValue;
+
+  const ExitPageState(this.returnValue, ThemeCollection collection) : super(collection);
+
+  @override
+  List<Object> get props => [collection, returnValue];
 }

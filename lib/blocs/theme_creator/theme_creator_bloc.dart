@@ -8,7 +8,6 @@ import '../../entities/game_theme.dart';
 import '../../entities/theme_collection.dart';
 
 part 'theme_creator_event.dart';
-
 part 'theme_creator_state.dart';
 
 class ThemeCreatorBloc extends Bloc<ThemeCreatorEvent, ThemeCreatorState> {
@@ -18,10 +17,12 @@ class ThemeCreatorBloc extends Bloc<ThemeCreatorEvent, ThemeCreatorState> {
 
   ThemeCreatorBloc({required this.themeCubit, ThemeCollection? original})
       : _collection = original?.copyWith() ?? themeCubit.defaultTheme.copyWith(name: "New Theme"),
-        super(ThemeCreatorInitial(original ?? themeCubit.defaultTheme)) {
+        super(ThemeCreatorInitial(original ?? themeCubit.defaultTheme.copyWith(name: "New Theme"))) {
     on<SetThemeColorsEvent>(_setThemeColor);
     on<SetThemeNameEvent>(_setThemeName);
     on<SaveThemeEvent>(_saveTheme);
+    on<ExitPageEvent>(_exitPage);
+    on<ConfirmExitPageEvent>(_confirmExitPage);
   }
 
   void _setThemeColor(SetThemeColorsEvent event, Emitter emit) {
@@ -33,17 +34,32 @@ class ThemeCreatorBloc extends Bloc<ThemeCreatorEvent, ThemeCreatorState> {
   }
 
   void _setThemeName(SetThemeNameEvent event, Emitter emit) {
-    if (event.name
-        .trim()
-        .isNotEmpty) {
-      _collection = _collection.copyWith(name: event.name.trim());
-      emit(ThemeCreatorInitial(_collection));
+    final name = event.name.trim();
+    if (name.isEmpty) {
+      emit(ThemeNameErrorState(ThemeCreatorNameError.mustNotBeEmpty, _collection));
+    } else if (themeCubit.customThemes.any((element) => element.name == name)) {
+      emit(ThemeNameErrorState(ThemeCreatorNameError.alreadyExists, _collection));
     } else {
-      emit(ThemeNameErrorState('Name must not be empty', _collection));
+      _collection = _collection.copyWith(name: name);
+      emit(ThemeCreatorInitial(_collection));
     }
   }
 
   void _saveTheme(SaveThemeEvent event, Emitter emit) {
-
+    themeCubit.saveCustomTheme(_collection);
+    emit(ExitPageState(true, _collection));
   }
+
+  void _exitPage(ExitPageEvent event, Emitter emit) {
+    emit(ShowExiConfirmationState(_collection));
+  }
+
+  void _confirmExitPage(ConfirmExitPageEvent event, Emitter emit) {
+    emit(ExitPageState(false, _collection));
+  }
+}
+
+enum ThemeCreatorNameError {
+  alreadyExists,
+  mustNotBeEmpty,
 }

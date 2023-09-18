@@ -288,5 +288,21 @@
   "themeControlsMoveDisabled": "Controls disabled",
   "@themeControlsMoveDisabled": {
     "description": "Game theme move controls disabled color"
+  },
+  "discardChanges": "Discard changes?",
+  "@discardChanges": {
+    "description": "Ask the user if he wants to discard all the changes made"
+  },
+  "cannotBeUndone": "This action cannot be undone.",
+  "@cannotBeUndone": {
+    "description": "Warn the user that the action cannot be undone"
+  },
+  "looseThemeChanges": "You will lose all the modifications you made to this theme.",
+  "@looseThemeChanges": {
+    "description": "Warn the user that he will lose all modifications made to the theme"
+  },
+  "saveAndExit": "Save and exit",
+  "@saveAndExit": {
+    "description": "Save and exit the page"
   }
 }

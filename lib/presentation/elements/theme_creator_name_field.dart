@@ -17,15 +17,36 @@ class _ThemeCreatorNameFieldState extends State<ThemeCreatorNameField> {
     return BlocBuilder<ThemeCreatorBloc, ThemeCreatorState>(
         builder: (BuildContext context, ThemeCreatorState state) {
           controller.value = controller.value.copyWith(text: state.collection.name);
+
+          String? errorText;
+
+          if (state is ThemeNameErrorState) {
+            switch (state.error) {
+              case ThemeCreatorNameError.alreadyExists:
+                errorText = "";
+                break;
+              case ThemeCreatorNameError.mustNotBeEmpty:
+                errorText = "";
+                break;
+            }
+          }
           return TextField(
             controller: controller,
+            decoration: InputDecoration(
+              errorText: errorText,
+            ),
             onChanged: (String value) {
-              if (value.trim().isNotEmpty) {
+              if (value
+                  .trim()
+                  .isNotEmpty) {
                 context.read<ThemeCreatorBloc>().add(SetThemeNameEvent(value.trim()));
               }
             },
           );
         },
-        buildWhen: (previous, current) => previous.collection.name != current.collection.name);
+        buildWhen: (previous, current) =>
+        previous.runtimeType != current.runtimeType ||
+            previous is ThemeNameErrorState && previous.error != (current as ThemeNameErrorState).error ||
+            previous.collection.name != current.collection.name);
   }
 }
