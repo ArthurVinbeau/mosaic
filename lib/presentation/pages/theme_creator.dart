@@ -154,7 +154,7 @@ class ThemeCreator extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Padding(
-              padding: EdgeInsets.only(left: 16.0, right: 32),
+              padding: EdgeInsets.only(left: 16.0, right: 48),
               child: ThemeCreatorNameField(),
             ),
             centerTitle: true,
