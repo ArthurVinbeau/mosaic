@@ -83,20 +83,30 @@ flutter gen-l10n
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 //  ...
 
-return const MaterialApp(
-  title: 'Localizations Sample App',
-  localizationsDelegates: [
-    AppLocalizations.delegate, // Add this line
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-  ],
-  supportedLocales: [
-    Locale('en'), // English
-    Locale('fr'), // French
-  ],
-  home: MyHomePage(),
-);
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'Localizations Sample App',
+      localizationsDelegates: [
+        AppLocalizations.delegate, // Add this line
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en'), // English
+        Locale('fr'), // French
+      ],
+      home: MyHomePage(),
+    );
+  }
+}
 
 class MyHomePage extends StatelessWidget {
 
