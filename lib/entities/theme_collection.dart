@@ -27,6 +27,8 @@ class ThemeCollection implements Equatable {
     );
   }
 
+  static const String reservedCharacters = "${GameTheme.reservedCharacters}|";
+
   String serialize() {
     String result = name;
     result += "|${light.serialize()}";

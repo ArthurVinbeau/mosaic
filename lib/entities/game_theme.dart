@@ -37,7 +37,8 @@ class GameTheme implements Equatable {
   });
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props =>
+      [
         primaryColor,
         brightness,
         menuBackground,
@@ -139,6 +140,8 @@ class GameTheme implements Equatable {
         throw ArgumentError('The color `$key` is not a valid key');
     }
   }
+
+  static const String reservedCharacters = ";,";
 
   String serialize() {
     String result = brightness == Brightness.light ? '1' : '0';
