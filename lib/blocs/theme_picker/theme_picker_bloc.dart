@@ -5,7 +5,6 @@ import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import '../../entities/theme_collection.dart';
 
 part 'theme_picker_event.dart';
-
 part 'theme_picker_state.dart';
 
 class ThemePickerBloc extends Bloc<ThemePickerEvent, ThemePickerState> {
@@ -15,6 +14,7 @@ class ThemePickerBloc extends Bloc<ThemePickerEvent, ThemePickerState> {
       : super(ThemePickerInitial(themeCubit.state.collection, themeCubit.combinedLists, themeCubit.preference)) {
     on<PickThemeEvent>(_onTheme);
     on<PickPreferenceEvent>(_onPreference);
+    on<ReloadThemesEvent>(_onReload);
   }
 
   _onTheme(PickThemeEvent event, Emitter emit) {
@@ -25,5 +25,9 @@ class ThemePickerBloc extends Bloc<ThemePickerEvent, ThemePickerState> {
   _onPreference(PickPreferenceEvent event, Emitter emit) {
     themeCubit.updateThemePreference(event.preference);
     emit(ThemePickerInitial(themeCubit.state.collection, themeCubit.combinedLists, event.preference));
+  }
+
+  _onReload(ReloadThemesEvent event, Emitter emit) {
+    emit(ThemePickerInitial(themeCubit.state.collection, themeCubit.combinedLists, themeCubit.preference));
   }
 }

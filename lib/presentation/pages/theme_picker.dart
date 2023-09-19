@@ -128,6 +128,21 @@ class ThemePicker extends StatelessWidget {
     }
   }
 
+  void _openThemeCreator({required BuildContext context, required ThemeCubit themeCubit, ThemeCollection? original}) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BlocProvider<ThemeCreatorBloc>(
+            create: (context) => ThemeCreatorBloc(themeCubit: themeCubit, original: original),
+            child: const ThemeCreator(),
+          ),
+        )).then((value) {
+      if (value ?? false) {
+        context.read<ThemePickerBloc>().add(const ReloadThemesEvent());
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
@@ -142,16 +157,7 @@ class ThemePicker extends StatelessWidget {
           title: Text(loc.themePickerTitle),
           actions: [
             IconButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlocProvider<ThemeCreatorBloc>(
-                          create: (context) => ThemeCreatorBloc(themeCubit: themeCubit),
-                          child: const ThemeCreator(),
-                        ),
-                      ));
-                },
+                onPressed: () => _openThemeCreator(context: context, themeCubit: themeCubit),
                 icon: const Icon(Icons.add))
           ],
         ),
