@@ -148,9 +148,11 @@ class ThemePicker extends StatelessWidget {
     final loc = AppLocalizations.of(context)!;
 
     return BlocBuilder<ThemePickerBloc, ThemePickerState>(builder: (BuildContext context, ThemePickerState state) {
-      final size = min(MediaQuery.of(context).size.width / 2, 250.0);
+      final width = MediaQuery.of(context).size.width;
+      final size = min(width / 2, 250.0);
       final themeCubit = context.read<ThemeCubit>();
       final theme = themeCubit.state.theme;
+      final scrollOffset = size * state.themes.indexOf(state.selected) / (width / size / 2).floor();
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -163,6 +165,7 @@ class ThemePicker extends StatelessWidget {
         ),
         backgroundColor: theme.menuBackground,
         body: GridView.builder(
+          controller: ScrollController(initialScrollOffset: scrollOffset),
           itemCount: state.themes.length,
           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: size * 2, childAspectRatio: 1.9, crossAxisSpacing: 8.0, mainAxisSpacing: 8.0),
