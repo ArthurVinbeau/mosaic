@@ -297,12 +297,52 @@
   "@cannotBeUndone": {
     "description": "Warn the user that the action cannot be undone"
   },
-  "looseThemeChanges": "You will lose all the modifications you made to this theme.",
-  "@looseThemeChanges": {
+  "loseThemeChanges": "You will lose all the modifications you made to this theme.",
+  "@loseThemeChanges": {
     "description": "Warn the user that he will lose all modifications made to the theme"
   },
   "saveAndExit": "Save and exit",
   "@saveAndExit": {
     "description": "Save and exit the page"
+  },
+  "deleteTheme": "Delete theme?",
+  "@deleteTheme": {
+    "description": "Ask the user if he wants to delete the theme"
+  },
+  "deleteThemeBody": "This will remove {name} from your theme list.",
+  "@deleteThemeBody": {
+    "description": "Warn the user that he will lose all modifications made to the theme",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "My theme name"
+      }
+    }
+  },
+  "delete": "delete",
+  "@delete": {
+    "description": "delete button action"
+  },
+  "importTheme": "Import theme",
+  "@importTheme": {
+    "description": "Import theme dialog title"
+  },
+  "import": "import",
+  "@import": {
+    "description": "import button action"
+  },
+  "forbiddenCharacters": "You must not use any of the following characters: {characters}",
+  "@forbiddenCharacters": {
+    "description": "Warn the user about forbidden characters",
+    "characters": {
+      "name": {
+        "type": "String",
+        "example": ";./^¨"
+      }
+    }
+  },
+  "mustNotBeEmpty": "This field must not be empty",
+  "@mustNotBeEmpty": {
+    "description": "Warn the user when a field must not be empty"
   }
 }

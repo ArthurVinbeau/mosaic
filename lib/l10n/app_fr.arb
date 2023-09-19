@@ -61,6 +61,13 @@
   "themeControlsMoveDisabled": "Contrôle désactivé",
   "discardChanges": "Annuler les changements ?",
   "cannotBeUndone": "Cette action est définitive.",
-  "looseThemeChanges": "Vous perdrez toutes les modifications apportées à ce thème",
-  "saveAndExit": "Sauvegarder et fermer"
+  "loseThemeChanges": "Vous perdrez toutes les modifications apportées à ce thème",
+  "saveAndExit": "Sauvegarder et fermer",
+  "deleteTheme": "Supprimer le thème ?",
+  "deleteThemeBody": "Cela supprimera {name} de votre liste de thèmes.",
+  "delete": "supprimer",
+  "importTheme": "Importer le thème",
+  "import": "importer",
+  "forbiddenCharacters": "Vous ne devez pas utiliser lez caractères suivants : {characters}",
+  "mustNotBeEmpty": "Ce champ ne doit pas être vide."
 }
