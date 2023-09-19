@@ -37,8 +37,7 @@ class GameTheme implements Equatable {
   });
 
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         primaryColor,
         brightness,
         menuBackground,
@@ -229,9 +228,51 @@ class GameTheme implements Equatable {
     }
   }
 
-  static String _getColorHexValue(Color color) => color.value.toRadixString(16);
+  static String _getColorHexValue(Color color) {
+    String alpha = color.opacity < 1 ? color.alpha.toRadixString(16).padLeft(2, '0') : "";
+    String red = color.red.toRadixString(16).padLeft(2, '0');
+    String green = color.green.toRadixString(16).padLeft(2, '0');
+    String blue = color.blue.toRadixString(16).padLeft(2, '0');
 
-  static Color _getColorFromHexString(String input) => Color(int.parse(input, radix: 16));
+    // Reduce 0xFF to 0xF if all three values are doubles
+    if (red[0] == red[1] && green[0] == green[1] && blue[0] == blue[1]) {
+      red = red[0];
+      green = green[0];
+      blue = blue[0];
+    }
+
+    return alpha.isEmpty && red == green && red == blue ? alpha + red : alpha + red + green + blue;
+  }
+
+  static Color _getColorFromHexString(String input) {
+    String alpha, red, green, blue;
+
+    if (input.length == 5 || input.length == 8) {
+      alpha = input.substring(0, 2);
+      input = input.substring(2);
+    } else {
+      alpha = "FF";
+    }
+
+    if (input.length < 3) {
+      red = input;
+      green = input;
+      blue = input;
+    } else {
+      final colorSize = input.length == 3 ? 1 : 2;
+      red = input.substring(0, colorSize);
+      green = input.substring(colorSize, colorSize * 2);
+      blue = input.substring(colorSize * 2);
+    }
+
+    if (red.length == 1) {
+      red = red + red;
+      green = green + green;
+      blue = blue + blue;
+    }
+
+    return Color(int.parse(alpha + red + green + blue, radix: 16));
+  }
 
   @override
   bool? get stringify => true;
