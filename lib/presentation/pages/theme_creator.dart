@@ -166,7 +166,7 @@ class ThemeCreator extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(loc.looseThemeChanges),
+                        Text(loc.loseThemeChanges),
                         Text(loc.cannotBeUndone, style: const TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
