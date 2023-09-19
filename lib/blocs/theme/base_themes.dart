@@ -7,6 +7,7 @@ final List<ThemeCollection> themeCollections = [baseTheme, redTheme, blueTheme];
 
 const ThemeCollection baseTheme = ThemeCollection(
     name: "Base",
+    editable: false,
     light: GameTheme(
         primaryColor: Colors.blue,
         brightness: Brightness.light,
@@ -40,6 +41,7 @@ const ThemeCollection baseTheme = ThemeCollection(
 
 const ThemeCollection redTheme = ThemeCollection(
     name: "Red",
+    editable: false,
     light: GameTheme(
         primaryColor: Colors.red,
         brightness: Brightness.light,
@@ -73,6 +75,7 @@ const ThemeCollection redTheme = ThemeCollection(
 
 final ThemeCollection blueTheme = ThemeCollection(
     name: "Blue",
+    editable: false,
     light: GameTheme(
         primaryColor: Colors.blue,
         brightness: Brightness.light,

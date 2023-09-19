@@ -4,21 +4,26 @@ import './game_theme.dart';
 import '../utils/config.dart';
 
 class ThemeCollection implements Equatable {
+  final int id;
   final GameTheme light;
   final GameTheme dark;
   final String name;
+  final bool editable;
 
-  const ThemeCollection({required this.light, required this.dark, required this.name});
+  const ThemeCollection(
+      {this.id = -1, required this.light, required this.dark, required this.name, required this.editable});
 
-  const ThemeCollection.unique({required GameTheme theme, required this.name})
+  const ThemeCollection.unique({this.id = -1, required GameTheme theme, required this.name, required this.editable})
       : light = theme,
         dark = theme;
 
-  ThemeCollection copyWith({GameTheme? light, GameTheme? dark, String? name}) {
+  ThemeCollection copyWith({int? id, GameTheme? light, GameTheme? dark, String? name}) {
     return ThemeCollection(
       light: light ?? this.light.copyWith(),
       dark: dark ?? this.dark.copyWith(),
       name: name ?? this.name,
+      id: id ?? this.id,
+      editable: true,
     );
   }
 
@@ -36,7 +41,7 @@ class ThemeCollection implements Equatable {
       final name = list[0];
       final light = GameTheme.deserialize(list[1])!;
       final dark = GameTheme.deserialize(list[2])!;
-      return ThemeCollection(light: light, dark: dark, name: name);
+      return ThemeCollection(light: light, dark: dark, name: name, editable: true);
     } catch (e, stack) {
       logger.e(
         "Could not deserialize theme collection, make sure it is in the correct format: `$input`",
@@ -44,16 +49,17 @@ class ThemeCollection implements Equatable {
         stackTrace: stack,
       );
     }
+    return null;
   }
 
   @override
-  List<Object?> get props => [light, dark, name];
+  List<Object?> get props => [id, light, dark, name, editable];
 
   @override
   bool? get stringify => false;
 
   @override
   String toString() {
-    return 'ThemeCollection `$name`: {\n\tlight: $light,\n\rdark: $dark,\n}';
+    return '${editable ? "Editable" : "Non-editable"} ThemeCollection $id `$name`: {\n\tlight: $light,\n\rdark: $dark,\n}';
   }
 }

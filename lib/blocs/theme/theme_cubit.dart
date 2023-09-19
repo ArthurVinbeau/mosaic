@@ -16,6 +16,7 @@ class ThemeCubit extends Cubit<ThemeState> {
   ThemeCollection _collection;
   late GameTheme _theme;
 
+  int _idCounter = 0;
   late List<ThemeCollection> customThemes;
 
   List<ThemeCollection> get combinedLists => themeCollections + customThemes;
@@ -28,7 +29,7 @@ class ThemeCubit extends Cubit<ThemeState> {
     SharedPreferences.getInstance().then((SharedPreferences prefs) {
       customThemes = prefs
           .getStringList(ThemeKeys.custom)
-          ?.map((e) => ThemeCollection.deserialize(e))
+          ?.map((e) => ThemeCollection.deserialize(e)?.copyWith(id: _idCounter++))
           .whereType<ThemeCollection>()
           .toList() ??
           [];
@@ -74,7 +75,13 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   void saveCustomTheme(ThemeCollection collection) {
-    final index = customThemes.indexWhere((element) => element.name == collection.name);
+    int index = -1;
+
+    if (collection.id < 0) {
+      collection = collection.copyWith(id: _idCounter++);
+    } else {
+      index = customThemes.indexWhere((element) => element.id == collection.id);
+    }
 
     if (index > -1) {
       customThemes[index] = collection;
@@ -90,7 +97,7 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   Future<bool> deleteTheme(ThemeCollection collection) async {
-    final index = customThemes.indexWhere((element) => element.name == collection.name);
+    final index = customThemes.indexWhere((element) => element.id == collection.id);
 
     if (index == -1 || !customThemes.remove(collection)) {
       return false;
@@ -109,11 +116,7 @@ class ThemeCubit extends Cubit<ThemeState> {
     ThemeCollection? collection = ThemeCollection.deserialize(serializedCollection.trim());
 
     if (collection != null) {
-      if (customThemes.indexWhere((element) => element.name == collection!.name) > -1) {
-        collection = collection.copyWith(name: "Imported ${collection.name}");
-      }
-
-      saveCustomTheme(collection);
+      saveCustomTheme(collection.copyWith(id: _idCounter++));
       return collection;
     }
 
