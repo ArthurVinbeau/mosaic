@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme_creator/theme_creator_bloc.dart';
+import 'package:mosaic/entities/theme_collection.dart';
 
 class ThemeCreatorNameField extends StatefulWidget {
   const ThemeCreatorNameField({Key? key}) : super(key: key);
@@ -14,6 +16,8 @@ class _ThemeCreatorNameFieldState extends State<ThemeCreatorNameField> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+
     return BlocBuilder<ThemeCreatorBloc, ThemeCreatorState>(
         builder: (BuildContext context, ThemeCreatorState state) {
           controller.value = controller.value.copyWith(text: state.collection.name);
@@ -22,11 +26,11 @@ class _ThemeCreatorNameFieldState extends State<ThemeCreatorNameField> {
 
           if (state is ThemeNameErrorState) {
             switch (state.error) {
-              case ThemeCreatorNameError.alreadyExists:
-                errorText = "";
+              case ThemeCreatorNameError.forbiddenCharacters:
+                errorText = loc.forbiddenCharacters(ThemeCollection.reservedCharacters);
                 break;
               case ThemeCreatorNameError.mustNotBeEmpty:
-                errorText = "";
+                errorText = loc.mustNotBeEmpty;
                 break;
             }
           }

@@ -24,6 +24,12 @@ class ThemeNameErrorState extends ThemeCreatorState {
 
 class ShowExiConfirmationState extends ThemeCreatorState {
   const ShowExiConfirmationState(ThemeCollection collection) : super(collection);
+
+  // Force rebuild
+  static final _rand = Random();
+
+  @override
+  List<Object> get props => [_rand.nextDouble()];
 }
 
 class ExitPageState extends ThemeCreatorState {

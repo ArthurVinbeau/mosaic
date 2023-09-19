@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
@@ -15,9 +16,9 @@ class ThemeCreatorBloc extends Bloc<ThemeCreatorEvent, ThemeCreatorState> {
 
   ThemeCollection _collection;
 
-  ThemeCreatorBloc({required this.themeCubit, ThemeCollection? original})
-      : _collection = original?.copyWith() ?? themeCubit.defaultTheme.copyWith(name: "New Theme"),
-        super(ThemeCreatorInitial(original ?? themeCubit.defaultTheme.copyWith(name: "New Theme"))) {
+  ThemeCreatorBloc({required this.themeCubit, required ThemeCollection original})
+      : _collection = original,
+        super(ThemeCreatorInitial(original)) {
     on<SetThemeColorsEvent>(_setThemeColor);
     on<SetThemeNameEvent>(_setThemeName);
     on<SaveThemeEvent>(_saveTheme);
@@ -37,8 +38,8 @@ class ThemeCreatorBloc extends Bloc<ThemeCreatorEvent, ThemeCreatorState> {
     final name = event.name.trim();
     if (name.isEmpty) {
       emit(ThemeNameErrorState(ThemeCreatorNameError.mustNotBeEmpty, _collection));
-    } else if (themeCubit.customThemes.any((element) => element.name == name)) {
-      emit(ThemeNameErrorState(ThemeCreatorNameError.alreadyExists, _collection));
+    } else if (name.contains(RegExp('[${ThemeCollection.reservedCharacters}]+'))) {
+      emit(ThemeNameErrorState(ThemeCreatorNameError.forbiddenCharacters, _collection));
     } else {
       _collection = _collection.copyWith(name: name);
       emit(ThemeCreatorInitial(_collection));
@@ -60,6 +61,6 @@ class ThemeCreatorBloc extends Bloc<ThemeCreatorEvent, ThemeCreatorState> {
 }
 
 enum ThemeCreatorNameError {
-  alreadyExists,
+  forbiddenCharacters,
   mustNotBeEmpty,
 }

@@ -13,3 +13,10 @@ class ThemePickerInitial extends ThemePickerState {
   const ThemePickerInitial(ThemeCollection selected, List<ThemeCollection> themes, Brightness? brightness)
       : super(selected, themes, brightness);
 }
+
+class OpenThemeCreator extends ThemePickerState {
+  final ThemeCollection original;
+
+  const OpenThemeCreator(this.original, ThemeCollection selected, List<ThemeCollection> themes, Brightness? brightness)
+      : super(selected, themes, brightness);
+}
