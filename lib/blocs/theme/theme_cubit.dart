@@ -88,6 +88,22 @@ class ThemeCubit extends Cubit<ThemeState> {
 
     setTheme(collection);
   }
+
+  Future<bool> deleteTheme(ThemeCollection collection) async {
+    final index = customThemes.indexWhere((element) => element.name == collection.name);
+
+    if (index == -1 || !customThemes.remove(collection)) {
+      return false;
+    }
+
+    final selected = combinedLists[themeCollections.length + index - 1];
+    setTheme(selected);
+
+    final pref = await SharedPreferences.getInstance();
+    pref.setStringList(ThemeKeys.custom, customThemes.map((e) => e.serialize()).toList());
+
+    return true;
+  }
 }
 
 abstract class ThemeKeys {
