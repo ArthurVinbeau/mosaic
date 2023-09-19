@@ -27,10 +27,10 @@ class ThemeCubit extends Cubit<ThemeState> {
         super(GameThemeState(baseTheme.light, baseTheme)) {
     SharedPreferences.getInstance().then((SharedPreferences prefs) {
       customThemes = prefs
-              .getStringList(ThemeKeys.custom)
-              ?.map((e) => ThemeCollection.deserialize(e))
-              .whereType<ThemeCollection>()
-              .toList() ??
+          .getStringList(ThemeKeys.custom)
+          ?.map((e) => ThemeCollection.deserialize(e))
+          .whereType<ThemeCollection>()
+          .toList() ??
           [];
 
       final index = prefs.getInt(ThemeKeys.index) ?? -1;
@@ -103,6 +103,21 @@ class ThemeCubit extends Cubit<ThemeState> {
     pref.setStringList(ThemeKeys.custom, customThemes.map((e) => e.serialize()).toList());
 
     return true;
+  }
+
+  ThemeCollection? importCustomTheme(String serializedCollection) {
+    ThemeCollection? collection = ThemeCollection.deserialize(serializedCollection.trim());
+
+    if (collection != null) {
+      if (customThemes.indexWhere((element) => element.name == collection!.name) > -1) {
+        collection = collection.copyWith(name: "Imported ${collection.name}");
+      }
+
+      saveCustomTheme(collection);
+      return collection;
+    }
+
+    return null;
   }
 }
 
