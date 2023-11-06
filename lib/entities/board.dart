@@ -11,17 +11,22 @@ class Board {
 
   final double density;
 
-  final Random _rand;
+  late final Random _rand;
+  late final int seed;
 
   String? _gameDesc;
 
-  Board({this.height = 8, this.width = 8, this.density = 0.5}) : _rand = Random();
+  Board({this.height = 8, this.width = 8, this.density = 0.5, int? seed}) {
+    this.seed = seed ?? Random().nextInt(1 << 32);
+    _rand = Random(this.seed);
+  }
 
   Board.from(Board other)
       : height = other.height,
         width = other.width,
         density = other.density,
         _rand = other._rand,
+        seed = other.seed,
         _gameDesc = other._gameDesc {
     cells = [];
     for (int i = 0; i < other.height; i++) {
