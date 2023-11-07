@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
               locale: localeState.locale,
               supportedLocales: AppLocalizations.supportedLocales,
               theme: ThemeData(
-                primarySwatch: themeState.theme.primaryColor,
+                colorSchemeSeed: themeState.theme.primaryColor,
                 brightness: themeState.theme.brightness,
                 useMaterial3: true,
               ),
