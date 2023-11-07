@@ -169,6 +169,8 @@ class _FreeDrawingState extends State<FreeDrawing> with WidgetsBindingObserver {
 
   @override
   void didChangeMetrics() {
-    _position = null;
+    setState(() {
+      _position = null;
+    });
   }
 }
