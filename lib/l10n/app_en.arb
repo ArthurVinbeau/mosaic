@@ -352,5 +352,17 @@
   "copiedGameSeed": "Copied game seed to clipboard",
   "@copiedGameSeed": {
     "description": "Informs the user the game seed was copied to the clipboard"
+  },
+  "importGameSeed": "Import game seed",
+  "@importGameSeed": {
+    "description": "import game seed button & title"
+  },
+  "gameSeed": "Game seed",
+  "@gameSeed": {
+    "description": "game seed label"
+  },
+  "invalidSeedMessage": "Could not load invalid seed",
+  "@invalidSeedMessage": {
+    "description": "Informs the user the provided seed is invalid"
   }
 }

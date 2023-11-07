@@ -71,5 +71,8 @@
   "forbiddenCharacters": "Vous ne devez pas utiliser lez caractères suivants : {characters}",
   "mustNotBeEmpty": "Ce champ ne doit pas être vide.",
   "copyGameSeed": "Copier la seed",
-  "copiedGameSeed": "La seed a été copiée dans le presse-papier."
+  "copiedGameSeed": "La seed a été copiée dans le presse-papier.",
+  "importGameSeed": "Importer une seed",
+  "gameSeed": "Seed",
+  "invalidSeedMessage": "Chargement impossible, seed invalide."
 }
