@@ -13,6 +13,8 @@ class ShowNewGameOptionsEvent extends GameEvent {}
 
 class RestartGameButtonEvent extends GameEvent {}
 
+class ExportSeedEvent extends GameEvent {}
+
 class RestartGameEvent extends GameEvent {}
 
 class TilePressedGameEvent extends GameEvent {

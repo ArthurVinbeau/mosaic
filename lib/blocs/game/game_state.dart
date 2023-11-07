@@ -33,6 +33,8 @@ class NewBoardGameState extends BoardGameState {
   NewBoardGameState(Board board, this.controls) : super(board);
 }
 
+class ShowCopySnackbar extends GameState {}
+
 class ShowDialogState extends GameState {
   final GameEvent confirmationEvent;
   final bool pop;

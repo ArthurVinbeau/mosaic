@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:mosaic/blocs/timer/timer_bloc.dart';
 import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/entities/cell.dart';
@@ -12,7 +13,6 @@ import 'package:mosaic/utils/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'game_event.dart';
-
 part 'game_state.dart';
 
 Board _generateBoard(Board board) {
@@ -54,6 +54,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<AppStartedEvent>(_checkForSave);
     on<ResumeGameEvent>(_resumeGame);
     on<ShouldRebuildEvent>(_rebuildGame);
+    on<ExportSeedEvent>(_exportSeed);
   }
 
   void _rebuildGame(ShouldRebuildEvent event, Emitter emit) {
@@ -275,6 +276,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     moveManager = MoveManager();
     emit(GeneratingBoardGameState());
     emit(NewBoardGameState(board!, controls));
+  }
+
+  void _exportSeed(ExportSeedEvent event, Emitter emit) async {
+    await Clipboard.setData(ClipboardData(text: "${board?.height};${board?.width};${board?.seed}"));
+    emit(ShowCopySnackbar());
   }
 }
 
