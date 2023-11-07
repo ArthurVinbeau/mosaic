@@ -35,6 +35,8 @@ class NewBoardGameState extends BoardGameState {
 
 class ShowCopySnackbar extends GameState {}
 
+class ShowInvalidSeedSnackbar extends GameState {}
+
 class ShowDialogState extends GameState {
   final GameEvent confirmationEvent;
   final bool pop;

@@ -9,6 +9,12 @@ class CreateGameEvent extends GameEvent {
   CreateGameEvent(this.height, this.width);
 }
 
+class ImportGameEvent extends GameEvent {
+  final String seed;
+
+  ImportGameEvent(this.seed);
+}
+
 class ShowNewGameOptionsEvent extends GameEvent {}
 
 class RestartGameButtonEvent extends GameEvent {}

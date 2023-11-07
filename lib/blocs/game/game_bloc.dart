@@ -41,7 +41,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         controls = GameControls(false, false, false, false),
         validTiles = 0,
         super(NotStartedGameState(baseHeight, baseWidth, false)) {
-    on<CreateGameEvent>(_newGame);
+    on<CreateGameEvent>(_createNewGame);
+    on<ImportGameEvent>(_importGame);
     on<ShowNewGameOptionsEvent>(_showNewGameWidget);
     on<RestartGameButtonEvent>(_showRestartGameConfirmation);
     on<RestartGameEvent>(_restartGame);
@@ -65,15 +66,37 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  void _newGame(CreateGameEvent event, Emitter emit) async {
+  Future<void> _newGame({required Emitter emit, required int height, required int width, int? seed}) async {
     _timerBloc.add(const TimerReset());
     status = GameStatus.generating;
-    emit(GeneratingBoardGameState(height: event.height, width: event.width));
-    board = await compute(_generateBoard, Board(height: event.height, width: event.width));
+    emit(GeneratingBoardGameState(height: height, width: width));
+    board = await compute(_generateBoard, Board(height: height, width: width, seed: seed));
     status = GameStatus.running;
     validTiles = 0;
     moveManager = MoveManager();
     emit(NewBoardGameState(board!, controls));
+  }
+
+  void _createNewGame(CreateGameEvent event, Emitter emit) async {
+    await _newGame(emit: emit, height: event.height, width: event.width);
+  }
+
+  void _importGame(ImportGameEvent event, Emitter emit) async {
+    final list = event.seed.split(";");
+    if (list.length != 3) {
+      emit(ShowInvalidSeedSnackbar());
+      return;
+    }
+
+    final height = int.tryParse(list[0]);
+    final width = int.tryParse(list[1]);
+    final seed = int.tryParse(list[2]);
+    if (height == null || height < 3 || width == null || width < 3 || seed == null || seed < 0) {
+      emit(ShowInvalidSeedSnackbar());
+      return;
+    }
+
+    await _newGame(emit: emit, height: height, width: width, seed: seed);
   }
 
   void _showNewGameWidget(ShowNewGameOptionsEvent event, Emitter emit) {
