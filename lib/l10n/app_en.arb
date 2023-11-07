@@ -344,5 +344,13 @@
   "mustNotBeEmpty": "This field must not be empty",
   "@mustNotBeEmpty": {
     "description": "Warn the user when a field must not be empty"
+  },
+  "copyGameSeed": "Copy game seed",
+  "@copyGameSeed": {
+    "description": "Copy the game seed for sharing & debugging"
+  },
+  "copiedGameSeed": "Copied game seed to clipboard",
+  "@copiedGameSeed": {
+    "description": "Informs the user the game seed was copied to the clipboard"
   }
 }

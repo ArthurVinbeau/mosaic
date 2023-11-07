@@ -93,28 +93,57 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
       if (vertical) {
         body = Row(children: [SizedBox(width: size.width - 64, child: body), _getControls(context, state.theme, true)]);
       }
-      return Scaffold(
-        appBar: AppBar(
-          title: RepaintBoundary(
-            child: BlocBuilder<TimerBloc, TimerState>(
-              buildWhen: (prev, state) => prev.duration != state.duration,
-              builder: (context, state) {
-                return Text(state.toString());
-              },
+
+      final loc = AppLocalizations.of(context)!;
+
+      return BlocListener<GameBloc, GameState>(
+        listenWhen: (previous, current) => current is ShowCopySnackbar,
+        listener: (context, state) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.copiedGameSeed)));
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: RepaintBoundary(
+              child: BlocBuilder<TimerBloc, TimerState>(
+                buildWhen: (prev, state) => prev.duration != state.duration,
+                builder: (context, state) {
+                  return Text(state.toString());
+                },
+              ),
             ),
+            centerTitle: true,
+            actions: [
+              MenuAnchor(
+                builder: (BuildContext context, MenuController controller, Widget? child) {
+                  return IconButton(
+                    onPressed: () {
+                      if (controller.isOpen) {
+                        controller.close();
+                      } else {
+                        controller.open();
+                      }
+                    },
+                    icon: const Icon(Icons.more_vert),
+                    tooltip: 'Show menu',
+                  );
+                },
+                menuChildren: [
+                  MenuItemButton(
+                    onPressed: () => context.read<GameBloc>().add(RestartGameButtonEvent()),
+                    child: Text(loc.restartGame),
+                  ),
+                  MenuItemButton(
+                    onPressed: () => context.read<GameBloc>().add(ExportSeedEvent()),
+                    child: Text(loc.copyGameSeed),
+                  ),
+                ],
+              ),
+            ],
           ),
-          centerTitle: true,
-          actions: [
-            IconButton(
-              onPressed: () => context.read<GameBloc>().add(RestartGameButtonEvent()),
-              icon: const Icon(Icons.refresh),
-              tooltip: AppLocalizations.of(context)!.restartGame,
-            )
-          ],
+          body: body,
+          backgroundColor: state.theme.gameBackground,
+          bottomSheet: vertical ? null : _getControls(context, state.theme, false),
         ),
-        body: body,
-        backgroundColor: state.theme.gameBackground,
-        bottomSheet: vertical ? null : _getControls(context, state.theme, false),
       );
     });
   }

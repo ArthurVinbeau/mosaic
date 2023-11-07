@@ -69,5 +69,7 @@
   "importTheme": "Importer le thème",
   "import": "importer",
   "forbiddenCharacters": "Vous ne devez pas utiliser lez caractères suivants : {characters}",
-  "mustNotBeEmpty": "Ce champ ne doit pas être vide."
+  "mustNotBeEmpty": "Ce champ ne doit pas être vide.",
+  "copyGameSeed": "Copier la seed",
+  "copiedGameSeed": "La seed a été copiée dans le presse-papier."
 }
