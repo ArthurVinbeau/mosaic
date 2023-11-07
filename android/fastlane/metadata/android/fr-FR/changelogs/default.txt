@@ -1,3 +1,5 @@
-Nouvelle animation de chargement
+Passage au Material Design 3
+Créez, modifiez, partagez et importez les thèmes visuels !
+Partagez la seed avec vos amis pour vous affronter avec le même plateau !
 
 Cette mise à jour contient diverses améliorations visuelles et corrections de bugs

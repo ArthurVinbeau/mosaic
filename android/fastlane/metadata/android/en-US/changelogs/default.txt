@@ -1,3 +1,5 @@
-New loading animation
+Moved to Material Design 3
+Create, edit, share & import game themes!
+Share the game seed with your friends to compete with the same board!
 
 This update contains various visual improvements and bug fixes.
