@@ -364,5 +364,29 @@
   "invalidSeedMessage": "Could not load invalid seed",
   "@invalidSeedMessage": {
     "description": "Informs the user the provided seed is invalid"
+  },
+  "about": "About",
+  "@about": {
+    "description": "About page button"
+  },
+  "extras": "Extras",
+  "@extras": {
+    "description": "Extras page button"
+  },
+  "loadingAnimation": "Loading Animation",
+  "@loadingAnimation": {
+    "description": "Loading animation picker title"
+  },
+  "boardSize": "Board size",
+  "@boardSize": {
+    "description": "Board size picker title"
+  },
+  "startAnimation": "Start animation",
+  "@startAnimation": {
+    "description": "Start animation button"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button"
   }
 }

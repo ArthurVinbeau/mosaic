@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:mosaic/blocs/game/game_bloc.dart';
 
 class NewGameWidget extends StatefulWidget {
-  final int height, width;
+  /// The starting height displayed int the [TextField]
+  final int height;
 
-  const NewGameWidget({Key? key, required this.height, required this.width}) : super(key: key);
+  /// The starting width displayed int the [TextField]
+  final int width;
+
+  /// The function called when the user has validated his input
+  final void Function(int height, int width) onValidate;
+
+  /// The title displayed above the size selection
+  final String title;
+
+  /// The text displayed on the validation button
+  final String validateButtonText;
+
+  const NewGameWidget(
+      {Key? key,
+      required this.height,
+      required this.width,
+      required this.onValidate,
+      required this.title,
+      required this.validateButtonText})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _NewGameWidgetState();
@@ -97,7 +115,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 24.0),
-          child: Text(loc.difficultyPickerHeader, style: Theme.of(context).textTheme.titleLarge),
+          child: Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
         ),
         DropdownButton<int>(
           value: _dropDownValue,
@@ -140,11 +158,11 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           ),
         ),
         ElevatedButton(
-          child: Text(loc.newGame),
+          child: Text(widget.validateButtonText),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              context.read<GameBloc>().add(CreateGameEvent(_height, _width));
+              widget.onValidate(_height, _width);
             }
           },
         ),

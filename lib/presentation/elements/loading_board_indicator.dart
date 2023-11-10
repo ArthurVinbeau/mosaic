@@ -4,13 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/entities/loading_painter.dart';
 
-import '../blocs/theme/theme_cubit.dart';
+import '../../blocs/theme/theme_cubit.dart';
 
 class LoadingBoardIndicator extends StatefulWidget {
   final int height;
   final int width;
+  final bool showLoadingText;
 
-  const LoadingBoardIndicator({Key? key, required this.height, required this.width}) : super(key: key);
+  const LoadingBoardIndicator({Key? key, required this.height, required this.width, this.showLoadingText = true})
+      : super(key: key);
 
   @override
   State<LoadingBoardIndicator> createState() => _LoadingBoardIndicatorState();
@@ -48,15 +50,16 @@ class _LoadingBoardIndicatorState extends State<LoadingBoardIndicator> {
                           cycle: cycle),
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.75),
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                  if (widget.showLoadingText)
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.75),
+                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: Text(AppLocalizations.of(context)!.generatingBoard,
+                          style: const TextStyle(color: Colors.white), textAlign: TextAlign.center),
                     ),
-                    child: Text(AppLocalizations.of(context)!.generatingBoard,
-                        style: const TextStyle(color: Colors.white), textAlign: TextAlign.center),
-                  ),
                 ],
               ),
             );

@@ -74,5 +74,11 @@
   "copiedGameSeed": "La seed a été copiée dans le presse-papier.",
   "importGameSeed": "Importer une seed",
   "gameSeed": "Seed",
-  "invalidSeedMessage": "Chargement impossible, seed invalide."
+  "invalidSeedMessage": "Chargement impossible, seed invalide.",
+  "about": "À propos",
+  "extras": "Extras",
+  "loadingAnimation": "Animation de chargement",
+  "boardSize": "Taille du plateau",
+  "startAnimation": "Lancer l'animation",
+  "close": "Fermer"
 }

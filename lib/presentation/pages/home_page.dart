@@ -68,7 +68,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      NewGameWidget(height: state.baseHeight, width: state.baseWidth),
+                      NewGameWidget(
+                        height: state.baseHeight,
+                        width: state.baseWidth,
+                        title: loc.difficultyPickerHeader,
+                        validateButtonText: loc.newGame,
+                        onValidate: (height, width) => context.read<GameBloc>().add(CreateGameEvent(height, width)),
+                      ),
                       if (state.canResume)
                         Container(
                           padding: const EdgeInsets.all(32.0),

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/presentation/elements/free_drawing.dart';
-import 'package:mosaic/presentation/loading_board_indicator.dart';
+import 'package:mosaic/presentation/elements/loading_board_indicator.dart';
 import 'package:mosaic/utils/config.dart';
 
 class BoardWidget extends StatelessWidget {
@@ -50,7 +50,7 @@ class BoardWidget extends StatelessWidget {
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(primary: theme.errorColor),
+                    style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
                     child: Text(dismiss)),
                 ElevatedButton(
                     onPressed: () {
