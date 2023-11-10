@@ -1,5 +1,6 @@
 Passage au Material Design 3
 Créez, modifiez, partagez et importez les thèmes visuels !
 Partagez la seed avec vos amis pour vous affronter avec le même plateau !
+Détendez-vous devant l'animation de chargement à volonté depuis le menu des extras !
 
 Cette mise à jour contient diverses améliorations visuelles et corrections de bugs
