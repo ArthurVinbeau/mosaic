@@ -43,7 +43,7 @@ const ThemeCollection redTheme = ThemeCollection(
     light: GameTheme(
         primaryColor: Colors.red,
         brightness: Brightness.light,
-        gameBackground: Color(0xFFFFB0B0),
+        gameBackground: Color(0xFFF1E7E7),
         cellBase: Color(0xffff8b8b),
         cellEmpty: Colors.red,
         cellFilled: Color(0xff590606),
