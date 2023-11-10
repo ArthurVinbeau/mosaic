@@ -69,7 +69,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
         style: enabled
             ? theme.textTheme.titleMedium
             : theme.textTheme.titleMedium?.copyWith(color: theme.textTheme.titleMedium?.color?.withOpacity(0.35)),
-        decoration: InputDecoration(label: Text(label), errorMaxLines: 10),
+        decoration: InputDecoration(label: Text(label), errorMaxLines: 10, border: const OutlineInputBorder()),
         onSaved: (String? value) {
           if (value != null) {
             onSaved(int.tryParse(value));
@@ -88,7 +88,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final List<DropdownMenuItem<int>> opts = [];
+    final List<DropdownMenuEntry<int>> opts = [];
     final loc = AppLocalizations.of(context)!;
     final difficulties = [
       loc.beginnerLevel,
@@ -107,7 +107,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
       if (o.height != null && o.width != null) {
         text += " (${o.height}x${o.width})";
       }
-      opts.add(DropdownMenuItem(value: i, child: Text(text)));
+      opts.add(DropdownMenuEntry(value: i, label: text));
     }
 
     return Column(
@@ -117,9 +117,9 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 24.0),
           child: Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
         ),
-        DropdownButton<int>(
-          value: _dropDownValue,
-          onChanged: (int? newValue) {
+        DropdownMenu<int>(
+          initialSelection: _dropDownValue,
+          onSelected: (int? newValue) {
             if (newValue != null) {
               setState(() {
                 _dropDownValue = newValue;
@@ -130,7 +130,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
               });
             }
           },
-          items: opts,
+          dropdownMenuEntries: opts,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
