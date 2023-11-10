@@ -1,9 +1,9 @@
-# mosaic `1.5.0+9`
+# mosaic `1.6.0+12`
 
 A flutter implementation of Mosaic
 from [Simon Tatham's Portable Puzzle Collection](https://www.chiark.greenend.org.uk/~sgtatham/puzzles/)
 
-- Flutter version `3.0.5`
+- Flutter version `3.13.9`
 
 # First steps
 
