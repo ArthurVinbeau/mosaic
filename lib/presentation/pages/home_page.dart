@@ -45,7 +45,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       return Scaffold(
         appBar: AppBar(
           title: Text(loc.appTitle),
-          backgroundColor: state.theme.menuBackground,
           centerTitle: true,
           actions: [
             IconButton(
@@ -117,7 +116,6 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             Navigator.push(context, MaterialPageRoute(builder: (ctx) => const TutorialPage()));
           },
         ),
-        backgroundColor: state.theme.menuBackground,
       );
     });
   }

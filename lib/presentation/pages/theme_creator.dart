@@ -16,8 +16,6 @@ class ThemeCreator extends StatelessWidget {
 
   const ThemeCreator({Key? key}) : super(key: key);
 
-  Color _getBackground(Color color) => color.computeLuminance() > 0.5 ? Colors.black : Colors.white;
-
   Widget _getColorRow({
     required BuildContext context,
     required String label,
@@ -34,16 +32,8 @@ class ThemeCreator extends StatelessWidget {
       collection: collection,
       colorKey: colorKey,
       outputMaterialColor: outputMaterialColor,
-      lightChild: Container(
-        color: _getBackground(light),
-        padding: const EdgeInsets.all(4),
-        child: Container(color: light),
-      ),
-      darkChild: Container(
-        color: _getBackground(dark),
-        padding: const EdgeInsets.all(4),
-        child: Container(color: dark),
-      ),
+      lightChild: Container(color: light),
+      darkChild: Container(color: dark),
     );
   }
 
@@ -63,22 +53,14 @@ class ThemeCreator extends StatelessWidget {
         colorKey: colorKey,
         outputMaterialColor: false,
         lightChild: Container(
-          color: _getBackground(collection.light.gameBackground),
-          padding: const EdgeInsets.all(4),
-          child: Container(
-            color: collection.light.gameBackground,
-            alignment: Alignment.center,
-            child: Icon(Icons.redo, color: light),
-          ),
+          color: collection.light.gameBackground,
+          alignment: Alignment.center,
+          child: Icon(Icons.redo, color: light),
         ),
         darkChild: Container(
-          color: _getBackground(collection.dark.gameBackground),
-          padding: const EdgeInsets.all(4),
-          child: Container(
-            color: collection.dark.gameBackground,
-            alignment: Alignment.center,
-            child: Icon(Icons.undo, color: dark),
-          ),
+          color: collection.dark.gameBackground,
+          alignment: Alignment.center,
+          child: Icon(Icons.undo, color: dark),
         ));
   }
 
@@ -148,7 +130,11 @@ class ThemeCreator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = context.read<ThemeCubit>().state.theme.brightness;
+    final brightness = context
+        .read<ThemeCubit>()
+        .state
+        .theme
+        .brightness;
     final loc = AppLocalizations.of(context)!;
 
     return BlocConsumer<ThemeCreatorBloc, ThemeCreatorState>(
@@ -160,7 +146,8 @@ class ThemeCreator extends StatelessWidget {
           final bloc = context.read<ThemeCreatorBloc>();
           showDialog(
               context: context,
-              builder: (context) => AlertDialog(
+              builder: (context) =>
+                  AlertDialog(
                     title: Text(loc.discardChanges),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -173,7 +160,10 @@ class ThemeCreator extends StatelessWidget {
                     actions: [
                       TextButton(onPressed: () => Navigator.pop(context), child: Text(loc.cancelDialog)),
                       FilledButton(
-                          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+                          style: FilledButton.styleFrom(backgroundColor: Theme
+                              .of(context)
+                              .colorScheme
+                              .error),
                           onPressed: () {
                             bloc.add(const ConfirmExitPageEvent());
                             Navigator.pop(context);
@@ -190,9 +180,6 @@ class ThemeCreator extends StatelessWidget {
             return false;
           },
           child: Scaffold(
-            backgroundColor: brightness == Brightness.light
-                ? state.collection.light.menuBackground
-                : state.collection.dark.menuBackground,
             appBar: AppBar(
               title: const Padding(
                 padding: EdgeInsets.only(left: 16.0, right: 48),
@@ -271,12 +258,6 @@ class ThemeCreator extends StatelessWidget {
                               collection: state.collection,
                               colorKey: 'primaryColor',
                               outputMaterialColor: true,
-                            ),
-                            _getColorRow(
-                              context: context,
-                              label: loc.themeMenuBackground,
-                              collection: state.collection,
-                              colorKey: 'menuBackground',
                             ),
                             _getColorRow(
                               context: context,

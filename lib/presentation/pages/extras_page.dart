@@ -14,7 +14,6 @@ class ExtrasPage extends StatelessWidget {
     final loc = AppLocalizations.of(context)!;
     return BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
       return Scaffold(
-        backgroundColor: state.theme.menuBackground,
         appBar: AppBar(
           title: Text(loc.extras),
           centerTitle: true,

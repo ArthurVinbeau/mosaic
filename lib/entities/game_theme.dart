@@ -6,7 +6,6 @@ import '../utils/config.dart';
 class GameTheme implements Equatable {
   final MaterialColor primaryColor;
   final Brightness brightness;
-  final Color menuBackground;
   final Color gameBackground;
   final Color cellBase;
   final Color cellEmpty;
@@ -22,7 +21,6 @@ class GameTheme implements Equatable {
   const GameTheme({
     required this.primaryColor,
     required this.brightness,
-    required this.menuBackground,
     required this.gameBackground,
     required this.cellBase,
     required this.cellEmpty,
@@ -37,11 +35,9 @@ class GameTheme implements Equatable {
   });
 
   @override
-  List<Object?> get props =>
-      [
+  List<Object?> get props => [
         primaryColor,
         brightness,
-        menuBackground,
         gameBackground,
         cellBase,
         cellEmpty,
@@ -58,7 +54,6 @@ class GameTheme implements Equatable {
   GameTheme copyWith({
     MaterialColor? primaryColor,
     Brightness? brightness,
-    Color? menuBackground,
     Color? gameBackground,
     Color? cellBase,
     Color? cellEmpty,
@@ -74,7 +69,6 @@ class GameTheme implements Equatable {
     return GameTheme(
       primaryColor: primaryColor ?? this.primaryColor,
       brightness: brightness ?? this.brightness,
-      menuBackground: menuBackground ?? this.menuBackground,
       gameBackground: gameBackground ?? this.gameBackground,
       cellBase: cellBase ?? this.cellBase,
       cellEmpty: cellEmpty ?? this.cellEmpty,
@@ -93,7 +87,6 @@ class GameTheme implements Equatable {
     return GameTheme(
       primaryColor: key == 'primaryColor' ? value as MaterialColor : primaryColor,
       brightness: key == 'brightness' ? value as Brightness : brightness,
-      menuBackground: key == 'menuBackground' ? value as Color : menuBackground,
       gameBackground: key == 'gameBackground' ? value as Color : gameBackground,
       cellBase: key == 'cellBase' ? value as Color : cellBase,
       cellEmpty: key == 'cellEmpty' ? value as Color : cellEmpty,
@@ -112,8 +105,6 @@ class GameTheme implements Equatable {
     switch (key) {
       case 'primaryColor':
         return primaryColor;
-      case 'menuBackground':
-        return menuBackground;
       case 'gameBackground':
         return gameBackground;
       case 'cellBase':
@@ -156,7 +147,6 @@ class GameTheme implements Equatable {
         '${_getColorHexValue(primaryColor.shade700)},'
         '${_getColorHexValue(primaryColor.shade800)},'
         '${_getColorHexValue(primaryColor.shade900)}';
-    result += ";${_getColorHexValue(menuBackground)}";
     result += ";${_getColorHexValue(gameBackground)}";
     result += ";${_getColorHexValue(cellBase)}";
     result += ";${_getColorHexValue(cellEmpty)}";
@@ -192,23 +182,21 @@ class GameTheme implements Equatable {
         900: _getColorFromHexString(primaryList[10]),
       });
 
-      final menuBackground = _getColorFromHexString(list[2]);
-      final gameBackground = _getColorFromHexString(list[3]);
-      final cellBase = _getColorFromHexString(list[4]);
-      final cellEmpty = _getColorFromHexString(list[5]);
-      final cellFilled = _getColorFromHexString(list[6]);
-      final cellTextBase = _getColorFromHexString(list[7]);
-      final cellTextEmpty = _getColorFromHexString(list[8]);
-      final cellTextFilled = _getColorFromHexString(list[9]);
-      final cellTextError = _getColorFromHexString(list[10]);
-      final cellTextComplete = _getColorFromHexString(list[11]);
-      final controlsMoveEnabled = _getColorFromHexString(list[12]);
-      final controlsMoveDisabled = _getColorFromHexString(list[13]);
+      final gameBackground = _getColorFromHexString(list[2]);
+      final cellBase = _getColorFromHexString(list[3]);
+      final cellEmpty = _getColorFromHexString(list[4]);
+      final cellFilled = _getColorFromHexString(list[5]);
+      final cellTextBase = _getColorFromHexString(list[6]);
+      final cellTextEmpty = _getColorFromHexString(list[7]);
+      final cellTextFilled = _getColorFromHexString(list[8]);
+      final cellTextError = _getColorFromHexString(list[9]);
+      final cellTextComplete = _getColorFromHexString(list[10]);
+      final controlsMoveEnabled = _getColorFromHexString(list[11]);
+      final controlsMoveDisabled = _getColorFromHexString(list[12]);
 
       return GameTheme(
         primaryColor: primaryColor,
         brightness: brightness,
-        menuBackground: menuBackground,
         gameBackground: gameBackground,
         cellBase: cellBase,
         cellEmpty: cellEmpty,

@@ -264,7 +264,6 @@ class ThemePicker extends StatelessWidget {
                     icon: const Icon(Icons.file_download_outlined))
               ],
             ),
-            backgroundColor: theme.menuBackground,
             body: ListView.builder(
               controller: ScrollController(initialScrollOffset: scrollOffset),
               itemCount: state.themes.length,

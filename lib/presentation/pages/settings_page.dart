@@ -25,7 +25,6 @@ class SettingsPage extends StatelessWidget {
             title: Text(loc.settingsTitle),
             centerTitle: true,
           ),
-          backgroundColor: state.theme.menuBackground,
           body: BlocBuilder<LocaleBloc, LocaleState>(
             builder: (context, state) {
               return LayoutBuilder(builder: (BuildContext context, BoxConstraints viewportConstraints) {
@@ -92,13 +91,11 @@ class SettingsPage extends StatelessWidget {
                             child: ElevatedButton(
                                 onPressed: () async {
                                   final info = await PackageInfo.fromPlatform();
-                                  // if (!context.mounted) return;
-                                  Navigator.push(
-                                      navigatorKey.currentContext!,
-                                      MaterialPageRoute(
-                                          builder: (ctx) => AboutDialog(
-                                                applicationVersion: info.buildNumber,
-                                              )));
+                                  showDialog(
+                                      context: navigatorKey.currentContext!,
+                                      builder: (ctx) => AboutDialog(
+                                            applicationVersion: info.buildNumber,
+                                          ));
                                 },
                                 child: Text(loc.about)),
                           ),

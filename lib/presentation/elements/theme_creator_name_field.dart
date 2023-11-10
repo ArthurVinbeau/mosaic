@@ -40,16 +40,14 @@ class _ThemeCreatorNameFieldState extends State<ThemeCreatorNameField> {
               errorText: errorText,
             ),
             onChanged: (String value) {
-              if (value
-                  .trim()
-                  .isNotEmpty) {
+              if (value.trim().isNotEmpty) {
                 context.read<ThemeCreatorBloc>().add(SetThemeNameEvent(value.trim()));
               }
             },
           );
         },
         buildWhen: (previous, current) =>
-        previous.runtimeType != current.runtimeType ||
+            previous.runtimeType != current.runtimeType ||
             previous is ThemeNameErrorState && previous.error != (current as ThemeNameErrorState).error ||
             previous.collection.name != current.collection.name);
   }
