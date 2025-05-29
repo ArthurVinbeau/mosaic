@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/theme_creator/theme_creator_bloc.dart';
 import 'package:mosaic/entities/theme_collection.dart';
@@ -9,6 +8,7 @@ import 'package:mosaic/presentation/elements/theme_creator_name_field.dart';
 import 'package:mosaic/presentation/pages/theme_picker.dart';
 import 'package:mosaic/utils/colors_ext.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../elements/free_drawing.dart';
 
 class ThemeCreator extends StatelessWidget {
@@ -90,7 +90,11 @@ class ThemeCreator extends StatelessWidget {
 
               if (result != null && context.mounted) {
                 context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                    collection.light.copyWithKey(colorKey, outputMaterialColor ? result.toMaterialColor() : result),
+                    collection.light.copyWithKey(
+                        colorKey,
+                        outputMaterialColor
+                            ? result.toMaterialColor()
+                            : result),
                     Brightness.light));
               }
             },
@@ -114,7 +118,11 @@ class ThemeCreator extends StatelessWidget {
 
               if (result != null && context.mounted) {
                 context.read<ThemeCreatorBloc>().add(SetThemeColorsEvent(
-                    collection.dark.copyWithKey(colorKey, outputMaterialColor ? result.toMaterialColor() : result),
+                    collection.dark.copyWithKey(
+                        colorKey,
+                        outputMaterialColor
+                            ? result.toMaterialColor()
+                            : result),
                     Brightness.dark));
               }
             },
@@ -130,15 +138,12 @@ class ThemeCreator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = context
-        .read<ThemeCubit>()
-        .state
-        .theme
-        .brightness;
+    final brightness = context.read<ThemeCubit>().state.theme.brightness;
     final loc = AppLocalizations.of(context)!;
 
     return BlocConsumer<ThemeCreatorBloc, ThemeCreatorState>(
-      listenWhen: (previous, current) => current is ExitPageState || current is ShowExiConfirmationState,
+      listenWhen: (previous, current) =>
+          current is ExitPageState || current is ShowExiConfirmationState,
       listener: (context, state) {
         if (state is ExitPageState) {
           Navigator.pop(context, state.returnValue);
@@ -146,24 +151,26 @@ class ThemeCreator extends StatelessWidget {
           final bloc = context.read<ThemeCreatorBloc>();
           showDialog(
               context: context,
-              builder: (context) =>
-                  AlertDialog(
+              builder: (context) => AlertDialog(
                     title: Text(loc.discardChanges),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(loc.loseThemeChanges),
-                        Text(loc.cannotBeUndone, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(loc.cannotBeUndone,
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: Text(loc.cancelDialog)),
+                      TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(loc.cancelDialog)),
                       FilledButton(
-                          style: FilledButton.styleFrom(backgroundColor: Theme
-                              .of(context)
-                              .colorScheme
-                              .error),
+                          style: FilledButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.error),
                           onPressed: () {
                             bloc.add(const ConfirmExitPageEvent());
                             Navigator.pop(context);
@@ -217,7 +224,8 @@ class ThemeCreator extends StatelessWidget {
                                 Expanded(
                                   child: Container(
                                     padding: const EdgeInsets.all(8.0),
-                                    color: state.collection.light.gameBackground,
+                                    color:
+                                        state.collection.light.gameBackground,
                                     child: FreeDrawing(
                                       board: _board,
                                       minScale: 1,
@@ -338,7 +346,9 @@ class ThemeCreator extends StatelessWidget {
                               ? state.collection.light.primaryColor
                               : state.collection.dark.primaryColor),
                       onPressed: () {
-                        context.read<ThemeCreatorBloc>().add(const SaveThemeEvent());
+                        context
+                            .read<ThemeCreatorBloc>()
+                            .add(const SaveThemeEvent());
                       },
                       child: Text(loc.saveAndExit),
                     ),

@@ -66,11 +66,16 @@ class FreePainter extends CustomPainter {
       ..style = PaintingStyle.fill
       ..color = Color.fromARGB(255, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));*/
 
-    final TextStyle cellTextBase = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextBase);
-    final TextStyle cellTextError = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextError);
-    final TextStyle cellTextComplete = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextComplete);
-    final TextStyle cellTextFilled = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextFilled);
-    final TextStyle cellTextEmpty = TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextEmpty);
+    final TextStyle cellTextBase =
+        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextBase);
+    final TextStyle cellTextError =
+        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextError);
+    final TextStyle cellTextComplete =
+        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextComplete);
+    final TextStyle cellTextFilled =
+        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextFilled);
+    final TextStyle cellTextEmpty =
+        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextEmpty);
 
     final iStart = max(0, (boardPosition.dy - iCount / 2).floor());
     final jStart = max(0, (boardPosition.dx - jCount / 2).floor());
@@ -103,12 +108,14 @@ class FreePainter extends CustomPainter {
       },
     });*/
 
-    final textPainter = TextPainter(textDirection: TextDirection.ltr, textAlign: TextAlign.center);
+    final textPainter = TextPainter(
+        textDirection: TextDirection.ltr, textAlign: TextAlign.center);
 
     for (int i = iStart; i < min(board.height, iStart + iCount + 1); i++) {
       for (int j = jStart; j < min(board.width, jStart + jCount + 1); j++) {
         final cell = board.cells[i][j];
-        final offset = Offset(midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
+        final offset = Offset(
+            midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
             midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
         var cellColor = cell.state == null
             ? cellBase
@@ -127,12 +134,14 @@ class FreePainter extends CustomPainter {
 
         if (overlay) {
           cellColor = Paint()
-            ..color = cellColor.color.withOpacity(0.5)
+            ..color = cellColor.color.withValues(alpha: 0.5)
             ..style = cellColor.style;
-          textStyle = textStyle.copyWith(color: textStyle.color!.withOpacity(0.5));
+          textStyle = textStyle.copyWith(
+              color: textStyle.color!.withValues(alpha: 0.5));
         }
 
-        _paintCell(canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
+        _paintCell(
+            canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
       }
     }
 
@@ -142,7 +151,8 @@ class FreePainter extends CustomPainter {
         final int j = target.dx.floor();
 
         final cell = board.cells[i][j];
-        final offset = Offset(midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
+        final offset = Offset(
+            midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
             midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
         var cellColor = cell.state == null
             ? cellBase
@@ -159,13 +169,14 @@ class FreePainter extends CustomPainter {
                         ? cellTextFilled
                         : cellTextEmpty;
 
-        _paintCell(canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
+        _paintCell(
+            canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
       }
     }
   }
 
-  void _paintCell(
-      Canvas canvas, Offset offset, Cell cell, Paint cellColor, double tileSize, textPainter, TextStyle textStyle) {
+  void _paintCell(Canvas canvas, Offset offset, Cell cell, Paint cellColor,
+      double tileSize, textPainter, TextStyle textStyle) {
     canvas.drawRect(
         Rect.fromPoints(
           offset,
@@ -178,8 +189,8 @@ class FreePainter extends CustomPainter {
         style: textStyle,
       );
       textPainter.layout();
-      final o = Offset(
-          offset.dx + (tileSize / 2) - (textPainter.width / 2), offset.dy + (tileSize / 2) - (textPainter.height / 2));
+      final o = Offset(offset.dx + (tileSize / 2) - (textPainter.width / 2),
+          offset.dy + (tileSize / 2) - (textPainter.height / 2));
       textPainter.paint(canvas, o);
     }
   }

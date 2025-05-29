@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/timer/timer_bloc.dart';
 
@@ -8,6 +7,7 @@ import '../../blocs/app_state/app_state_bloc.dart';
 import '../../blocs/game/game_bloc.dart';
 import '../../entities/game_controls.dart';
 import '../../entities/game_theme.dart';
+import '../../l10n/app_localizations.dart';
 import '../elements/board_widget.dart';
 
 class GamePage extends StatefulWidget {
@@ -51,23 +51,35 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 spacing: 8.0,
                 children: [
                   IconButton(
-                      onPressed: () => context.read<GameBloc>().add(ToggleColorsEvent()),
+                      onPressed: () =>
+                          context.read<GameBloc>().add(ToggleColorsEvent()),
                       icon: Stack(
-                        children: [Icon(Icons.circle, color: empty), Icon(Icons.contrast, color: filled)],
+                        children: [
+                          Icon(Icons.circle, color: empty),
+                          Icon(Icons.contrast, color: filled)
+                        ],
                       )),
                   Ink(
-                    decoration: ShapeDecoration(shape: const CircleBorder(), color: controls.fill ? filled : null),
+                    decoration: ShapeDecoration(
+                        shape: const CircleBorder(),
+                        color: controls.fill ? filled : null),
                     child: IconButton(
-                        onPressed: () => context.read<GameBloc>().add(ToggleFillEvent()),
-                        icon: Icon(Icons.format_color_fill, color: controls.fill ? empty : filled)),
+                        onPressed: () =>
+                            context.read<GameBloc>().add(ToggleFillEvent()),
+                        icon: Icon(Icons.format_color_fill,
+                            color: controls.fill ? empty : filled)),
                   ),
                   IconButton(
-                      onPressed: controls.canUndo ? () => context.read<GameBloc>().add(UndoEvent()) : null,
+                      onPressed: controls.canUndo
+                          ? () => context.read<GameBloc>().add(UndoEvent())
+                          : null,
                       icon: const Icon(Icons.undo),
                       color: theme.controlsMoveEnabled,
                       disabledColor: theme.controlsMoveDisabled),
                   IconButton(
-                      onPressed: controls.canRedo ? () => context.read<GameBloc>().add(RedoEvent()) : null,
+                      onPressed: controls.canRedo
+                          ? () => context.read<GameBloc>().add(RedoEvent())
+                          : null,
                       icon: const Icon(Icons.redo),
                       color: theme.controlsMoveEnabled,
                       disabledColor: theme.controlsMoveDisabled),
@@ -83,7 +95,8 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
+    return BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (BuildContext context, ThemeState state) {
       Widget body = const RepaintBoundary(child: BoardWidget());
 
       final size = MediaQuery.of(context).size;
@@ -91,7 +104,10 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
       final bool vertical = size.height <= size.width;
 
       if (vertical) {
-        body = Row(children: [SizedBox(width: size.width - 64, child: body), _getControls(context, state.theme, true)]);
+        body = Row(children: [
+          SizedBox(width: size.width - 64, child: body),
+          _getControls(context, state.theme, true)
+        ]);
       }
 
       final loc = AppLocalizations.of(context)!;
@@ -99,7 +115,8 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
       return BlocListener<GameBloc, GameState>(
         listenWhen: (previous, current) => current is ShowCopySnackbar,
         listener: (context, state) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.copiedGameSeed)));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(loc.copiedGameSeed)));
         },
         child: Scaffold(
           appBar: AppBar(
@@ -114,7 +131,8 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
             centerTitle: true,
             actions: [
               MenuAnchor(
-                builder: (BuildContext context, MenuController controller, Widget? child) {
+                builder: (BuildContext context, MenuController controller,
+                    Widget? child) {
                   return IconButton(
                     onPressed: () {
                       if (controller.isOpen) {
@@ -129,11 +147,13 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
                 },
                 menuChildren: [
                   MenuItemButton(
-                    onPressed: () => context.read<GameBloc>().add(RestartGameButtonEvent()),
+                    onPressed: () =>
+                        context.read<GameBloc>().add(RestartGameButtonEvent()),
                     child: Text(loc.restartGame),
                   ),
                   MenuItemButton(
-                    onPressed: () => context.read<GameBloc>().add(ExportSeedEvent()),
+                    onPressed: () =>
+                        context.read<GameBloc>().add(ExportSeedEvent()),
                     child: Text(loc.copyGameSeed),
                   ),
                 ],
@@ -142,7 +162,8 @@ class _GamePageState extends State<GamePage> with WidgetsBindingObserver {
           ),
           body: body,
           backgroundColor: state.theme.gameBackground,
-          bottomSheet: vertical ? null : _getControls(context, state.theme, false),
+          bottomSheet:
+              vertical ? null : _getControls(context, state.theme, false),
         ),
       );
     });

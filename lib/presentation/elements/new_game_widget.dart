@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../l10n/app_localizations.dart';
 
 class NewGameWidget extends StatefulWidget {
   /// The starting height displayed int the [TextField]
@@ -35,8 +36,10 @@ class _NewGameWidgetState extends State<NewGameWidget> {
   late int _height = options[_dropDownValue].height ?? widget.height;
   late int _width = options[_dropDownValue].width ?? widget.width;
 
-  late final TextEditingController _heightController = TextEditingController(text: _height.toString());
-  late final TextEditingController _widthController = TextEditingController(text: _width.toString());
+  late final TextEditingController _heightController =
+      TextEditingController(text: _height.toString());
+  late final TextEditingController _widthController =
+      TextEditingController(text: _width.toString());
 
   static const List<_GameOpts> options = [
     _GameOpts(name: "Beginner", height: 3, width: 3),
@@ -68,8 +71,13 @@ class _NewGameWidgetState extends State<NewGameWidget> {
         keyboardType: TextInputType.number,
         style: enabled
             ? theme.textTheme.titleMedium
-            : theme.textTheme.titleMedium?.copyWith(color: theme.textTheme.titleMedium?.color?.withOpacity(0.35)),
-        decoration: InputDecoration(label: Text(label), errorMaxLines: 10, border: const OutlineInputBorder()),
+            : theme.textTheme.titleMedium?.copyWith(
+                color: theme.textTheme.titleMedium?.color
+                    ?.withValues(alpha: 0.35)),
+        decoration: InputDecoration(
+            label: Text(label),
+            errorMaxLines: 10,
+            border: const OutlineInputBorder()),
         onSaved: (String? value) {
           if (value != null) {
             onSaved(int.tryParse(value));
@@ -77,7 +85,9 @@ class _NewGameWidgetState extends State<NewGameWidget> {
         },
         validator: (String? value) {
           int? val;
-          if (value == null || (val = int.tryParse(value)) == null || val! < 3) {
+          if (value == null ||
+              (val = int.tryParse(value)) == null ||
+              val! < 3) {
             return errorString(label, 3);
           }
           return null;
@@ -115,7 +125,8 @@ class _NewGameWidgetState extends State<NewGameWidget> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 24.0),
-          child: Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
+          child:
+              Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
         ),
         DropdownMenu<int>(
           initialSelection: _dropDownValue,
@@ -124,9 +135,11 @@ class _NewGameWidgetState extends State<NewGameWidget> {
               setState(() {
                 _dropDownValue = newValue;
                 _height = options[_dropDownValue].height ?? widget.height;
-                _heightController.value = _heightController.value.copyWith(text: _height.toString());
+                _heightController.value =
+                    _heightController.value.copyWith(text: _height.toString());
                 _width = options[_dropDownValue].width ?? widget.width;
-                _widthController.value = _widthController.value.copyWith(text: _width.toString());
+                _widthController.value =
+                    _widthController.value.copyWith(text: _width.toString());
               });
             }
           },

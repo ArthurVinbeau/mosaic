@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../l10n/app_localizations.dart';
 
 class ColorPickerDialog extends StatefulWidget {
   final Color color;
@@ -50,7 +51,9 @@ class _ColorPickerDialogState extends State<ColorPickerDialog> {
         // ),
       ),
       actions: <Widget>[
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(loc.cancelDialog)),
+        TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(loc.cancelDialog)),
         ElevatedButton(
           child: Text(loc.acceptDialog),
           onPressed: () {

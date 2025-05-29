@@ -13,7 +13,8 @@ class ThemePickerBloc extends Bloc<ThemePickerEvent, ThemePickerState> {
   final ThemeCubit themeCubit;
 
   ThemePickerBloc(this.themeCubit)
-      : super(ThemePickerInitial(themeCubit.state.collection, themeCubit.combinedLists, themeCubit.preference)) {
+      : super(ThemePickerInitial(themeCubit.state.collection,
+            themeCubit.combinedLists, themeCubit.preference)) {
     on<PickThemeEvent>(_onTheme);
     on<PickPreferenceEvent>(_onPreference);
     on<ReloadThemesEvent>(_onReload);
@@ -24,47 +25,59 @@ class ThemePickerBloc extends Bloc<ThemePickerEvent, ThemePickerState> {
     on<ImportThemeEvent>(_onImport);
   }
 
-  _onTheme(PickThemeEvent event, Emitter emit) {
+  void _onTheme(PickThemeEvent event, Emitter emit) {
     themeCubit.setTheme(event.collection);
-    emit(ThemePickerInitial(event.collection, themeCubit.combinedLists, themeCubit.preference));
+    emit(ThemePickerInitial(
+        event.collection, themeCubit.combinedLists, themeCubit.preference));
   }
 
-  _onPreference(PickPreferenceEvent event, Emitter emit) {
+  void _onPreference(PickPreferenceEvent event, Emitter emit) {
     themeCubit.updateThemePreference(event.preference);
-    emit(ThemePickerInitial(themeCubit.state.collection, themeCubit.combinedLists, event.preference));
+    emit(ThemePickerInitial(themeCubit.state.collection,
+        themeCubit.combinedLists, event.preference));
   }
 
-  _onReload(ReloadThemesEvent event, Emitter emit) {
-    emit(ThemePickerInitial(themeCubit.state.collection, themeCubit.combinedLists, themeCubit.preference));
+  void _onReload(ReloadThemesEvent event, Emitter emit) {
+    emit(ThemePickerInitial(themeCubit.state.collection,
+        themeCubit.combinedLists, themeCubit.preference));
   }
 
-  _onDelete(DeleteThemeEvent event, Emitter emit) async {
+  Future<void> _onDelete(DeleteThemeEvent event, Emitter emit) async {
     if (await themeCubit.deleteTheme(event.collection)) {
-      emit(ThemePickerInitial(themeCubit.state.collection, themeCubit.combinedLists, themeCubit.preference));
+      emit(ThemePickerInitial(themeCubit.state.collection,
+          themeCubit.combinedLists, themeCubit.preference));
     } else {
       // FIXME: snackbar
     }
   }
 
-  _onCopyTheme(CopyThemeEvent event, Emitter emit) {
-    emit(OpenThemeCreator(event.collection.copyWith(name: "Copy of ${event.collection.name}", id: -1),
-        themeCubit.state.collection, themeCubit.combinedLists, themeCubit.preference));
-  }
-
-  _onEditTheme(EditThemeEvent event, Emitter emit) {
+  void _onCopyTheme(CopyThemeEvent event, Emitter emit) {
     emit(OpenThemeCreator(
-        event.collection, themeCubit.state.collection, themeCubit.combinedLists, themeCubit.preference));
+        event.collection
+            .copyWith(name: "Copy of ${event.collection.name}", id: -1),
+        themeCubit.state.collection,
+        themeCubit.combinedLists,
+        themeCubit.preference));
   }
 
-  _onShare(ShareThemeEvent event, Emitter emit) {
+  void _onEditTheme(EditThemeEvent event, Emitter emit) {
+    emit(OpenThemeCreator(event.collection, themeCubit.state.collection,
+        themeCubit.combinedLists, themeCubit.preference));
+  }
+
+  void _onShare(ShareThemeEvent event, Emitter emit) {
     final serialized = event.collection.serialize();
     logger.d("Sharing $serialized");
-    Share.share(serialized);
+    SharePlus.instance.share(ShareParams(
+      text: serialized,
+      subject: "Mosaic Theme: ${event.collection.name}",
+    ));
   }
 
-  _onImport(ImportThemeEvent event, Emitter emit) {
+  void _onImport(ImportThemeEvent event, Emitter emit) {
     if (themeCubit.importCustomTheme(event.serializedCollection) != null) {
-      emit(ThemePickerInitial(themeCubit.state.collection, themeCubit.combinedLists, themeCubit.preference));
+      emit(ThemePickerInitial(themeCubit.state.collection,
+          themeCubit.combinedLists, themeCubit.preference));
     } else {
       // FIXME: snackbar
     }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme_creator/theme_creator_bloc.dart';
 import 'package:mosaic/entities/theme_collection.dart';
+
+import '../../l10n/app_localizations.dart';
 
 class ThemeCreatorNameField extends StatefulWidget {
   const ThemeCreatorNameField({Key? key}) : super(key: key);
@@ -20,14 +21,16 @@ class _ThemeCreatorNameFieldState extends State<ThemeCreatorNameField> {
 
     return BlocBuilder<ThemeCreatorBloc, ThemeCreatorState>(
         builder: (BuildContext context, ThemeCreatorState state) {
-          controller.value = controller.value.copyWith(text: state.collection.name);
+          controller.value =
+              controller.value.copyWith(text: state.collection.name);
 
           String? errorText;
 
           if (state is ThemeNameErrorState) {
             switch (state.error) {
               case ThemeCreatorNameError.forbiddenCharacters:
-                errorText = loc.forbiddenCharacters(ThemeCollection.reservedCharacters);
+                errorText =
+                    loc.forbiddenCharacters(ThemeCollection.reservedCharacters);
                 break;
               case ThemeCreatorNameError.mustNotBeEmpty:
                 errorText = loc.mustNotBeEmpty;
@@ -41,14 +44,17 @@ class _ThemeCreatorNameFieldState extends State<ThemeCreatorNameField> {
             ),
             onChanged: (String value) {
               if (value.trim().isNotEmpty) {
-                context.read<ThemeCreatorBloc>().add(SetThemeNameEvent(value.trim()));
+                context
+                    .read<ThemeCreatorBloc>()
+                    .add(SetThemeNameEvent(value.trim()));
               }
             },
           );
         },
         buildWhen: (previous, current) =>
             previous.runtimeType != current.runtimeType ||
-            previous is ThemeNameErrorState && previous.error != (current as ThemeNameErrorState).error ||
+            previous is ThemeNameErrorState &&
+                previous.error != (current as ThemeNameErrorState).error ||
             previous.collection.name != current.collection.name);
   }
 }

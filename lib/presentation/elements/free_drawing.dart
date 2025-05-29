@@ -56,7 +56,7 @@ class _FreeDrawingState extends State<FreeDrawing> with WidgetsBindingObserver {
   void initState() {
     _scale = widget.minScale;
     if (widget.vibration) {
-      Vibration.hasVibrator().then((value) => _vibration = value ?? false);
+      Vibration.hasVibrator().then((value) => _vibration = value);
     } else {
       _vibration = false;
     }
@@ -75,18 +75,26 @@ class _FreeDrawingState extends State<FreeDrawing> with WidgetsBindingObserver {
 
   Offset _getBoardPosition(Offset position, BoxConstraints constraints) {
     return Offset(
-      (position.dx - constraints.minWidth) * widget.board.width / (constraints.maxWidth - constraints.minWidth),
-      (position.dy - constraints.minHeight) * widget.board.height / (constraints.maxHeight - constraints.minHeight),
+      (position.dx - constraints.minWidth) *
+          widget.board.width /
+          (constraints.maxWidth - constraints.minWidth),
+      (position.dy - constraints.minHeight) *
+          widget.board.height /
+          (constraints.maxHeight - constraints.minHeight),
     );
   }
 
-  void _onTap(bool long, Offset boardPosition, Offset center, BoxConstraints boardSize) {
+  void _onTap(bool long, Offset boardPosition, Offset center,
+      BoxConstraints boardSize) {
     if (widget.onTap != null) {
       // _position doesn't include _scale but _tapTarget depends on the scaled painted grid so they are not in the same
       // coordinate system. We first need to transpose _tapTarget to the _position system.
       final absoluteCenteredTapTarget = (_tapTarget - center) / _scale;
-      final target = _getBoardPosition(_position! + absoluteCenteredTapTarget, boardSize);
-      if (widget.onTap!(target.dy.floor(), target.dx.floor(), long) && long && _vibration) {
+      final target =
+          _getBoardPosition(_position! + absoluteCenteredTapTarget, boardSize);
+      if (widget.onTap!(target.dy.floor(), target.dx.floor(), long) &&
+          long &&
+          _vibration) {
         Vibration.vibrate(duration: 50);
       }
     }
@@ -110,36 +118,50 @@ class _FreeDrawingState extends State<FreeDrawing> with WidgetsBindingObserver {
       );
 
       if (screenRatio > boardRatio) {
-        var offset = (boardSize.maxHeight - (boardSize.maxHeight / screenRatio * boardRatio)) / 2;
+        var offset = (boardSize.maxHeight -
+                (boardSize.maxHeight / screenRatio * boardRatio)) /
+            2;
         boardSize = boardSize.copyWith(
           minHeight: boardSize.minHeight + offset,
           maxHeight: boardSize.maxHeight - offset,
         );
       } else {
-        var offset = (boardSize.maxWidth - (boardSize.maxWidth * screenRatio / boardRatio)) / 2;
+        var offset = (boardSize.maxWidth -
+                (boardSize.maxWidth * screenRatio / boardRatio)) /
+            2;
         boardSize = boardSize.copyWith(
           minWidth: boardSize.minWidth + offset,
           maxWidth: boardSize.maxWidth - offset,
         );
       }
       final boardPosition = _getBoardPosition(_position!, boardSize);
-      final center = Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
+      final center =
+          Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
 
-      final limitH = (boardSize.maxHeight - boardSize.minHeight) * widget.minScale / _scale / 2;
-      final limitW = (boardSize.maxWidth - boardSize.minWidth) * widget.minScale / _scale / 2;
+      final limitH = (boardSize.maxHeight - boardSize.minHeight) *
+          widget.minScale /
+          _scale /
+          2;
+      final limitW = (boardSize.maxWidth - boardSize.minWidth) *
+          widget.minScale /
+          _scale /
+          2;
 
       return GestureDetector(
         onScaleUpdate: (ScaleUpdateDetails scaleDetails) {
           setState(() {
             if (widget.canZoom) {
-              _scale = (_scaleStart * scaleDetails.scale).clamp(widget.minScale, widget.maxScale);
+              _scale = (_scaleStart * scaleDetails.scale)
+                  .clamp(widget.minScale, widget.maxScale);
             }
             if (widget.canPan) {
               _position = Offset(
                 (_position!.dx - (scaleDetails.focalPointDelta.dx / _scale))
-                    .clamp(boardSize.minWidth + limitW, boardSize.maxWidth - limitW),
+                    .clamp(boardSize.minWidth + limitW,
+                        boardSize.maxWidth - limitW),
                 (_position!.dy - (scaleDetails.focalPointDelta.dy / _scale))
-                    .clamp(boardSize.minHeight + limitH, boardSize.maxHeight - limitH),
+                    .clamp(boardSize.minHeight + limitH,
+                        boardSize.maxHeight - limitH),
               );
             }
           });

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme_creator/theme_creator_bloc.dart';
 import 'package:mosaic/blocs/theme_picker/theme_picker_bloc.dart';
 import 'package:mosaic/presentation/elements/free_drawing.dart';
@@ -12,6 +11,7 @@ import '../../blocs/theme/theme_cubit.dart';
 import '../../entities/board.dart';
 import '../../entities/game_theme.dart';
 import '../../entities/theme_collection.dart';
+import '../../l10n/app_localizations.dart';
 
 class ThemePicker extends StatelessWidget {
   const ThemePicker({Key? key}) : super(key: key);
@@ -41,8 +41,14 @@ class ThemePicker extends StatelessWidget {
     return board;
   }
 
-  Widget _getExpandableThemeWidget(BuildContext context, double width, ThemeCollection collection, bool selected,
-      AppLocalizations loc, ThemePickerBloc themePickerBloc, GameTheme activeTheme) {
+  Widget _getExpandableThemeWidget(
+      BuildContext context,
+      double width,
+      ThemeCollection collection,
+      bool selected,
+      AppLocalizations loc,
+      ThemePickerBloc themePickerBloc,
+      GameTheme activeTheme) {
     final theme = Theme.of(context);
 
     double height = width / 1.7;
@@ -76,14 +82,19 @@ class ThemePicker extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(loc.deleteThemeBody(collection.name)),
-                            Text(loc.cannotBeUndone, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            Text(loc.cannotBeUndone,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                           ],
                         ),
                         actions: [
-                          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(loc.cancelDialog)),
+                          TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: Text(loc.cancelDialog)),
                           FilledButton(
                             onPressed: () => Navigator.pop(context, true),
-                            style: FilledButton.styleFrom(backgroundColor: theme.colorScheme.error),
+                            style: FilledButton.styleFrom(
+                                backgroundColor: theme.colorScheme.error),
                             child: Text(loc.delete),
                           ),
                         ],
@@ -107,7 +118,8 @@ class ThemePicker extends StatelessWidget {
     }
 
     return InkWell(
-      onTap: () => context.read<ThemePickerBloc>().add(PickThemeEvent(collection)),
+      onTap: () =>
+          context.read<ThemePickerBloc>().add(PickThemeEvent(collection)),
       child: AnimatedContainer(
         width: width,
         height: height,
@@ -216,8 +228,9 @@ class ThemePicker extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => BlocProvider<ThemeCreatorBloc>(
-                    create: (context) =>
-                        ThemeCreatorBloc(themeCubit: context.read<ThemeCubit>(), original: state.original),
+                    create: (context) => ThemeCreatorBloc(
+                        themeCubit: context.read<ThemeCubit>(),
+                        original: state.original),
                     child: const ThemeCreator(),
                   ),
                 )).then((value) {
@@ -253,8 +266,13 @@ class ThemePicker extends StatelessWidget {
                                 ),
                                 actions: [
                                   TextButton(
-                                      onPressed: () => Navigator.pop(context, false), child: Text(loc.cancelDialog)),
-                                  FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(loc.import)),
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: Text(loc.cancelDialog)),
+                                  FilledButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: Text(loc.import)),
                                 ],
                               ));
                       if (result ?? false) {
@@ -271,8 +289,8 @@ class ThemePicker extends StatelessWidget {
               maxCrossAxisExtent: size * 2, childAspectRatio: 1.5, crossAxisSpacing: 8.0, mainAxisSpacing: 8.0),*/
               itemBuilder: (context, index) {
                 final collection = state.themes[index];
-                return _getExpandableThemeWidget(
-                    context, size, collection, collection == state.selected, loc, themePickerBloc, theme);
+                return _getExpandableThemeWidget(context, size, collection,
+                    collection == state.selected, loc, themePickerBloc, theme);
               },
             ),
             bottomNavigationBar: Material(
@@ -292,12 +310,19 @@ class ThemePicker extends StatelessWidget {
                         themePickerBloc.add(PickPreferenceEvent(newValue));
                       },
                       alignment: Alignment.center,
-                      items: <Brightness?>[null, Brightness.light, Brightness.dark]
-                          .map<DropdownMenuItem<Brightness?>>((Brightness? value) => DropdownMenuItem<Brightness?>(
-                                value: value,
-                                alignment: Alignment.center,
-                                child: Text(_getBrightnessLabel(value, loc)),
-                              ))
+                      items: <Brightness?>[
+                        null,
+                        Brightness.light,
+                        Brightness.dark
+                      ]
+                          .map<DropdownMenuItem<Brightness?>>(
+                              (Brightness? value) =>
+                                  DropdownMenuItem<Brightness?>(
+                                    value: value,
+                                    alignment: Alignment.center,
+                                    child:
+                                        Text(_getBrightnessLabel(value, loc)),
+                                  ))
                           .toList(),
                     ),
                   ],

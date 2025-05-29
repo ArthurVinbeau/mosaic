@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/presentation/elements/loading_board_indicator.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../elements/new_game_widget.dart';
 
 class ExtrasPage extends StatelessWidget {
@@ -12,7 +12,8 @@ class ExtrasPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    return BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
+    return BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (BuildContext context, ThemeState state) {
       return Scaffold(
         appBar: AppBar(
           title: Text(loc.extras),
@@ -24,7 +25,8 @@ class ExtrasPage extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(loc.loadingAnimation, style: Theme.of(context).textTheme.headlineMedium),
+                child: Text(loc.loadingAnimation,
+                    style: Theme.of(context).textTheme.headlineMedium),
               ),
               NewGameWidget(
                 height: 8,
@@ -36,7 +38,8 @@ class ExtrasPage extends StatelessWidget {
                       context: context,
                       builder: (BuildContext context) => Dialog.fullscreen(
                             backgroundColor: state.theme.gameBackground,
-                            child: LayoutBuilder(builder: (context, constraints) {
+                            child:
+                                LayoutBuilder(builder: (context, constraints) {
                               return Column(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.center,

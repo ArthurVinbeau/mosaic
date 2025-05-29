@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/tutorial/tutorial_bloc.dart';
@@ -11,6 +10,7 @@ import 'package:mosaic/presentation/elements/new_game_widget.dart';
 import 'package:mosaic/presentation/pages/settings_page.dart';
 import 'package:mosaic/presentation/pages/tutorial_page.dart';
 
+import '../../l10n/app_localizations.dart';
 import 'game_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -41,21 +41,24 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
 
-    return BlocBuilder<ThemeCubit, ThemeState>(builder: (BuildContext context, ThemeState state) {
+    return BlocBuilder<ThemeCubit, ThemeState>(
+        builder: (BuildContext context, ThemeState state) {
       return Scaffold(
         appBar: AppBar(
           title: Text(loc.appTitle),
           centerTitle: true,
           actions: [
             IconButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (ctx) => const SettingsPage())),
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (ctx) => const SettingsPage())),
                 icon: const Icon(Icons.settings))
           ],
         ),
         body: BlocConsumer<GameBloc, GameState>(
           builder: (context, state) {
             state as NotStartedGameState;
-            return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+            return LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
               return SingleChildScrollView(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
@@ -72,22 +75,28 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         width: state.baseWidth,
                         title: loc.difficultyPickerHeader,
                         validateButtonText: loc.newGame,
-                        onValidate: (height, width) => context.read<GameBloc>().add(CreateGameEvent(height, width)),
+                        onValidate: (height, width) => context
+                            .read<GameBloc>()
+                            .add(CreateGameEvent(height, width)),
                       ),
                       if (state.canResume)
                         Container(
                           padding: const EdgeInsets.all(32.0),
                           width: double.infinity,
                           child: ElevatedButton(
-                            child: Text("${loc.resumeGame} (${state.baseHeight}x${state.baseWidth})"),
-                            onPressed: () => context.read<GameBloc>().add(ResumeGameEvent()),
+                            child: Text(
+                                "${loc.resumeGame} (${state.baseHeight}x${state.baseWidth})"),
+                            onPressed: () =>
+                                context.read<GameBloc>().add(ResumeGameEvent()),
                           ),
                         ),
                       ElevatedButton(
                           onPressed: () async {
                             final bloc = context.read<GameBloc>();
                             final result = await showDialog(
-                                context: context, builder: (BuildContext context) => const ImportSeedDialog());
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    const ImportSeedDialog());
                             if (result != null) {
                               bloc.add(ImportGameEvent(result));
                             }
@@ -100,12 +109,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
             });
           },
           buildWhen: (_, b) => b is NotStartedGameState,
-          listenWhen: (_, b) => b is GeneratingBoardGameState || b is ShowInvalidSeedSnackbar,
+          listenWhen: (_, b) =>
+              b is GeneratingBoardGameState || b is ShowInvalidSeedSnackbar,
           listener: (context, state) {
             if (state is GeneratingBoardGameState) {
-              Navigator.push(context, MaterialPageRoute(builder: (ctx) => const GamePage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (ctx) => const GamePage()));
             } else if (state is ShowInvalidSeedSnackbar) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.invalidSeedMessage)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(loc.invalidSeedMessage)));
             }
           },
         ),
@@ -113,7 +125,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           child: const Icon(Icons.help),
           onPressed: () {
             context.read<TutorialBloc>().add(StartTutorialEvent());
-            Navigator.push(context, MaterialPageRoute(builder: (ctx) => const TutorialPage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (ctx) => const TutorialPage()));
           },
         ),
       );
@@ -122,6 +135,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   void didChangePlatformBrightness() {
-    _cubit.updatePlatformBrightness(PlatformDispatcher.instance.platformBrightness);
+    _cubit.updatePlatformBrightness(
+        PlatformDispatcher.instance.platformBrightness);
   }
 }

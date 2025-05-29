@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/presentation/elements/free_drawing.dart';
 import 'package:mosaic/presentation/elements/loading_board_indicator.dart';
 import 'package:mosaic/utils/config.dart';
+
+import '../../l10n/app_localizations.dart';
 
 class BoardWidget extends StatelessWidget {
   const BoardWidget({Key? key}) : super(key: key);
@@ -50,7 +51,8 @@ class BoardWidget extends StatelessWidget {
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
+                    style: TextButton.styleFrom(
+                        foregroundColor: theme.colorScheme.error),
                     child: Text(dismiss)),
                 ElevatedButton(
                     onPressed: () {
@@ -90,7 +92,8 @@ class BoardWidget extends StatelessWidget {
             ),
           );
         } else {
-          throw UnimplementedError("State ${state.runtimeType} is not implemented");
+          throw UnimplementedError(
+              "State ${state.runtimeType} is not implemented");
         }
       },
     );

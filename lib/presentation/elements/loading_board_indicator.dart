@@ -1,17 +1,21 @@
 import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mosaic/entities/loading_painter.dart';
 
 import '../../blocs/theme/theme_cubit.dart';
+import '../../l10n/app_localizations.dart';
 
 class LoadingBoardIndicator extends StatefulWidget {
   final int height;
   final int width;
   final bool showLoadingText;
 
-  const LoadingBoardIndicator({Key? key, required this.height, required this.width, this.showLoadingText = true})
+  const LoadingBoardIndicator(
+      {Key? key,
+      required this.height,
+      required this.width,
+      this.showLoadingText = true})
       : super(key: key);
 
   @override
@@ -33,7 +37,8 @@ class _LoadingBoardIndicatorState extends State<LoadingBoardIndicator> {
             state.triggerAnimation(restart: true);
             cycle++;
           },
-          builder: (BuildContext context, AnimatorState animatorState, Widget? _) {
+          builder:
+              (BuildContext context, AnimatorState animatorState, Widget? _) {
             final progress = animatorState.value;
             return SizedBox.expand(
               child: Stack(
@@ -54,11 +59,13 @@ class _LoadingBoardIndicatorState extends State<LoadingBoardIndicator> {
                     Container(
                       padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.75),
-                        borderRadius: const BorderRadius.all(Radius.circular(20)),
+                        color: Colors.black.withValues(alpha: 0.75),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(20)),
                       ),
                       child: Text(AppLocalizations.of(context)!.generatingBoard,
-                          style: const TextStyle(color: Colors.white), textAlign: TextAlign.center),
+                          style: const TextStyle(color: Colors.white),
+                          textAlign: TextAlign.center),
                     ),
                 ],
               ),

@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-part 'locale_event.dart';
+import '../../l10n/app_localizations.dart';
 
+part 'locale_event.dart';
 part 'locale_state.dart';
 
 class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
@@ -27,14 +27,16 @@ class LocaleBloc extends Bloc<LocaleEvent, LocaleState> {
     final prefs = await SharedPreferences.getInstance();
     final str = prefs.getString(prefsKey);
     if (str != null) {
-      _locale = AppLocalizations.supportedLocales
-          .firstWhere((Locale l) => l.toLanguageTag() == str, orElse: () => _fallback!);
+      _locale = AppLocalizations.supportedLocales.firstWhere(
+          (Locale l) => l.toLanguageTag() == str,
+          orElse: () => _fallback!);
     }
     emit(LocaleState(_locale));
   }
 
   void _onPicked(LocalePickedEvent event, Emitter emit) {
-    if (event.locale == null || AppLocalizations.supportedLocales.contains(event.locale)) {
+    if (event.locale == null ||
+        AppLocalizations.supportedLocales.contains(event.locale)) {
       _locale = event.locale;
     } else {
       _locale = _fallback;

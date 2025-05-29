@@ -85,7 +85,8 @@ class GameTheme implements Equatable {
 
   GameTheme copyWithKey(String key, Object value) {
     return GameTheme(
-      primaryColor: key == 'primaryColor' ? value as MaterialColor : primaryColor,
+      primaryColor:
+          key == 'primaryColor' ? value as MaterialColor : primaryColor,
       brightness: key == 'brightness' ? value as Brightness : brightness,
       gameBackground: key == 'gameBackground' ? value as Color : gameBackground,
       cellBase: key == 'cellBase' ? value as Color : cellBase,
@@ -95,9 +96,12 @@ class GameTheme implements Equatable {
       cellTextEmpty: key == 'cellTextEmpty' ? value as Color : cellTextEmpty,
       cellTextFilled: key == 'cellTextFilled' ? value as Color : cellTextFilled,
       cellTextError: key == 'cellTextError' ? value as Color : cellTextError,
-      cellTextComplete: key == 'cellTextComplete' ? value as Color : cellTextComplete,
-      controlsMoveEnabled: key == 'controlsMoveEnabled' ? value as Color : controlsMoveEnabled,
-      controlsMoveDisabled: key == 'controlsMoveDisabled' ? value as Color : controlsMoveDisabled,
+      cellTextComplete:
+          key == 'cellTextComplete' ? value as Color : cellTextComplete,
+      controlsMoveEnabled:
+          key == 'controlsMoveEnabled' ? value as Color : controlsMoveEnabled,
+      controlsMoveDisabled:
+          key == 'controlsMoveDisabled' ? value as Color : controlsMoveDisabled,
     );
   }
 
@@ -169,7 +173,8 @@ class GameTheme implements Equatable {
       final brightness = list[0] == '1' ? Brightness.light : Brightness.dark;
 
       final primaryList = list[1].split(',');
-      final primaryColor = MaterialColor(_getColorFromHexString(primaryList[0]).value, {
+      final primaryColor =
+          MaterialColor(_getColorFromHexString(primaryList[0]).toARGB32(), {
         50: _getColorFromHexString(primaryList[1]),
         100: _getColorFromHexString(primaryList[2]),
         200: _getColorFromHexString(primaryList[3]),
@@ -220,10 +225,10 @@ class GameTheme implements Equatable {
   }
 
   static String _getColorHexValue(Color color) {
-    String alpha = color.opacity < 1 ? color.alpha.toRadixString(16).padLeft(2, '0') : "";
-    String red = color.red.toRadixString(16).padLeft(2, '0');
-    String green = color.green.toRadixString(16).padLeft(2, '0');
-    String blue = color.blue.toRadixString(16).padLeft(2, '0');
+    String alpha = color.a < 1 ? _toHexValue(color.a) : "";
+    String red = _toHexValue(color.r);
+    String green = _toHexValue(color.g);
+    String blue = _toHexValue(color.b);
 
     // Reduce 0xFF to 0xF if all three values are doubles
     if (red[0] == red[1] && green[0] == green[1] && blue[0] == blue[1]) {
@@ -232,7 +237,14 @@ class GameTheme implements Equatable {
       blue = blue[0];
     }
 
-    return alpha.isEmpty && red == green && red == blue ? alpha + red : alpha + red + green + blue;
+    return alpha.isEmpty && red == green && red == blue
+        ? alpha + red
+        : alpha + red + green + blue;
+  }
+
+  static String _toHexValue(double value) {
+    final intValue = (value * 255).round() & 0xff;
+    return intValue.toRadixString(16).padLeft(2, '0');
   }
 
   static Color _getColorFromHexString(String input) {

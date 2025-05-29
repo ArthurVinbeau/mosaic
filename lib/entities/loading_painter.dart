@@ -51,29 +51,39 @@ class LoadingPainter extends CustomPainter {
 
     for (int i = 0; i < height; i++) {
       for (int j = 0; j < width; j++) {
-        final offset = Offset(midW - (width / 2 - j) * tileSize * paddingRatio + padding,
+        final offset = Offset(
+            midW - (width / 2 - j) * tileSize * paddingRatio + padding,
             midH - (height / 2 - i) * tileSize * paddingRatio + padding);
         final cellColor = Paint()
           ..style = PaintingStyle.fill
           ..color = theme.cellBase;
 
-        canvas.drawRect(Rect.fromPoints(offset, Offset(offset.dx + tileSize, offset.dy + tileSize)), cellColor);
+        canvas.drawRect(
+            Rect.fromPoints(
+                offset, Offset(offset.dx + tileSize, offset.dy + tileSize)),
+            cellColor);
 
         /*final tmp = (progress - (i + j) / (boardSize - 1) / 2);
         final overlayColor = Paint()
           ..style = PaintingStyle.fill
-          ..color = theme.cellFilled.withOpacity(max(1 - 4 * tmp * tmp, 0));*/
+          ..color = theme.cellFilled.withValues(alpha: max(1 - 4 * tmp * tmp, 0));*/
 
         // Y = (1/4*PI() + PI()*X)
         // Z = MAX(0;SIN(Y-1/2*PI()*(i+j)/N))
-        final adjustedProgress = progress * 2 - 0.25; // the pattern that we want starts at -0.25 and ends at 1.75
+        final adjustedProgress = progress * 2 -
+            0.25; // the pattern that we want starts at -0.25 and ends at 1.75
         final tmp = (1 / 4 * pi + pi * adjustedProgress);
         final overlayColor = Paint()
           ..style = PaintingStyle.fill
           ..color = (cycle % 2 == 0 ? theme.cellFilled : theme.cellEmpty)
-              .withOpacity(max(0, sin(tmp - 1 / 2 * pi * (i + j) / max(height, width))));
+              .withValues(
+                  alpha: max(
+                      0, sin(tmp - 1 / 2 * pi * (i + j) / max(height, width))));
 
-        canvas.drawRect(Rect.fromPoints(offset, Offset(offset.dx + tileSize, offset.dy + tileSize)), overlayColor);
+        canvas.drawRect(
+            Rect.fromPoints(
+                offset, Offset(offset.dx + tileSize, offset.dy + tileSize)),
+            overlayColor);
       }
     }
   }
