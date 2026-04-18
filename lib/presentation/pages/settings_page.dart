@@ -77,7 +77,7 @@ class SettingsPage extends StatelessWidget {
                               showSearchBox: true,
                               fit: FlexFit.loose,
                             ),
-                            onChanged: (int? newValue) {
+                            onSelected: (int? newValue) {
                               if (newValue != null) {
                                 context.read<LocaleBloc>().add(
                                     LocalePickedEvent(newValue <
