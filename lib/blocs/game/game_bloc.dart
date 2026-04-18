@@ -148,6 +148,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _tilePressed(TilePressedGameEvent event, Emitter emit) {
+    if (event.i.clamp(0, board!.height - 1) != event.i || event.j.clamp(0, board!.width - 1) != event.j) {
+      return;
+    }
+
     if (_timerBloc.state is TimerInitial) {
       _timerBloc.add(const TimerStart());
     } else if (_timerBloc.state is TimerPaused) {
