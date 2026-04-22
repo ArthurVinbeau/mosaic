@@ -16,6 +16,10 @@ class Board {
 
   String? _gameDesc;
 
+  /// Incremented each time cells are mutated so [FreePainter] can detect
+  /// visual changes without relying on object identity.
+  int version = 0;
+
   Board({this.height = 8, this.width = 8, this.density = 0.5, int? seed}) {
     this.seed = seed ?? Random().nextInt(1 << 32);
     _rand = Random(this.seed);

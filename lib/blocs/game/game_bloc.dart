@@ -111,11 +111,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   void _restartGame(RestartGameEvent event, Emitter emit) {
     _timerBloc.add(const TimerReset());
     for (int i = 0; i < board!.height; i++) {
-      for (int j = 0; j < board!.height; j++) {
+      for (int j = 0; j < board!.width; j++) {
         board!.cells[i][j].state = null;
         board!.cells[i][j].error = board!.cells[i][j].complete = false;
       }
     }
+    board!.version++;
     status = GameStatus.running;
     validTiles = 0;
     moveManager = MoveManager();
@@ -187,6 +188,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     logger.i(validTiles);
 
+    board!.version++;
     emit(BoardGameState(board!));
     if (validTiles == board!.height * board!.width) {
       _timerBloc.add(const TimerPause());
@@ -239,6 +241,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           checkCellError(board!, p1, p2);
         });
       });
+      board!.version++;
       emit(BoardGameState(board!));
       _updateMoveControls(emit);
     }
@@ -252,6 +255,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           checkCellError(board!, p1, p2);
         });
       });
+      board!.version++;
       emit(BoardGameState(board!));
       _updateMoveControls(emit);
     }
