@@ -20,6 +20,12 @@ class Board {
   /// visual changes without relying on object identity.
   int version = 0;
 
+  /// Increments [version] using a 30-bit mask to prevent silent overflow on
+  /// all Dart platforms (native 64-bit wrap and web 53-bit JavaScript double
+  /// saturation). The wrap-around space (~1 billion values) makes an accidental
+  /// version collision practically impossible during a game session.
+  void bumpVersion() => version = (version + 1) & 0x3FFFFFFF;
+
   Board({this.height = 8, this.width = 8, this.density = 0.5, int? seed}) {
     this.seed = seed ?? Random().nextInt(1 << 32);
     _rand = Random(this.seed);

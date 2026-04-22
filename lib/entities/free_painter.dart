@@ -139,21 +139,6 @@ class FreePainter extends CustomPainter {
       jCount += (boardPosition.dx - jCount / 2).floor();
     }
 
-    // Per-call TextPainter cache keyed by (clue, styleIndex).
-    // styleIndex 0–4: normal; 5–9: overlay variants of the same order.
-    // Within one paint call each unique (clue, style) is laid out only once,
-    // reducing layout() calls from O(visible cells) to at most 10 clues × 5
-    // styles = 50 calls per frame. The static cache further avoids re-layout
-    // across frames when tileSize and colors are unchanged.
-    final Map<(int, int), TextPainter> tpCache = {};
-
-    // Returns a cached, already-laid-out TextPainter for the given clue/style.
-    TextPainter _getTP(int clue, int styleIndex, TextStyle style) {
-      return tpCache.putIfAbsent((clue, styleIndex), () {
-        return _staticGetTP(clue, style);
-      });
-    }
-
     // Collect styles in order: [base, error, complete, filled, empty]
     final List<TextStyle> normalStyles = [
       cellTextBase,
@@ -185,14 +170,12 @@ class FreePainter extends CustomPainter {
             cell,
             _cellPaint(cell, useOverlay: overlay),
             tileSize,
-            overlay ? baseIdx + 5 : baseIdx,
-            overlay ? overlayStyles![baseIdx] : normalStyles[baseIdx],
-            _getTP);
+            overlay ? overlayStyles![baseIdx] : normalStyles[baseIdx]);
       }
     }
 
     if (overlay) {
-      // Draw overlay exceptions at full opacity, reusing the same tp cache.
+      // Draw overlay exceptions at full opacity.
       for (var target in overlayExceptions) {
         final int i = target.dy.floor();
         final int j = target.dx.floor();
@@ -203,31 +186,33 @@ class FreePainter extends CustomPainter {
             midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
         final baseIdx = _baseStyleIndex(cell);
         _paintCell(canvas, offset, cell, _cellPaint(cell, useOverlay: false),
-            tileSize, baseIdx, normalStyles[baseIdx], _getTP);
+            tileSize, normalStyles[baseIdx]);
       }
     }
-
-    // Per-call map prevents redundant _staticGetTP lookups within one frame.
-    tpCache.clear();
   }
 
   // ---------------------------------------------------------------------------
   // Static cross-frame TextPainter cache
-  // Key: (clue, roundedFontSize×2, colorARGB) – layout is reused as long as
+  // Key: "$clue,$roundedFontSize×2,$colorARGB" – layout is reused as long as
   // the text, fontSize, and color are unchanged.
+  // String keys are used for Dart 2.x compatibility (record types require
+  // Dart 3.0+).
   // The cache is bounded to 500 entries. On overflow the entire cache is
   // cleared (and native Paragraph resources are released via dispose) rather
   // than using an LRU strategy: given that there are at most 10 clue values ×
   // 5 style variants × a handful of practical zoom levels, overflow will be
   // rare in normal usage, so a full clear is simpler and equally effective.
+  // Note: _paintCell uses the returned painter IMMEDIATELY (synchronous call),
+  // so a future overflow-triggered dispose cannot affect a painter that is
+  // currently in use.
   // ---------------------------------------------------------------------------
-  static final Map<(int, int, int), TextPainter> _staticTpCache = {};
+  static final Map<String, TextPainter> _staticTpCache = {};
 
   static TextPainter _staticGetTP(int clue, TextStyle style) {
     // Multiply fontSize by 2 before rounding to preserve half-pixel precision
     // in the cache key (avoids aliasing two sizes that differ by < 1 px).
     final roundedFontSize = (style.fontSize! * 2).round();
-    final key = (clue, roundedFontSize, style.color!.value);
+    final key = '$clue,$roundedFontSize,${style.color!.value}';
 
     final cached = _staticTpCache[key];
     if (cached != null) return cached;
@@ -285,9 +270,7 @@ class FreePainter extends CustomPainter {
       Cell cell,
       Paint cellColor,
       double tileSize,
-      int styleIndex,
-      TextStyle textStyle,
-      TextPainter Function(int clue, int styleIndex, TextStyle style) getTP) {
+      TextStyle textStyle) {
     canvas.drawRect(
         Rect.fromPoints(
           offset,
@@ -295,11 +278,12 @@ class FreePainter extends CustomPainter {
         ),
         cellColor);
     if (cell.shown) {
-      final tp = getTP(cell.clue, styleIndex, textStyle);
+      // _staticGetTP returns the painter and it is used immediately
+      // (synchronous), so a future cache overflow cannot affect this call.
+      final tp = _staticGetTP(cell.clue, textStyle);
       final o = Offset(offset.dx + (tileSize / 2) - (tp.width / 2),
           offset.dy + (tileSize / 2) - (tp.height / 2));
       tp.paint(canvas, o);
     }
   }
 }
-
