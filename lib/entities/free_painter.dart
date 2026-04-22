@@ -215,12 +215,17 @@ class FreePainter extends CustomPainter {
   // Static cross-frame TextPainter cache
   // Key: (clue, roundedFontSize×2, colorARGB) – layout is reused as long as
   // the text, fontSize, and color are unchanged.
-  // The cache is bounded to 500 entries; it is fully cleared on overflow to
-  // keep memory usage predictable.
+  // The cache is bounded to 500 entries. On overflow the entire cache is
+  // cleared (and native Paragraph resources are released via dispose) rather
+  // than using an LRU strategy: given that there are at most 10 clue values ×
+  // 5 style variants × a handful of practical zoom levels, overflow will be
+  // rare in normal usage, so a full clear is simpler and equally effective.
   // ---------------------------------------------------------------------------
   static final Map<(int, int, int), TextPainter> _staticTpCache = {};
 
   static TextPainter _staticGetTP(int clue, TextStyle style) {
+    // Multiply fontSize by 2 before rounding to preserve half-pixel precision
+    // in the cache key (avoids aliasing two sizes that differ by < 1 px).
     final roundedFontSize = (style.fontSize! * 2).round();
     final key = (clue, roundedFontSize, style.color!.value);
 
