@@ -139,16 +139,15 @@ class FreePainter extends CustomPainter {
       jCount += (boardPosition.dx - jCount / 2).floor();
     }
 
-    // Per-call TextPainter cache keyed by (clue * 10 + styleIndex).
+    // Per-call TextPainter cache keyed by (clue, styleIndex).
     // styleIndex 0–4: normal; 5–9: overlay variants of the same order.
     // Within one paint call each unique (clue, style) is laid out only once,
     // reducing layout() calls from O(visible cells) to O(10 × 5) = O(50).
-    final Map<int, TextPainter> tpCache = {};
+    final Map<(int, int), TextPainter> tpCache = {};
 
     // Returns a cached, already-laid-out TextPainter for the given clue/style.
     TextPainter _getTP(int clue, int styleIndex, TextStyle style) {
-      final key = clue * 10 + styleIndex;
-      return tpCache.putIfAbsent(key, () {
+      return tpCache.putIfAbsent((clue, styleIndex), () {
         return TextPainter(
             textDirection: TextDirection.ltr, textAlign: TextAlign.center)
           ..text = TextSpan(text: clue.toString(), style: style)
@@ -156,60 +155,40 @@ class FreePainter extends CustomPainter {
       });
     }
 
+    // Collect styles in order: [base, error, complete, filled, empty]
+    final List<TextStyle> normalStyles = [
+      cellTextBase,
+      cellTextError,
+      cellTextComplete,
+      cellTextFilled,
+      cellTextEmpty
+    ];
+    final List<TextStyle>? overlayStyles = overlay
+        ? [
+            cellTextBaseOvl!,
+            cellTextErrorOvl!,
+            cellTextCompleteOvl!,
+            cellTextFilledOvl!,
+            cellTextEmptyOvl!
+          ]
+        : null;
+
     for (int i = iStart; i < min(board.height, iStart + iCount + 1); i++) {
       for (int j = jStart; j < min(board.width, jStart + jCount + 1); j++) {
         final cell = board.cells[i][j];
         final offset = Offset(
             midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
             midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
-
-        if (overlay) {
-          final cellColor = cell.state == null
-              ? cellBaseOverlay
-              : cell.state!
-                  ? cellFilledOverlay
-                  : cellEmptyOverlay;
-          final styleIndex = (cell.error
-                  ? 1
-                  : cell.complete
-                      ? 2
-                      : cell.state == null
-                          ? 0
-                          : cell.state!
-                              ? 3
-                              : 4) +
-              5;
-          final textStyle = cell.error
-              ? cellTextErrorOvl!
-              : cell.complete
-                  ? cellTextCompleteOvl!
-                  : cell.state == null
-                      ? cellTextBaseOvl!
-                      : cell.state!
-                          ? cellTextFilledOvl!
-                          : cellTextEmptyOvl!;
-          _paintCell(canvas, offset, cell, cellColor, tileSize, styleIndex,
-              textStyle, _getTP);
-        } else {
-          final cellColor = cell.state == null
-              ? cellBase
-              : cell.state!
-                  ? cellFilled
-                  : cellEmpty;
-          final styleIndex =
-              cell.error ? 1 : cell.complete ? 2 : cell.state == null ? 0 : cell.state! ? 3 : 4;
-          final textStyle = cell.error
-              ? cellTextError
-              : cell.complete
-                  ? cellTextComplete
-                  : cell.state == null
-                      ? cellTextBase
-                      : cell.state!
-                          ? cellTextFilled
-                          : cellTextEmpty;
-          _paintCell(canvas, offset, cell, cellColor, tileSize, styleIndex,
-              textStyle, _getTP);
-        }
+        final baseIdx = _baseStyleIndex(cell);
+        _paintCell(
+            canvas,
+            offset,
+            cell,
+            _cellPaint(cell, useOverlay: overlay),
+            tileSize,
+            overlay ? baseIdx + 5 : baseIdx,
+            overlay ? overlayStyles![baseIdx] : normalStyles[baseIdx],
+            _getTP);
       }
     }
 
@@ -223,24 +202,9 @@ class FreePainter extends CustomPainter {
         final offset = Offset(
             midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
             midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
-        final cellColor = cell.state == null
-            ? cellBase
-            : cell.state!
-                ? cellFilled
-                : cellEmpty;
-        final styleIndex =
-            cell.error ? 1 : cell.complete ? 2 : cell.state == null ? 0 : cell.state! ? 3 : 4;
-        final textStyle = cell.error
-            ? cellTextError
-            : cell.complete
-                ? cellTextComplete
-                : cell.state == null
-                    ? cellTextBase
-                    : cell.state!
-                        ? cellTextFilled
-                        : cellTextEmpty;
-        _paintCell(canvas, offset, cell, cellColor, tileSize, styleIndex,
-            textStyle, _getTP);
+        final baseIdx = _baseStyleIndex(cell);
+        _paintCell(canvas, offset, cell, _cellPaint(cell, useOverlay: false),
+            tileSize, baseIdx, normalStyles[baseIdx], _getTP);
       }
     }
 
@@ -248,6 +212,38 @@ class FreePainter extends CustomPainter {
     for (final tp in tpCache.values) {
       tp.dispose();
     }
+  }
+
+  /// Returns the fill paint for [cell]. When [useOverlay] is true the
+  /// half-alpha pre-computed overlay variant is returned.
+  Paint _cellPaint(Cell cell, {required bool useOverlay}) {
+    if (useOverlay) {
+      return cell.state == null
+          ? cellBaseOverlay
+          : cell.state!
+              ? cellFilledOverlay
+              : cellEmptyOverlay;
+    }
+    return cell.state == null
+        ? cellBase
+        : cell.state!
+            ? cellFilled
+            : cellEmpty;
+  }
+
+  /// Returns a base style index in [0–4] for [cell]:
+  /// 0=base, 1=error, 2=complete, 3=filled, 4=empty.
+  /// Add 5 to get the corresponding overlay variant.
+  int _baseStyleIndex(Cell cell) {
+    return cell.error
+        ? 1
+        : cell.complete
+            ? 2
+            : cell.state == null
+                ? 0
+                : cell.state!
+                    ? 3
+                    : 4;
   }
 
   void _paintCell(
