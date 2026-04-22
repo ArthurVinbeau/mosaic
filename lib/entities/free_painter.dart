@@ -142,16 +142,15 @@ class FreePainter extends CustomPainter {
     // Per-call TextPainter cache keyed by (clue, styleIndex).
     // styleIndex 0–4: normal; 5–9: overlay variants of the same order.
     // Within one paint call each unique (clue, style) is laid out only once,
-    // reducing layout() calls from O(visible cells) to O(10 × 5) = O(50).
+    // reducing layout() calls from O(visible cells) to at most 10 clues × 5
+    // styles = 50 calls per frame. The static cache further avoids re-layout
+    // across frames when tileSize and colors are unchanged.
     final Map<(int, int), TextPainter> tpCache = {};
 
     // Returns a cached, already-laid-out TextPainter for the given clue/style.
     TextPainter _getTP(int clue, int styleIndex, TextStyle style) {
       return tpCache.putIfAbsent((clue, styleIndex), () {
-        return TextPainter(
-            textDirection: TextDirection.ltr, textAlign: TextAlign.center)
-          ..text = TextSpan(text: clue.toString(), style: style)
-          ..layout();
+        return _staticGetTP(clue, style);
       });
     }
 
@@ -208,10 +207,39 @@ class FreePainter extends CustomPainter {
       }
     }
 
-    // Dispose all TextPainters created in this frame.
-    for (final tp in tpCache.values) {
-      tp.dispose();
+    // Per-call map prevents redundant _staticGetTP lookups within one frame.
+    tpCache.clear();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Static cross-frame TextPainter cache
+  // Key: (clue, roundedFontSize×2, colorARGB) – layout is reused as long as
+  // the text, fontSize, and color are unchanged.
+  // The cache is bounded to 500 entries; it is fully cleared on overflow to
+  // keep memory usage predictable.
+  // ---------------------------------------------------------------------------
+  static final Map<(int, int, int), TextPainter> _staticTpCache = {};
+
+  static TextPainter _staticGetTP(int clue, TextStyle style) {
+    final roundedFontSize = (style.fontSize! * 2).round();
+    final key = (clue, roundedFontSize, style.color!.value);
+
+    final cached = _staticTpCache[key];
+    if (cached != null) return cached;
+
+    if (_staticTpCache.length >= 500) {
+      for (final tp in _staticTpCache.values) {
+        tp.dispose();
+      }
+      _staticTpCache.clear();
     }
+
+    final tp = TextPainter(
+        textDirection: TextDirection.ltr, textAlign: TextAlign.center)
+      ..text = TextSpan(text: clue.toString(), style: style)
+      ..layout();
+    _staticTpCache[key] = tp;
+    return tp;
   }
 
   /// Returns the fill paint for [cell]. When [useOverlay] is true the
@@ -269,3 +297,4 @@ class FreePainter extends CustomPainter {
     }
   }
 }
+
