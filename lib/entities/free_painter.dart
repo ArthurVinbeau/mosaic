@@ -8,6 +8,9 @@ import 'game_theme.dart';
 
 class FreePainter extends CustomPainter {
   final Board board;
+  // Snapshot of board.version at construction time so shouldRepaint can detect
+  // in-place cell mutations without relying on object identity.
+  final int _boardVersion;
   final GameTheme theme;
   final double scale;
   final double paddingRatio;
@@ -16,8 +19,7 @@ class FreePainter extends CustomPainter {
   final bool overlay;
   final List<Offset> overlayExceptions;
 
-  // static final Random rand = Random();
-
+  // Pre-computed solid fill paints.
   late final Paint cellBase = Paint()
     ..style = PaintingStyle.fill
     ..color = theme.cellBase;
@@ -28,6 +30,17 @@ class FreePainter extends CustomPainter {
     ..style = PaintingStyle.fill
     ..color = theme.cellEmpty;
 
+  // Pre-computed half-alpha overlay paints (avoid per-cell Paint allocation).
+  late final Paint cellBaseOverlay = Paint()
+    ..style = PaintingStyle.fill
+    ..color = theme.cellBase.withValues(alpha: 0.5);
+  late final Paint cellFilledOverlay = Paint()
+    ..style = PaintingStyle.fill
+    ..color = theme.cellFilled.withValues(alpha: 0.5);
+  late final Paint cellEmptyOverlay = Paint()
+    ..style = PaintingStyle.fill
+    ..color = theme.cellEmpty.withValues(alpha: 0.5);
+
   FreePainter(
       {required this.board,
       required this.theme,
@@ -35,7 +48,30 @@ class FreePainter extends CustomPainter {
       required this.boardPosition,
       required this.overlay,
       required this.overlayExceptions,
-      this.paddingRatio = 1.125});
+      this.paddingRatio = 1.125})
+      : _boardVersion = board.version;
+
+  @override
+  bool shouldRepaint(covariant FreePainter oldDelegate) {
+    // Skip repaint when nothing visible has changed.
+    // Check board identity first: a different Board object (e.g. new game,
+    // tutorial copy) always requires a repaint regardless of version.
+    // For the same Board object mutated in place, version tracks changes.
+    if (!identical(board, oldDelegate.board) ||
+        _boardVersion != oldDelegate._boardVersion ||
+        scale != oldDelegate.scale ||
+        boardPosition != oldDelegate.boardPosition ||
+        !identical(theme, oldDelegate.theme) ||
+        overlay != oldDelegate.overlay ||
+        overlayExceptions.length != oldDelegate.overlayExceptions.length) {
+      return true;
+    }
+    // Deep-compare overlay exceptions to catch position changes with same count.
+    for (int k = 0; k < overlayExceptions.length; k++) {
+      if (overlayExceptions[k] != oldDelegate.overlayExceptions[k]) return true;
+    }
+    return false;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -46,12 +82,10 @@ class FreePainter extends CustomPainter {
     int iCount, jCount;
 
     if (screenRatio > boardRatio) {
-      // pH = (size.height - (size.height * boardRatio / screenRatio)) / 2;
       tileSize = size.width / board.width * scale / paddingRatio;
       jCount = (board.width / scale).ceil();
       iCount = (jCount * screenRatio).ceil();
     } else {
-      // pW = (size.width - (size.width * boardRatio / screenRatio)) / 2;
       tileSize = size.height / board.height * scale / paddingRatio;
       iCount = (board.height / scale).ceil();
       jCount = (iCount / screenRatio).ceil();
@@ -62,20 +96,38 @@ class FreePainter extends CustomPainter {
     final double midW = size.width / 2;
     final double midH = size.height / 2;
 
-    /*final Paint cellRandom = Paint()
-      ..style = PaintingStyle.fill
-      ..color = Color.fromARGB(255, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));*/
+    final double fontSize = 0.75 * tileSize;
 
+    // Pre-compute text styles (depend on tileSize so must live inside paint).
     final TextStyle cellTextBase =
-        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextBase);
+        TextStyle(fontSize: fontSize, color: theme.cellTextBase);
     final TextStyle cellTextError =
-        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextError);
+        TextStyle(fontSize: fontSize, color: theme.cellTextError);
     final TextStyle cellTextComplete =
-        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextComplete);
+        TextStyle(fontSize: fontSize, color: theme.cellTextComplete);
     final TextStyle cellTextFilled =
-        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextFilled);
+        TextStyle(fontSize: fontSize, color: theme.cellTextFilled);
     final TextStyle cellTextEmpty =
-        TextStyle(fontSize: 0.75 * tileSize, color: theme.cellTextEmpty);
+        TextStyle(fontSize: fontSize, color: theme.cellTextEmpty);
+
+    // Pre-compute overlay text styles outside the loop (avoid per-cell copyWith).
+    TextStyle? cellTextBaseOvl;
+    TextStyle? cellTextErrorOvl;
+    TextStyle? cellTextCompleteOvl;
+    TextStyle? cellTextFilledOvl;
+    TextStyle? cellTextEmptyOvl;
+    if (overlay) {
+      cellTextBaseOvl =
+          TextStyle(fontSize: fontSize, color: theme.cellTextBase.withValues(alpha: 0.5));
+      cellTextErrorOvl =
+          TextStyle(fontSize: fontSize, color: theme.cellTextError.withValues(alpha: 0.5));
+      cellTextCompleteOvl =
+          TextStyle(fontSize: fontSize, color: theme.cellTextComplete.withValues(alpha: 0.5));
+      cellTextFilledOvl =
+          TextStyle(fontSize: fontSize, color: theme.cellTextFilled.withValues(alpha: 0.5));
+      cellTextEmptyOvl =
+          TextStyle(fontSize: fontSize, color: theme.cellTextEmpty.withValues(alpha: 0.5));
+    }
 
     final iStart = max(0, (boardPosition.dy - iCount / 2).floor());
     final jStart = max(0, (boardPosition.dx - jCount / 2).floor());
@@ -87,29 +139,23 @@ class FreePainter extends CustomPainter {
       jCount += (boardPosition.dx - jCount / 2).floor();
     }
 
-    /*logger.i({
-      "tileSize": tileSize,
-      "count": {
-        "i": iCount,
-        "j": jCount,
-      },
-      "end-start": {
-        "i": min(board.height, iStart + iCount + 1) - iStart,
-        "j": min(board.width, jStart + jCount + 1) - jStart,
-      },
-      "boardPosition": boardPosition,
-      "canvas": {
-        "height": size.height,
-        "width": size.width,
-      },
-      "board": {
-        "height": board.height,
-        "width": board.width,
-      },
-    });*/
-
-    final textPainter = TextPainter(
-        textDirection: TextDirection.ltr, textAlign: TextAlign.center);
+    // Collect styles in order: [base, error, complete, filled, empty]
+    final List<TextStyle> normalStyles = [
+      cellTextBase,
+      cellTextError,
+      cellTextComplete,
+      cellTextFilled,
+      cellTextEmpty
+    ];
+    final List<TextStyle>? overlayStyles = overlay
+        ? [
+            cellTextBaseOvl!,
+            cellTextErrorOvl!,
+            cellTextCompleteOvl!,
+            cellTextFilledOvl!,
+            cellTextEmptyOvl!
+          ]
+        : null;
 
     for (int i = iStart; i < min(board.height, iStart + iCount + 1); i++) {
       for (int j = jStart; j < min(board.width, jStart + jCount + 1); j++) {
@@ -117,35 +163,19 @@ class FreePainter extends CustomPainter {
         final offset = Offset(
             midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
             midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
-        var cellColor = cell.state == null
-            ? cellBase
-            : cell.state!
-                ? cellFilled
-                : cellEmpty;
-        var textStyle = cell.error
-            ? cellTextError
-            : cell.complete
-                ? cellTextComplete
-                : cell.state == null
-                    ? cellTextBase
-                    : cell.state!
-                        ? cellTextFilled
-                        : cellTextEmpty;
-
-        if (overlay) {
-          cellColor = Paint()
-            ..color = cellColor.color.withValues(alpha: 0.5)
-            ..style = cellColor.style;
-          textStyle = textStyle.copyWith(
-              color: textStyle.color!.withValues(alpha: 0.5));
-        }
-
+        final baseIdx = _baseStyleIndex(cell);
         _paintCell(
-            canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
+            canvas,
+            offset,
+            cell,
+            _cellPaint(cell, useOverlay: overlay),
+            tileSize,
+            overlay ? overlayStyles![baseIdx] : normalStyles[baseIdx]);
       }
     }
 
     if (overlay) {
+      // Draw overlay exceptions at full opacity.
       for (var target in overlayExceptions) {
         final int i = target.dy.floor();
         final int j = target.dx.floor();
@@ -154,29 +184,93 @@ class FreePainter extends CustomPainter {
         final offset = Offset(
             midW - (boardPosition.dx - j) * tileSize * paddingRatio + padding,
             midH - (boardPosition.dy - i) * tileSize * paddingRatio + padding);
-        var cellColor = cell.state == null
-            ? cellBase
-            : cell.state!
-                ? cellFilled
-                : cellEmpty;
-        var textStyle = cell.error
-            ? cellTextError
-            : cell.complete
-                ? cellTextComplete
-                : cell.state == null
-                    ? cellTextBase
-                    : cell.state!
-                        ? cellTextFilled
-                        : cellTextEmpty;
-
-        _paintCell(
-            canvas, offset, cell, cellColor, tileSize, textPainter, textStyle);
+        final baseIdx = _baseStyleIndex(cell);
+        _paintCell(canvas, offset, cell, _cellPaint(cell, useOverlay: false),
+            tileSize, normalStyles[baseIdx]);
       }
     }
   }
 
-  void _paintCell(Canvas canvas, Offset offset, Cell cell, Paint cellColor,
-      double tileSize, textPainter, TextStyle textStyle) {
+  // ---------------------------------------------------------------------------
+  // Static cross-frame TextPainter cache
+  // Key: "$clue,$roundedFontSize×2,$colorARGB" – layout is reused as long as
+  // the text, fontSize, and color are unchanged.
+  // String keys are used for Dart 2.x compatibility (record types require
+  // Dart 3.0+).
+  // The cache is bounded to 500 entries. On overflow the entire cache is
+  // cleared (and native Paragraph resources are released via dispose) rather
+  // than using an LRU strategy: given that there are at most 10 clue values ×
+  // 5 style variants × a handful of practical zoom levels, overflow will be
+  // rare in normal usage, so a full clear is simpler and equally effective.
+  // Note: _paintCell uses the returned painter IMMEDIATELY (synchronous call),
+  // so a future overflow-triggered dispose cannot affect a painter that is
+  // currently in use.
+  // ---------------------------------------------------------------------------
+  static final Map<String, TextPainter> _staticTpCache = {};
+
+  static TextPainter _staticGetTP(int clue, TextStyle style) {
+    // Multiply fontSize by 2 before rounding to preserve half-pixel precision
+    // in the cache key (avoids aliasing two sizes that differ by < 1 px).
+    final roundedFontSize = (style.fontSize! * 2).round();
+    final key = '$clue,$roundedFontSize,${style.color!.value}';
+
+    final cached = _staticTpCache[key];
+    if (cached != null) return cached;
+
+    if (_staticTpCache.length >= 500) {
+      for (final tp in _staticTpCache.values) {
+        tp.dispose();
+      }
+      _staticTpCache.clear();
+    }
+
+    final tp = TextPainter(
+        textDirection: TextDirection.ltr, textAlign: TextAlign.center)
+      ..text = TextSpan(text: clue.toString(), style: style)
+      ..layout();
+    _staticTpCache[key] = tp;
+    return tp;
+  }
+
+  /// Returns the fill paint for [cell]. When [useOverlay] is true the
+  /// half-alpha pre-computed overlay variant is returned.
+  Paint _cellPaint(Cell cell, {required bool useOverlay}) {
+    if (useOverlay) {
+      return cell.state == null
+          ? cellBaseOverlay
+          : cell.state!
+              ? cellFilledOverlay
+              : cellEmptyOverlay;
+    }
+    return cell.state == null
+        ? cellBase
+        : cell.state!
+            ? cellFilled
+            : cellEmpty;
+  }
+
+  /// Returns a base style index in [0–4] for [cell]:
+  /// 0=base, 1=error, 2=complete, 3=filled, 4=empty.
+  /// Add 5 to get the corresponding overlay variant.
+  int _baseStyleIndex(Cell cell) {
+    return cell.error
+        ? 1
+        : cell.complete
+            ? 2
+            : cell.state == null
+                ? 0
+                : cell.state!
+                    ? 3
+                    : 4;
+  }
+
+  void _paintCell(
+      Canvas canvas,
+      Offset offset,
+      Cell cell,
+      Paint cellColor,
+      double tileSize,
+      TextStyle textStyle) {
     canvas.drawRect(
         Rect.fromPoints(
           offset,
@@ -184,19 +278,12 @@ class FreePainter extends CustomPainter {
         ),
         cellColor);
     if (cell.shown) {
-      textPainter.text = TextSpan(
-        text: cell.clue.toString(),
-        style: textStyle,
-      );
-      textPainter.layout();
-      final o = Offset(offset.dx + (tileSize / 2) - (textPainter.width / 2),
-          offset.dy + (tileSize / 2) - (textPainter.height / 2));
-      textPainter.paint(canvas, o);
+      // _staticGetTP returns the painter and it is used immediately
+      // (synchronous), so a future cache overflow cannot affect this call.
+      final tp = _staticGetTP(cell.clue, textStyle);
+      final o = Offset(offset.dx + (tileSize / 2) - (tp.width / 2),
+          offset.dy + (tileSize / 2) - (tp.height / 2));
+      tp.paint(canvas, o);
     }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
   }
 }
