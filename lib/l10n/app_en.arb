@@ -381,6 +381,42 @@
   "@boardSize": {
     "description": "Board size picker title"
   },
+  "boardSizePickerHeader": "Board size",
+  "@boardSizePickerHeader": {
+    "description": "The header displayed above the board size dropdown"
+  },
+  "algorithmPickerHeader": "Algorithm",
+  "@algorithmPickerHeader": {
+    "description": "The header displayed above the algorithm picker"
+  },
+  "classicAlgorithm": "Classic",
+  "@classicAlgorithm": {
+    "description": "Classic board generation algorithm option"
+  },
+  "hybridAlgorithm": "Hybrid",
+  "@hybridAlgorithm": {
+    "description": "Hybrid board generation algorithm option"
+  },
+  "generatingElapsed": "{seconds}s elapsed",
+  "@generatingElapsed": {
+    "description": "Shows elapsed generation time in seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "15"
+      }
+    }
+  },
+  "generatingEstimatedRemaining": "~{seconds}s remaining",
+  "@generatingEstimatedRemaining": {
+    "description": "Shows estimated remaining generation time in seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
   "startAnimation": "Start animation",
   "@startAnimation": {
     "description": "Start animation button"

@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:mosaic/entities/board.dart';
 
 import '../../l10n/app_localizations.dart';
 
 class NewGameWidget extends StatefulWidget {
-  /// The starting height displayed int the [TextField]
+  /// The starting height displayed in the [TextField]
   final int height;
 
-  /// The starting width displayed int the [TextField]
+  /// The starting width displayed in the [TextField]
   final int width;
 
   /// The function called when the user has validated his input
-  final void Function(int height, int width) onValidate;
+  final void Function(int height, int width, {GenerationAlgorithm algorithm}) onValidate;
 
   /// The title displayed above the size selection
   final String title;
@@ -53,6 +54,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
   ];
 
   int _dropDownValue = 2;
+  GenerationAlgorithm _algorithm = GenerationAlgorithm.classic;
 
   Widget _getInputWidget(
       {required BuildContext context,
@@ -98,7 +100,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final List<DropdownMenuEntry<int>> opts = [];
+    final List<DropdownMenuEntry<int>> sizeOpts = [];
     final loc = AppLocalizations.of(context)!;
     final difficulties = [
       loc.beginnerLevel,
@@ -117,8 +119,15 @@ class _NewGameWidgetState extends State<NewGameWidget> {
       if (o.height != null && o.width != null) {
         text += " (${o.height}x${o.width})";
       }
-      opts.add(DropdownMenuEntry(value: i, label: text));
+      sizeOpts.add(DropdownMenuEntry(value: i, label: text));
     }
+
+    final List<DropdownMenuEntry<GenerationAlgorithm>> algorithmOpts = [
+      DropdownMenuEntry(
+          value: GenerationAlgorithm.classic, label: loc.classicAlgorithm),
+      DropdownMenuEntry(
+          value: GenerationAlgorithm.hybrid, label: loc.hybridAlgorithm),
+    ];
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -127,6 +136,12 @@ class _NewGameWidgetState extends State<NewGameWidget> {
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 24.0),
           child:
               Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
+        ),
+        // Board size picker
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Text(loc.boardSizePickerHeader,
+              style: Theme.of(context).textTheme.titleMedium),
         ),
         DropdownMenu<int>(
           initialSelection: _dropDownValue,
@@ -143,7 +158,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
               });
             }
           },
-          dropdownMenuEntries: opts,
+          dropdownMenuEntries: sizeOpts,
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -170,12 +185,30 @@ class _NewGameWidgetState extends State<NewGameWidget> {
             ),
           ),
         ),
+        // Algorithm picker
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Text(loc.algorithmPickerHeader,
+              style: Theme.of(context).textTheme.titleMedium),
+        ),
+        DropdownMenu<GenerationAlgorithm>(
+          initialSelection: _algorithm,
+          onSelected: (GenerationAlgorithm? newValue) {
+            if (newValue != null) {
+              setState(() {
+                _algorithm = newValue;
+              });
+            }
+          },
+          dropdownMenuEntries: algorithmOpts,
+        ),
+        const SizedBox(height: 16),
         ElevatedButton(
           child: Text(widget.validateButtonText),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              widget.onValidate(_height, _width);
+              widget.onValidate(_height, _width, algorithm: _algorithm);
             }
           },
         ),

@@ -578,6 +578,42 @@ abstract class AppLocalizations {
   /// **'Board size'**
   String get boardSize;
 
+  /// The header displayed above the board size dropdown
+  ///
+  /// In en, this message translates to:
+  /// **'Board size'**
+  String get boardSizePickerHeader;
+
+  /// The header displayed above the algorithm picker
+  ///
+  /// In en, this message translates to:
+  /// **'Algorithm'**
+  String get algorithmPickerHeader;
+
+  /// Classic board generation algorithm option
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get classicAlgorithm;
+
+  /// Hybrid board generation algorithm option
+  ///
+  /// In en, this message translates to:
+  /// **'Hybrid'**
+  String get hybridAlgorithm;
+
+  /// Shows elapsed generation time in seconds
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s elapsed'**
+  String generatingElapsed(int seconds);
+
+  /// Shows estimated remaining generation time in seconds
+  ///
+  /// In en, this message translates to:
+  /// **'~{seconds}s remaining'**
+  String generatingEstimatedRemaining(int seconds);
+
   /// Start animation button
   ///
   /// In en, this message translates to:

@@ -4,12 +4,18 @@ import 'dart:math';
 import 'package:mosaic/entities/cell.dart';
 import 'package:mosaic/utils/config.dart';
 
+enum GenerationAlgorithm {
+  classic,
+  hybrid,
+}
+
 class Board {
   final int height;
   final int width;
   late List<List<Cell>> cells;
 
   final double density;
+  final GenerationAlgorithm algorithm;
 
   late final Random _rand;
   late final int seed;
@@ -26,7 +32,7 @@ class Board {
   /// version collision practically impossible during a game session.
   void bumpVersion() => version = (version + 1) & 0x3FFFFFFF;
 
-  Board({this.height = 8, this.width = 8, this.density = 0.5, int? seed}) {
+  Board({this.height = 8, this.width = 8, this.density = 0.5, int? seed, this.algorithm = GenerationAlgorithm.classic}) {
     this.seed = seed ?? Random().nextInt(1 << 32);
     _rand = Random(this.seed);
   }
@@ -35,6 +41,7 @@ class Board {
       : height = other.height,
         width = other.width,
         density = other.density,
+        algorithm = other.algorithm,
         _rand = other._rand,
         seed = other.seed,
         _gameDesc = other._gameDesc {
@@ -141,7 +148,7 @@ class Board {
     int maxSpace = 'z'.codeUnitAt(0);
     int spaceCount = baseSpace;
 
-    cells = _genV7(debugStreamSink);
+    cells = algorithm == GenerationAlgorithm.hybrid ? _genHybrid(debugStreamSink) : _genV7(debugStreamSink);
 
     // uncompressed string generation omitted
 
@@ -211,7 +218,92 @@ class Board {
     return compressed;
   }
 
-  /// This algorithm may result in cells having ```{clue=-1, shown=false}```. Replace ```while (filled.length < size)```
+  /// Hybrid algorithm: runs [_genV7] then applies a constraint-propagation
+  /// pass to remove additional clues that are uniquely deducible from their
+  /// neighbours, producing harder, more minimal puzzles.
+  List<List<Cell>> _genHybrid(StreamSink<BoardGenerationStep>? debugStreamSink) {
+    final list = _genV7(debugStreamSink);
+
+    // Build the list of shown clue coordinates and shuffle it so removal order
+    // is random (and therefore reproducible via seed).
+    final List<_Coordinates> shown = [];
+    for (int i = 0; i < height; i++) {
+      for (int j = 0; j < width; j++) {
+        if (list[i][j].shown) shown.add(_Coordinates(i, j));
+      }
+    }
+    shown.shuffle(_rand);
+
+    int removed = 0;
+    for (final coord in shown) {
+      final cell = list[coord.i][coord.j];
+      cell.shown = false;
+      if (_canSolveWithConstraintPropagation(list)) {
+        removed++;
+      } else {
+        cell.shown = true;
+      }
+    }
+
+    logger.d('Hybrid pass removed $removed additional clues');
+    return list;
+  }
+
+  /// Returns true when simple constraint propagation (forced-cell deduction)
+  /// can uniquely determine every cell in [cells] using only the shown clues.
+  bool _canSolveWithConstraintPropagation(List<List<Cell>> cells) {
+    // Simulate an empty board (all cells unknown).
+    final states = List.generate(height, (_) => List<bool?>.filled(width, null, growable: false));
+    int unsolved = height * width;
+
+    bool progress = true;
+    while (progress && unsolved > 0) {
+      progress = false;
+      for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+          final c = cells[i][j];
+          if (!c.shown) continue;
+
+          int filled = 0, unknown = 0;
+          final unknownCoords = <_Coordinates>[];
+          iterateOnSquare(states, i, j, (bool? s, ni, nj) {
+            if (s == true) {
+              filled++;
+            } else if (s == null) {
+              unknown++;
+              unknownCoords.add(_Coordinates(ni, nj));
+            }
+          });
+
+          if (unknown == 0) continue;
+
+          if (filled == c.clue) {
+            // All remaining unknowns must be empty.
+            for (final nc in unknownCoords) {
+              if (states[nc.i][nc.j] == null) {
+                states[nc.i][nc.j] = false;
+                unsolved--;
+                progress = true;
+              }
+            }
+          } else if (filled + unknown == c.clue) {
+            // All remaining unknowns must be filled.
+            for (final nc in unknownCoords) {
+              if (states[nc.i][nc.j] == null) {
+                states[nc.i][nc.j] = true;
+                unsolved--;
+                progress = true;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return unsolved == 0;
+  }
+
+
   /// with ```while (pending.isNotEmpty)``` to fill all the clues.
   List<List<Cell>> _genV7(StreamSink<BoardGenerationStep>? debugStreamSink) {
     final List<List<Cell?>> cells = List.generate(height, (i) => List.generate(width, (j) => null));

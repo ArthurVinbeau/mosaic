@@ -79,6 +79,12 @@
   "extras": "Extras",
   "loadingAnimation": "Animation de chargement",
   "boardSize": "Taille du plateau",
+  "boardSizePickerHeader": "Taille du plateau",
+  "algorithmPickerHeader": "Algorithme",
+  "classicAlgorithm": "Classique",
+  "hybridAlgorithm": "Hybride",
+  "generatingElapsed": "{seconds}s écoulées",
+  "generatingEstimatedRemaining": "~{seconds}s restantes",
   "startAnimation": "Lancer l'animation",
   "close": "Fermer"
 }
