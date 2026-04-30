@@ -523,7 +523,7 @@ class Board {
     int shown = 0;
 
     // Option 1 fill strategy: independent fills are only applied on boards large
-    // enough for Phase 2 to run (size > 25).  On small boards the single-colour
+    // enough for Phase 2 to run (size > 25).  On small boards the single-color
     // cluster strategy keeps clues at 0 or 9, which are the only values that
     // allow deduction when just one clue is visible.
     final bool effectiveIndependentFill = independentFill && size > 25;
