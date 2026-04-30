@@ -19,7 +19,7 @@ class GeneratingBoardGameState extends GameState {
   GeneratingBoardGameState({int? height, int? width, GenerationAlgorithm? algorithm, DateTime? startedAt})
       : height = height ?? 5,
         width = width ?? 5,
-        algorithm = algorithm ?? GenerationAlgorithm.classic,
+        algorithm = algorithm ?? GenerationAlgorithm.easy,
         startedAt = startedAt ?? DateTime.now();
 }
 

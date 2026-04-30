@@ -385,17 +385,25 @@
   "@boardSizePickerHeader": {
     "description": "The header displayed above the board size dropdown"
   },
-  "algorithmPickerHeader": "Algorithm",
+  "algorithmPickerHeader": "Difficulty",
   "@algorithmPickerHeader": {
-    "description": "The header displayed above the algorithm picker"
+    "description": "The header displayed above the difficulty picker"
   },
-  "classicAlgorithm": "Classic",
-  "@classicAlgorithm": {
-    "description": "Classic board generation algorithm option"
+  "difficultyEasy": "Easy",
+  "@difficultyEasy": {
+    "description": "Easy generation difficulty (Phase 1 current + Phase 2 current)"
   },
-  "hybridAlgorithm": "Hybrid",
-  "@hybridAlgorithm": {
-    "description": "Hybrid board generation algorithm option"
+  "difficultyMedium": "Medium",
+  "@difficultyMedium": {
+    "description": "Medium generation difficulty (Phase 1 Option1 + Phase 2 current)"
+  },
+  "difficultyHard": "Hard",
+  "@difficultyHard": {
+    "description": "Hard generation difficulty (Phase 1 Option1 + enriched constraint propagation)"
+  },
+  "difficultyExpert": "Expert",
+  "@difficultyExpert": {
+    "description": "Expert generation difficulty (Phase 1 Option1 + enriched propagation + backtracking uniqueness)"
   },
   "generatingElapsed": "{seconds}s elapsed",
   "@generatingElapsed": {

@@ -21,7 +21,7 @@ class LoadingBoardIndicator extends StatefulWidget {
       required this.height,
       required this.width,
       this.showLoadingText = true,
-      this.algorithm = GenerationAlgorithm.classic,
+      this.algorithm = GenerationAlgorithm.easy,
       this.startedAt})
       : super(key: key);
 
@@ -38,14 +38,18 @@ class _LoadingBoardIndicatorState extends State<LoadingBoardIndicator> {
   static const Duration _showAfter = Duration(seconds: 10);
 
   /// Rough estimate of total generation time in seconds for a board of
-  /// [widget.height]×[widget.width] cells with the given algorithm.
+  /// [widget.height]×[widget.width] cells at the given difficulty.
   double _estimatedTotalSeconds() {
     final cells = widget.height * widget.width;
     switch (widget.algorithm) {
-      case GenerationAlgorithm.classic:
+      case GenerationAlgorithm.easy:
         return cells * 0.0012 + 1.0;
-      case GenerationAlgorithm.hybrid:
+      case GenerationAlgorithm.medium:
+        return cells * 0.0015 + 1.0;
+      case GenerationAlgorithm.hard:
         return cells * 0.006 + 2.0;
+      case GenerationAlgorithm.expert:
+        return cells * 0.012 + 4.0;
     }
   }
 

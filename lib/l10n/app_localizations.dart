@@ -584,23 +584,35 @@ abstract class AppLocalizations {
   /// **'Board size'**
   String get boardSizePickerHeader;
 
-  /// The header displayed above the algorithm picker
+  /// The header displayed above the difficulty picker
   ///
   /// In en, this message translates to:
-  /// **'Algorithm'**
+  /// **'Difficulty'**
   String get algorithmPickerHeader;
 
-  /// Classic board generation algorithm option
+  /// Easy generation difficulty option
   ///
   /// In en, this message translates to:
-  /// **'Classic'**
-  String get classicAlgorithm;
+  /// **'Easy'**
+  String get difficultyEasy;
 
-  /// Hybrid board generation algorithm option
+  /// Medium generation difficulty option
   ///
   /// In en, this message translates to:
-  /// **'Hybrid'**
-  String get hybridAlgorithm;
+  /// **'Medium'**
+  String get difficultyMedium;
+
+  /// Hard generation difficulty option
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get difficultyHard;
+
+  /// Expert generation difficulty option
+  ///
+  /// In en, this message translates to:
+  /// **'Expert'**
+  String get difficultyExpert;
 
   /// Shows elapsed generation time in seconds
   ///

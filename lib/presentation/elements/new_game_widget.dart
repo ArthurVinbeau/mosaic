@@ -54,7 +54,7 @@ class _NewGameWidgetState extends State<NewGameWidget> {
   ];
 
   int _dropDownValue = 2;
-  GenerationAlgorithm _algorithm = GenerationAlgorithm.classic;
+  GenerationAlgorithm _algorithm = GenerationAlgorithm.easy;
 
   Widget _getInputWidget(
       {required BuildContext context,
@@ -124,9 +124,13 @@ class _NewGameWidgetState extends State<NewGameWidget> {
 
     final List<DropdownMenuEntry<GenerationAlgorithm>> algorithmOpts = [
       DropdownMenuEntry(
-          value: GenerationAlgorithm.classic, label: loc.classicAlgorithm),
+          value: GenerationAlgorithm.easy, label: loc.difficultyEasy),
       DropdownMenuEntry(
-          value: GenerationAlgorithm.hybrid, label: loc.hybridAlgorithm),
+          value: GenerationAlgorithm.medium, label: loc.difficultyMedium),
+      DropdownMenuEntry(
+          value: GenerationAlgorithm.hard, label: loc.difficultyHard),
+      DropdownMenuEntry(
+          value: GenerationAlgorithm.expert, label: loc.difficultyExpert),
     ];
 
     return Column(

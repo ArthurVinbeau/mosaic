@@ -7,7 +7,7 @@ class CreateGameEvent extends GameEvent {
   final int height, width;
   final GenerationAlgorithm algorithm;
 
-  CreateGameEvent(this.height, this.width, {this.algorithm = GenerationAlgorithm.classic});
+  CreateGameEvent(this.height, this.width, {this.algorithm = GenerationAlgorithm.easy});
 }
 
 class ImportGameEvent extends GameEvent {

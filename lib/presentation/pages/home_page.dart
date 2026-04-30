@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         width: state.baseWidth,
                         title: loc.difficultyPickerHeader,
                         validateButtonText: loc.newGame,
-                        onValidate: (height, width, {algorithm = GenerationAlgorithm.classic}) => context
+                        onValidate: (height, width, {algorithm = GenerationAlgorithm.easy}) => context
                             .read<GameBloc>()
                             .add(CreateGameEvent(height, width, algorithm: algorithm)),
                       ),

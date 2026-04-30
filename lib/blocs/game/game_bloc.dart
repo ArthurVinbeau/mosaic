@@ -66,7 +66,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
   }
 
-  Future<void> _newGame({required Emitter emit, required int height, required int width, int? seed, GenerationAlgorithm algorithm = GenerationAlgorithm.classic}) async {
+  Future<void> _newGame({required Emitter emit, required int height, required int width, int? seed, GenerationAlgorithm algorithm = GenerationAlgorithm.easy}) async {
     _timerBloc.add(const TimerReset());
     status = GameStatus.generating;
     final now = DateTime.now();
