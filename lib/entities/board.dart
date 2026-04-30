@@ -438,7 +438,7 @@ class Board {
               final sMin = [0, needA - onlyALen, needB - onlyBCount].reduce((a, b) => a > b ? a : b);
               final sMax = [sharedLen, needA, needB].reduce((a, b) => a < b ? a : b);
 
-              if (sMin > sMax) continue; // Inconsistent bounds, skip
+              if (sMin > sMax) return -1; // Contradiction: constraints of A and B are irreconcilable
 
               void markCells(List<_Coordinates> coords, bool val) {
                 for (final sc in coords) {
