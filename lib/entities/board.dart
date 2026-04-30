@@ -522,6 +522,12 @@ class Board {
     final startPos = pending.first;
     int shown = 0;
 
+    // Option 1 fill strategy: independent fills are only applied on boards large
+    // enough for Phase 2 to run (size > 25).  On small boards the single-colour
+    // cluster strategy keeps clues at 0 or 9, which are the only values that
+    // allow deduction when just one clue is visible.
+    final bool effectiveIndependentFill = independentFill && size > 25;
+
     // board generation
     while (filled.length < size) {
       var target = pending.elementAt(_rand.nextInt(pending.length));
@@ -535,7 +541,7 @@ class Board {
         if (e == null) {
           // Option 1: each new cell gets its own independent random value
           // instead of sharing the single `filling` bool drawn for this target.
-          final cellValue = independentFill ? _rand.nextBool() : filling;
+          final cellValue = effectiveIndependentFill ? _rand.nextBool() : filling;
           e = Cell(value: cellValue, shown: false, clue: -1);
           cells[i][j] = e;
           filled.add(_Coordinates(i, j));
@@ -567,44 +573,61 @@ class Board {
       final Set<Cell> processed = {};
       final Set<_Coordinates> whole = {};
 
-      while (filled.length < size) {
-        var target = pending.elementAt(_rand.nextInt(pending.length));
-        final cell = list[target.i][target.j];
+      // Multi-pass constraint propagation: iterate over all pending cells in a
+      // round; repeat rounds as long as at least one cell was resolved.  Cells
+      // that cannot be forced yet (black < clue < black+empty) are left in
+      // pending for the next round.  When a full round yields no progress the
+      // loop terminates — avoiding an infinite spin on ambiguous patterns
+      // (the main issue with independently-filled boards where clues cluster
+      // around mid-range values and few cells can be immediately forced).
+      bool propagationProgress = true;
+      while (propagationProgress && filled.length < size) {
+        propagationProgress = false;
+        for (final target in pending.toList()) {
+          if (!pending.contains(target)) continue;
+          final cell = list[target.i][target.j];
 
-        if (!cell.shown) continue;
-
-        int black = 0, empty = 0;
-
-        iterateOnSquare(list, target.i, target.j, (Cell cell, i, j) {
-          switch (cell.state) {
-            case true:
-              black++;
-              break;
-            case null:
-              empty++;
+          if (!cell.shown) {
+            pending.remove(target);
+            propagationProgress = true;
+            continue;
           }
-        });
 
-        processed.add(cell);
+          int black = 0, empty = 0;
 
-        if (cell.clue == 0 || cell.clue == 9) {
-          whole.add(target);
-        }
-
-        if (empty == 0) {
-          pending.remove(target);
-        } else if (black == cell.clue || empty + black == cell.clue) {
-          iterateOnSquare(list, target.i, target.j, (Cell e, i, j) {
-            if (e.state == null) {
-              e.state = black != cell.clue;
-              filled.add(_Coordinates(i, j));
-            }
-
-            if (e.shown && !processed.contains(e)) {
-              pending.add(_Coordinates(i, j));
+          iterateOnSquare(list, target.i, target.j, (Cell cell, i, j) {
+            switch (cell.state) {
+              case true:
+                black++;
+                break;
+              case null:
+                empty++;
             }
           });
-          pending.remove(target);
+
+          processed.add(cell);
+
+          if (cell.clue == 0 || cell.clue == 9) {
+            whole.add(target);
+          }
+
+          if (empty == 0) {
+            pending.remove(target);
+            propagationProgress = true;
+          } else if (black == cell.clue || empty + black == cell.clue) {
+            iterateOnSquare(list, target.i, target.j, (Cell e, i, j) {
+              if (e.state == null) {
+                e.state = black != cell.clue;
+                filled.add(_Coordinates(i, j));
+              }
+
+              if (e.shown && !processed.contains(e)) {
+                pending.add(_Coordinates(i, j));
+              }
+            });
+            pending.remove(target);
+            propagationProgress = true;
+          }
         }
       }
 
