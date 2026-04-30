@@ -304,6 +304,7 @@ class Board {
   }
 
 
+  /// This algorithm may result in cells having ```{clue=-1, shown=false}```. Replace ```while (filled.length < size)```
   /// with ```while (pending.isNotEmpty)``` to fill all the clues.
   List<List<Cell>> _genV7(StreamSink<BoardGenerationStep>? debugStreamSink) {
     final List<List<Cell?>> cells = List.generate(height, (i) => List.generate(width, (j) => null));
