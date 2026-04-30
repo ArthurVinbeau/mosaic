@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
+import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/presentation/elements/free_drawing.dart';
 import 'package:mosaic/presentation/elements/loading_board_indicator.dart';
 import 'package:mosaic/utils/config.dart';
@@ -80,6 +81,8 @@ class BoardWidget extends StatelessWidget {
           return LoadingBoardIndicator(
             height: state.height,
             width: state.width,
+            algorithm: state.algorithm,
+            startedAt: state.startedAt,
           );
         } else if (state is BoardGameState) {
           return SizedBox.expand(

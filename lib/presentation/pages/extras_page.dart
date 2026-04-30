@@ -33,7 +33,7 @@ class ExtrasPage extends StatelessWidget {
                 width: 8,
                 title: loc.boardSize,
                 validateButtonText: loc.startAnimation,
-                onValidate: (height, width) {
+                onValidate: (height, width, {algorithm}) {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) => Dialog.fullscreen(

@@ -79,6 +79,14 @@
   "extras": "Extras",
   "loadingAnimation": "Animation de chargement",
   "boardSize": "Taille du plateau",
+  "boardSizePickerHeader": "Taille du plateau",
+  "algorithmPickerHeader": "Difficulté",
+  "difficultyEasy": "Facile",
+  "difficultyMedium": "Moyen",
+  "difficultyHard": "Difficile",
+  "difficultyExpert": "Expert",
+  "generatingElapsed": "{seconds}s écoulées",
+  "generatingEstimatedRemaining": "~{seconds}s restantes",
   "startAnimation": "Lancer l'animation",
   "close": "Fermer"
 }

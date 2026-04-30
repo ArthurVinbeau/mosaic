@@ -578,6 +578,54 @@ abstract class AppLocalizations {
   /// **'Board size'**
   String get boardSize;
 
+  /// The header displayed above the board size dropdown
+  ///
+  /// In en, this message translates to:
+  /// **'Board size'**
+  String get boardSizePickerHeader;
+
+  /// The header displayed above the difficulty picker
+  ///
+  /// In en, this message translates to:
+  /// **'Difficulty'**
+  String get algorithmPickerHeader;
+
+  /// Easy generation difficulty option
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get difficultyEasy;
+
+  /// Medium generation difficulty option
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get difficultyMedium;
+
+  /// Hard generation difficulty option
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get difficultyHard;
+
+  /// Expert generation difficulty option
+  ///
+  /// In en, this message translates to:
+  /// **'Expert'**
+  String get difficultyExpert;
+
+  /// Shows elapsed generation time in seconds
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s elapsed'**
+  String generatingElapsed(int seconds);
+
+  /// Shows estimated remaining generation time in seconds
+  ///
+  /// In en, this message translates to:
+  /// **'~{seconds}s remaining'**
+  String generatingEstimatedRemaining(int seconds);
+
   /// Start animation button
   ///
   /// In en, this message translates to:

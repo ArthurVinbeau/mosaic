@@ -270,6 +270,34 @@ class AppLocalizationsFr extends AppLocalizations {
   String get boardSize => 'Taille du plateau';
 
   @override
+  String get boardSizePickerHeader => 'Taille du plateau';
+
+  @override
+  String get algorithmPickerHeader => 'Difficulté';
+
+  @override
+  String get difficultyEasy => 'Facile';
+
+  @override
+  String get difficultyMedium => 'Moyen';
+
+  @override
+  String get difficultyHard => 'Difficile';
+
+  @override
+  String get difficultyExpert => 'Expert';
+
+  @override
+  String generatingElapsed(int seconds) {
+    return '${seconds}s écoulées';
+  }
+
+  @override
+  String generatingEstimatedRemaining(int seconds) {
+    return '~${seconds}s restantes';
+  }
+
+  @override
   String get startAnimation => 'Lancer l\'animation';
 
   @override

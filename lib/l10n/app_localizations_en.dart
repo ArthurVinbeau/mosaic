@@ -270,6 +270,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get boardSize => 'Board size';
 
   @override
+  String get boardSizePickerHeader => 'Board size';
+
+  @override
+  String get algorithmPickerHeader => 'Difficulty';
+
+  @override
+  String get difficultyEasy => 'Easy';
+
+  @override
+  String get difficultyMedium => 'Medium';
+
+  @override
+  String get difficultyHard => 'Hard';
+
+  @override
+  String get difficultyExpert => 'Expert';
+
+  @override
+  String generatingElapsed(int seconds) {
+    return '${seconds}s elapsed';
+  }
+
+  @override
+  String generatingEstimatedRemaining(int seconds) {
+    return '~${seconds}s remaining';
+  }
+
+  @override
   String get startAnimation => 'Start animation';
 
   @override

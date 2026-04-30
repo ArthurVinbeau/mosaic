@@ -381,6 +381,50 @@
   "@boardSize": {
     "description": "Board size picker title"
   },
+  "boardSizePickerHeader": "Board size",
+  "@boardSizePickerHeader": {
+    "description": "The header displayed above the board size dropdown"
+  },
+  "algorithmPickerHeader": "Difficulty",
+  "@algorithmPickerHeader": {
+    "description": "The header displayed above the difficulty picker"
+  },
+  "difficultyEasy": "Easy",
+  "@difficultyEasy": {
+    "description": "Easy generation difficulty (Phase 1 current + Phase 2 current)"
+  },
+  "difficultyMedium": "Medium",
+  "@difficultyMedium": {
+    "description": "Medium generation difficulty (Phase 1 Option1 + Phase 2 current)"
+  },
+  "difficultyHard": "Hard",
+  "@difficultyHard": {
+    "description": "Hard generation difficulty (Phase 1 Option1 + enriched constraint propagation)"
+  },
+  "difficultyExpert": "Expert",
+  "@difficultyExpert": {
+    "description": "Expert generation difficulty (Phase 1 Option1 + enriched propagation + backtracking uniqueness)"
+  },
+  "generatingElapsed": "{seconds}s elapsed",
+  "@generatingElapsed": {
+    "description": "Shows elapsed generation time in seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "15"
+      }
+    }
+  },
+  "generatingEstimatedRemaining": "~{seconds}s remaining",
+  "@generatingEstimatedRemaining": {
+    "description": "Shows estimated remaining generation time in seconds",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
   "startAnimation": "Start animation",
   "@startAnimation": {
     "description": "Start animation button"

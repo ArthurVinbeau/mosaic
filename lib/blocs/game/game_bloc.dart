@@ -62,15 +62,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (status == GameStatus.running || status == GameStatus.win) {
       emit(NewBoardGameState(board!, controls));
     } else if (status == GameStatus.generating) {
-      emit(GeneratingBoardGameState(height: board?.height, width: board?.width));
+      emit(GeneratingBoardGameState(height: board?.height, width: board?.width, algorithm: board?.algorithm));
     }
   }
 
-  Future<void> _newGame({required Emitter emit, required int height, required int width, int? seed}) async {
+  Future<void> _newGame({required Emitter emit, required int height, required int width, int? seed, GenerationAlgorithm algorithm = GenerationAlgorithm.easy}) async {
     _timerBloc.add(const TimerReset());
     status = GameStatus.generating;
-    emit(GeneratingBoardGameState(height: height, width: width));
-    board = await compute(_generateBoard, Board(height: height, width: width, seed: seed));
+    final now = DateTime.now();
+    emit(GeneratingBoardGameState(height: height, width: width, algorithm: algorithm, startedAt: now));
+    board = await compute(_generateBoard, Board(height: height, width: width, seed: seed, algorithm: algorithm));
     status = GameStatus.running;
     validTiles = 0;
     moveManager = MoveManager();
@@ -78,7 +79,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   void _createNewGame(CreateGameEvent event, Emitter emit) async {
-    await _newGame(emit: emit, height: event.height, width: event.width);
+    await _newGame(emit: emit, height: event.height, width: event.width, algorithm: event.algorithm);
   }
 
   void _importGame(ImportGameEvent event, Emitter emit) async {

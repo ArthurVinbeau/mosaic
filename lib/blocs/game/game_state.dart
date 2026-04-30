@@ -13,10 +13,14 @@ class NotStartedGameState extends GameState {
 class GeneratingBoardGameState extends GameState {
   final int height;
   final int width;
+  final GenerationAlgorithm algorithm;
+  final DateTime startedAt;
 
-  GeneratingBoardGameState({int? height, int? width})
+  GeneratingBoardGameState({int? height, int? width, GenerationAlgorithm? algorithm, DateTime? startedAt})
       : height = height ?? 5,
-        width = width ?? 5;
+        width = width ?? 5,
+        algorithm = algorithm ?? GenerationAlgorithm.easy,
+        startedAt = startedAt ?? DateTime.now();
 }
 
 class CheckingForSavesState extends GameState {}

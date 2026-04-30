@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mosaic/blocs/game/game_bloc.dart';
 import 'package:mosaic/blocs/theme/theme_cubit.dart';
 import 'package:mosaic/blocs/tutorial/tutorial_bloc.dart';
+import 'package:mosaic/entities/board.dart';
 import 'package:mosaic/presentation/elements/import_seed_dialog.dart';
 import 'package:mosaic/presentation/elements/new_game_widget.dart';
 import 'package:mosaic/presentation/pages/settings_page.dart';
@@ -75,9 +76,9 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                         width: state.baseWidth,
                         title: loc.difficultyPickerHeader,
                         validateButtonText: loc.newGame,
-                        onValidate: (height, width) => context
+                        onValidate: (height, width, {algorithm = GenerationAlgorithm.easy}) => context
                             .read<GameBloc>()
-                            .add(CreateGameEvent(height, width)),
+                            .add(CreateGameEvent(height, width, algorithm: algorithm)),
                       ),
                       if (state.canResume)
                         Container(
